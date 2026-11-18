@@ -623,32 +623,271 @@ function openAiModal() {
    MOODLE
    ========================================================= */
 
+function renderMoodleStatus() {
+  const config = state.moodleConfig;
+  const isLive = config.mode === "live";
+  const demoButton = $("[data-moodle-mode='demo']");
+  const liveButton = $("[data-moodle-mode='live']");
+  const demoPanel = $("#moodle-demo-panel");
+  const livePanel = $("#moodle-live-panel");
+  const proxyInput = $("#moodle-proxy-input");
+  const lastSync = $("#moodle-last-sync");
+  const summary = $("#moodle-summary");
+  const status = $("#moodle-status");
+  const activeClass = "bg-white dark:bg-slate-700 text-studia-700 dark:text-studia-300 shadow-sm";
+  const inactiveClass = "text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200";
+
+  if (demoButton) {
+    demoButton.className = `py-2.5 rounded-xl text-xs font-bold transition ${!isLive ? activeClass : inactiveClass}`;
+    demoButton.setAttribute("aria-pressed", String(!isLive));
+  }
+  if (liveButton) {
+    liveButton.className = `py-2.5 rounded-xl text-xs font-bold transition ${isLive ? activeClass : inactiveClass}`;
+    liveButton.setAttribute("aria-pressed", String(isLive));
+  }
+  if (demoPanel) demoPanel.classList.toggle("hidden", isLive);
+  if (livePanel) livePanel.classList.toggle("hidden", !isLive);
+  if (proxyInput && document.activeElement !== proxyInput) proxyInput.value = config.proxyUrl;
+
+  const hasMatchingSync = Boolean(config.lastSync) && config.lastSyncMode === config.mode;
+  if (lastSync) {
+    lastSync.textContent = config.lastSync
+      ? formatSyncTime(config.lastSync, config.lastSyncMode || config.mode)
+      : "Još nije sinkronizirano";
+  }
+  if (summary) {
+    if (config.lastSummary) {
+      const suffix = config.lastSyncMode && config.lastSyncMode !== config.mode
+        ? ` (iz ${config.lastSyncMode === "live" ? "live" : "demo"} načina)`
+        : "";
+      summary.textContent = `${MoodleAPI.getSummaryText(config.lastSummary)}${suffix}`;
+    } else {
+      summary.textContent = isLive
+        ? "Live način čeka prvu sinkronizaciju preko proxyja."
+        : "Odaberi način rada i pokreni sinkronizaciju.";
+    }
+  }
+  if (status) {
+    status.textContent = isLive
+      ? (hasMatchingSync ? "Live · sinkronizirano" : "Live · čeka proxy")
+      : (hasMatchingSync ? "Demo · sinkronizirano" : "Demo · spreman");
+    status.className = hasMatchingSync
+      ? "font-bold text-emerald-600 dark:text-emerald-400"
+      : "font-bold text-slate-600 dark:text-slate-300";
+  }
+}
+
+function setMoodleMode(mode) {
+  state.moodleConfig.mode = mode === "live" ? "live" : "demo";
+  persistMoodleConfig();
+  renderMoodleStatus();
+  applyMoodleState();
+  showToast(state.moodleConfig.mode === "live" ? "Uključen je live način rada." : "Uključen je demo način rada.", "info");
+}
+
 function openMoodleModal() {
   toggleProfileDropdown(false);
   closeSidebar(false);
-  openModal("moodle-modal", "#moodle-url-input");
+  closeNotificationPanel();
+  renderMoodleStatus();
+  openModal(
+    "moodle-modal",
+    state.moodleConfig.mode === "live" ? "#moodle-proxy-input" : "[data-moodle-mode='demo']"
+  );
 }
 
-function saveMoodleConfig(event) {
+async function saveMoodleConfig(event) {
   event.preventDefault();
 
-  const urlInput = $("#moodle-url-input");
-  if (urlInput) {
-    try {
-      const url = new URL(urlInput.value);
-      if (!["http:", "https:"].includes(url.protocol)) throw new Error("invalid");
-    } catch (error) {
-      showToast("Unesi ispravan Moodle URL (npr. https://eucenje.sum.ba/moodle/).", "error");
-      urlInput.focus();
-      return;
-    }
+  const mode = state.moodleConfig.mode;
+  const proxyInput = $("#moodle-proxy-input");
+  const proxyValue = proxyInput ? proxyInput.value : state.moodleConfig.proxyUrl;
+
+  if (mode === "live" && !MoodleAPI.normalizeProxy(proxyValue)) {
+    showToast("Unesi ispravan URL proxy poslužitelja (npr. https://proxy.example.com).", "error");
+    if (proxyInput) proxyInput.focus();
+    return;
   }
 
-  state.moodleConnected = true;
-  safeSet(STORAGE_KEYS.moodle, "true");
-  applyMoodleState();
-  closeModal("moodle-modal", false);
-  showToast("Uspješno povezano sa SUM Moodle sustavom!");
+  MoodleAPI.saveConfig(mode, proxyValue);
+
+  const syncButton = $("#moodle-sync-btn");
+  const syncLabel = $("#moodle-sync-label");
+  if (syncButton) syncButton.disabled = true;
+  if (syncLabel) syncLabel.textContent = "Sinkroniziram...";
+  renderMoodleStatus();
+
+  try {
+    const result = await MoodleAPI.sync({ mode, proxyUrl: proxyValue });
+    MoodleAPI.saveResult(result);
+    renderMoodleStatus();
+    pushNotification({
+      type: "system",
+      title: "Moodle sinkronizacija završena",
+      text: `${result.mode === "live" ? "Live" : "Demo"} · ${MoodleAPI.getSummaryText(result.summary)}`,
+      time: "Upravo sada",
+      targetTab: "dashboard",
+      unread: true
+    });
+    showToast(`Sinkronizacija dovršena: ${MoodleAPI.getSummaryText(result.summary)}.`);
+  } catch (error) {
+    showToast(error.message || "Sinkronizacija nije uspjela.", "error");
+    const status = $("#moodle-status");
+    if (status) {
+      status.textContent = "Greška · provjeri proxy";
+      status.className = "font-bold text-rose-600 dark:text-rose-400";
+    }
+  } finally {
+    if (syncButton) syncButton.disabled = false;
+    if (syncLabel) syncLabel.textContent = "Sinkroniziraj sada";
+  }
+}
+
+/* =========================================================
+   OBAVIJESTI I PODSJETNICI
+   ========================================================= */
+
+function pushNotification(notification) {
+  state.notifications.unshift({
+    id: Date.now(),
+    type: notification.type || "system",
+    title: notification.title,
+    text: notification.text,
+    time: notification.time || "Upravo sada",
+    dateISO: "2026-11-18",
+    targetTab: notification.targetTab || "dashboard",
+    unread: notification.unread !== false
+  });
+  renderNotifications();
+}
+
+function openNotification(notificationId) {
+  const notification = getNotification(notificationId);
+  if (!notification) return;
+
+  markNotificationRead(notification.id);
+  renderNotifications();
+  closeNotificationPanel();
+
+  if (notification.targetTab === "materials") {
+    state.materialCourse = notification.targetCourse || "all";
+    state.materialType = "all";
+    state.materialsQuery = "";
+    const search = $("#material-search-input");
+    if (search) search.value = "";
+  }
+
+  if (notification.targetTab) {
+    switchTab(notification.targetTab);
+  }
+}
+
+function markAllNotifications() {
+  const count = markAllNotificationsRead();
+  renderNotifications();
+  showToast(count > 0 ? `Označeno je ${count} obavijesti kao pročitano.` : "Sve obavijesti su već pročitane.", "info");
+}
+
+function openRemindersModal() {
+  closeNotificationPanel();
+  renderReminderSettings();
+  openModal("reminders-modal", "#reminder-deadlines");
+}
+
+function saveReminders(event) {
+  event.preventDefault();
+
+  ["deadlines", "grades", "materials", "forums"].forEach((key) => {
+    const input = $(`#reminder-${key}`);
+    state.reminderSettings[key] = Boolean(input && input.checked);
+  });
+
+  const leadDays = $("#reminder-lead-days");
+  if (leadDays && ["1", "3", "7"].includes(leadDays.value)) {
+    state.reminderSettings.leadDays = leadDays.value;
+  }
+
+  persistReminderSettings();
+  closeModal("reminders-modal", false);
+  showToast("Postavke podsjetnika su spremljene.");
+}
+
+function sendTestReminder() {
+  const leadDaysInput = $("#reminder-lead-days");
+  const leadDays = leadDaysInput && ["1", "3", "7"].includes(leadDaysInput.value)
+    ? leadDaysInput.value
+    : state.reminderSettings.leadDays;
+  const dayLabel = leadDays === "1" ? "1 dan" : `${leadDays} dana`;
+
+  pushNotification({
+    type: "deadline",
+    title: "Testni podsjetnik: Laravel CRUD sustav",
+    text: `Rok za DZ1 istječe za ${dayLabel}. Provjeri obavijesti i postavke podsjetnika.`,
+    time: "Upravo sada",
+    targetTab: "assignments",
+    unread: true
+  });
+
+  closeModal("reminders-modal", false);
+  window.setTimeout(() => toggleNotificationPanel(true), 120);
+  showToast("Testni podsjetnik je dodan u centar obavijesti.", "info");
+}
+
+/* =========================================================
+   OCJENE, MATERIJALI I IZVOZ
+   ========================================================= */
+
+function csvCell(value) {
+  return `"${String(value == null ? "" : value).replace(/"/g, '""')}"`;
+}
+
+function exportGradesCSV() {
+  const grades = getFilteredGrades();
+  if (grades.length === 0) {
+    showToast("Nema ocjena za izvoz u odabranom semestru.", "info");
+    return;
+  }
+
+  const rows = [
+    ["Kolegij", "Šifra", "Semestar", "ECTS", "Ocjena", "Datum polaganja", "Profesor"].map(csvCell).join(";")
+  ].concat(grades.map((grade) => [
+    grade.name,
+    grade.code,
+    grade.semester,
+    grade.ects,
+    grade.grade,
+    grade.date,
+    grade.professor
+  ].map(csvCell).join(";")));
+
+  downloadTextFile(`studia-ocjene-${state.gradeFilter === "all" ? "sve" : `semestar-${state.gradeFilter}`}.csv`, `\uFEFF${rows.join("\r\n")}`);
+  showToast(`Izvezeno je ${grades.length} ocjena u CSV datoteku.`);
+}
+
+function downloadMaterial(materialId) {
+  const material = getMaterial(materialId);
+  if (!material) return;
+
+  const course = getCourse(material.courseId);
+  const type = getMaterialType(material.type);
+  const content = [
+    "STUDIA · MATERIJAL KOLEGIJA",
+    "========================================",
+    `Naslov: ${material.title}`,
+    `Kolegij: ${course ? course.name : material.courseId}`,
+    `Sekcija: ${material.section}`,
+    `Tip: ${type.label}`,
+    `Objavljeno: ${formatDateISO(material.dateISO)}`,
+    `Veličina: ${material.size}`,
+    "",
+    material.description,
+    "",
+    "Ovo je demo datoteka generirana u studentskom portalu Studia.",
+    "U live načinu ovdje bi se preuzela izvorna datoteka iz Moodle kolegija."
+  ].join("\r\n");
+
+  downloadTextFile(`studia-${slugify(material.title)}.txt`, content);
+  showToast(`Materijal „${material.title}“ je preuzet.`);
 }
 
 /* =========================================================
@@ -671,6 +910,24 @@ function handleDocumentClick(event) {
   const toastButton = event.target.closest("[data-toast]");
   if (toastButton) {
     showToast(toastButton.dataset.toast, "info");
+    return;
+  }
+
+  const remindersButton = event.target.closest("[data-open-reminders]");
+  if (remindersButton) {
+    openRemindersModal();
+    return;
+  }
+
+  const notificationButton = event.target.closest("[data-notification-open]");
+  if (notificationButton) {
+    openNotification(notificationButton.dataset.notificationOpen);
+    return;
+  }
+
+  const moodleModeButton = event.target.closest("[data-moodle-mode]");
+  if (moodleModeButton) {
+    setMoodleMode(moodleModeButton.dataset.moodleMode);
     return;
   }
 
@@ -747,6 +1004,34 @@ function handleDocumentClick(event) {
     return;
   }
 
+  const gradeFilterButton = event.target.closest("[data-grade-filter]");
+  if (gradeFilterButton) {
+    state.gradeFilter = gradeFilterButton.dataset.gradeFilter;
+    renderGrades();
+    refreshIcons();
+    return;
+  }
+
+  const materialCourseButton = event.target.closest("[data-material-course]");
+  if (materialCourseButton) {
+    state.materialCourse = materialCourseButton.dataset.materialCourse;
+    renderMaterials();
+    refreshIcons();
+    return;
+  }
+
+  const exportGradesButton = event.target.closest("[data-export-grades]");
+  if (exportGradesButton) {
+    exportGradesCSV();
+    return;
+  }
+
+  const downloadMaterialButton = event.target.closest("[data-download-material]");
+  if (downloadMaterialButton) {
+    downloadMaterial(downloadMaterialButton.dataset.downloadMaterial);
+    return;
+  }
+
   const assignmentButton = event.target.closest("[data-assignment-open]");
   if (assignmentButton) {
     openAssignmentModal(assignmentButton.dataset.assignmentOpen);
@@ -815,6 +1100,12 @@ function handleDocumentClick(event) {
     toggleProfileDropdown(false);
   }
 
+  // Zatvori centar obavijesti klikom izvan njega.
+  const notificationRoot = $("#notification-btn") ? $("#notification-btn").parentElement : null;
+  if (notificationRoot && !notificationRoot.contains(event.target)) {
+    closeNotificationPanel();
+  }
+
   // Sakrij rezultate pretrage klikom izvan pretrage.
   const searchInput = $("#global-search-input");
   const searchPanel = $("#search-results-panel");
@@ -847,6 +1138,12 @@ function handleKeydown(event) {
     const dropdown = $("#profile-dropdown");
     if (dropdown && !dropdown.classList.contains("hidden")) {
       toggleProfileDropdown(false);
+      return;
+    }
+
+    const notificationPanel = $("#notification-panel");
+    if (notificationPanel && !notificationPanel.classList.contains("hidden")) {
+      closeNotificationPanel();
       return;
     }
 
@@ -891,6 +1188,23 @@ function bindEvents() {
     });
   }
 
+  const notificationButton = $("#notification-btn");
+  if (notificationButton) {
+    notificationButton.addEventListener("click", (event) => {
+      event.stopPropagation();
+      toggleNotificationPanel();
+    });
+  }
+
+  const notificationReadAll = $("#notification-read-all");
+  if (notificationReadAll) notificationReadAll.addEventListener("click", markAllNotifications);
+
+  const remindersForm = $("#reminders-form");
+  if (remindersForm) remindersForm.addEventListener("submit", saveReminders);
+
+  const reminderTest = $("#reminder-test");
+  if (reminderTest) reminderTest.addEventListener("click", sendTestReminder);
+
   const searchInput = $("#global-search-input");
   if (searchInput) {
     searchInput.addEventListener("input", (event) => handleGlobalSearch(event.target.value));
@@ -928,6 +1242,24 @@ function bindEvents() {
     scriptSearch.addEventListener("input", (event) => {
       state.scriptsQuery = event.target.value;
       renderScripts();
+      refreshIcons();
+    });
+  }
+
+  const materialSearch = $("#material-search-input");
+  if (materialSearch) {
+    materialSearch.addEventListener("input", (event) => {
+      state.materialsQuery = event.target.value;
+      renderMaterials();
+      refreshIcons();
+    });
+  }
+
+  const materialType = $("#material-type-filter");
+  if (materialType) {
+    materialType.addEventListener("change", (event) => {
+      state.materialType = event.target.value;
+      renderMaterials();
       refreshIcons();
     });
   }
@@ -1013,7 +1345,7 @@ function init() {
   renderAll();
 
   const hash = window.location.hash.replace("#", "");
-  const validTabs = ["dashboard", "profile", "inbox", "courses", "assignments", "timetable", "meet"];
+  const validTabs = ["dashboard", "profile", "inbox", "courses", "grades", "materials", "assignments", "timetable", "meet"];
   switchTab(validTabs.includes(hash) ? hash : "dashboard", { keepScroll: true, keepHash: !hash });
 
   bindEvents();

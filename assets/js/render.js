@@ -473,3 +473,339 @@ function renderScripts() {
 
   refreshIcons();
 }
+
+/* =========================================================
+   OCJENE I ECTS
+   ========================================================= */
+
+function gradeBadgeClass(grade) {
+  if (grade === 5) return "bg-emerald-100 text-emerald-700 dark:bg-emerald-950/70 dark:text-emerald-400";
+  if (grade === 4) return "bg-studia-100 text-studia-700 dark:bg-studia-950/70 dark:text-studia-300";
+  if (grade === 3) return "bg-amber-100 text-amber-700 dark:bg-amber-950/70 dark:text-amber-400";
+  if (grade === 2) return "bg-rose-100 text-rose-700 dark:bg-rose-950/70 dark:text-rose-400";
+  return "bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300";
+}
+
+function renderGradeFilters() {
+  const container = $("#grade-filter-pills");
+  if (!container) return;
+
+  const options = [
+    { id: "all", label: "Svi semestri", count: GRADE_HISTORY.length },
+    { id: "1", label: "1. semestar", count: GRADE_HISTORY.filter((grade) => grade.semesterId === "1").length },
+    { id: "2", label: "2. semestar", count: GRADE_HISTORY.filter((grade) => grade.semesterId === "2").length }
+  ];
+
+  container.innerHTML = options.map((option) => {
+    const isActive = state.gradeFilter === option.id;
+    return `
+      <button type="button" class="filter-pill ${isActive ? "is-active" : ""}" data-grade-filter="${option.id}" aria-pressed="${isActive}">
+        <span>${escapeHtml(option.label)}</span>
+        <span class="filter-pill__count">${option.count}</span>
+      </button>
+    `;
+  }).join("");
+}
+
+function renderGrades() {
+  const summary = $("#grades-summary");
+  const distribution = $("#grades-distribution");
+  const tableBody = $("#grades-table-body");
+  const cards = $("#grades-cards");
+  const empty = $("#grades-empty");
+  const tableWrap = $("#grades-table-wrap");
+  if (!summary || !tableBody || !cards) return;
+
+  const average = calculateGradeAverage(GRADE_HISTORY);
+  const completedEcts = getCompletedEcts();
+  const inProgressEcts = getEctsInProgress();
+  const totalEcts = 180;
+  const ectsPercent = Math.min(100, Math.round((completedEcts / totalEcts) * 100));
+  const topGradeCount = GRADE_HISTORY.filter((grade) => grade.grade === 5).length;
+
+  summary.innerHTML = `
+    <div class="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-soft">
+      <span class="w-9 h-9 rounded-xl bg-studia-100 dark:bg-studia-950 text-studia-600 dark:text-studia-400 flex items-center justify-center mb-3">${icon("award", "w-4 h-4")}</span>
+      <div class="text-2xl font-display font-extrabold text-slate-900 dark:text-white">${average.toFixed(2)}</div>
+      <div class="text-[11px] font-semibold text-slate-500 dark:text-slate-400 mt-0.5">Prosjek ocjena</div>
+      <div class="text-[10px] text-slate-400 mt-1">Ponderirano po ECTS bodovima</div>
+    </div>
+    <div class="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-soft">
+      <span class="w-9 h-9 rounded-xl bg-emerald-100 dark:bg-emerald-950 text-emerald-600 dark:text-emerald-400 flex items-center justify-center mb-3">${icon("graduation-cap", "w-4 h-4")}</span>
+      <div class="text-2xl font-display font-extrabold text-slate-900 dark:text-white">${completedEcts} ECTS</div>
+      <div class="text-[11px] font-semibold text-slate-500 dark:text-slate-400 mt-0.5">Ostvareno do sada</div>
+      <div class="text-[10px] text-slate-400 mt-1">od ${totalEcts} ECTS na studiju</div>
+    </div>
+    <div class="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-soft">
+      <span class="w-9 h-9 rounded-xl bg-amber-100 dark:bg-amber-950 text-amber-600 dark:text-amber-400 flex items-center justify-center mb-3">${icon("book-open", "w-4 h-4")}</span>
+      <div class="text-2xl font-display font-extrabold text-slate-900 dark:text-white">${inProgressEcts} ECTS</div>
+      <div class="text-[11px] font-semibold text-slate-500 dark:text-slate-400 mt-0.5">Upisano ovaj semestar</div>
+      <div class="text-[10px] text-slate-400 mt-1">${COURSES.length} kolegija u tijeku</div>
+    </div>
+    <div class="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-soft">
+      <span class="w-9 h-9 rounded-xl bg-sky-100 dark:bg-sky-950 text-sky-600 dark:text-sky-400 flex items-center justify-center mb-3">${icon("check-circle-2", "w-4 h-4")}</span>
+      <div class="text-2xl font-display font-extrabold text-slate-900 dark:text-white">${GRADE_HISTORY.length}</div>
+      <div class="text-[11px] font-semibold text-slate-500 dark:text-slate-400 mt-0.5">Položenih kolegija</div>
+      <div class="text-[10px] text-slate-400 mt-1">${topGradeCount}× ocjena 5</div>
+    </div>
+  `;
+
+  const ectsBar = $("#grades-ects-bar");
+  const ectsText = $("#grades-ects-text");
+  if (ectsBar) ectsBar.style.width = `${ectsPercent}%`;
+  if (ectsText) ectsText.textContent = `${completedEcts} / ${totalEcts} ECTS · ${ectsPercent}%`;
+
+  if (distribution) {
+    const counts = getGradeDistribution(GRADE_HISTORY);
+    const maxCount = Math.max(...counts.map((item) => item.count), 1);
+    distribution.innerHTML = counts.map((item) => `
+      <div class="flex items-center gap-3">
+        <span class="w-12 text-xs font-bold ${item.grade >= 2 ? gradeBadgeClass(item.grade) : "text-slate-400"} px-2 py-1 rounded-lg text-center">${item.grade}</span>
+        <div class="flex-1 h-2.5 rounded-full bg-slate-100 dark:bg-slate-800 overflow-hidden">
+          <div class="h-full rounded-full ${item.grade === 5 ? "bg-emerald-500" : item.grade === 4 ? "bg-studia-500" : item.grade === 3 ? "bg-amber-400" : "bg-rose-400"}" style="width: ${Math.round((item.count / maxCount) * 100)}%"></div>
+        </div>
+        <span class="w-6 text-right text-xs font-bold text-slate-600 dark:text-slate-300">${item.count}</span>
+      </div>
+    `).join("");
+  }
+
+  renderGradeFilters();
+
+  const filtered = getFilteredGrades();
+  if (empty) empty.classList.toggle("hidden", filtered.length > 0);
+  if (tableWrap) tableWrap.style.display = filtered.length === 0 ? "none" : "";
+
+  tableBody.innerHTML = filtered.map((grade) => `
+    <tr class="border-t border-slate-100 dark:border-slate-800 hover:bg-slate-50/70 dark:hover:bg-slate-800/40 transition">
+      <td class="py-3.5 pr-3">
+        <span class="block font-bold text-slate-800 dark:text-slate-100">${escapeHtml(grade.name)}</span>
+        <span class="block text-[10px] text-slate-400 font-mono">${escapeHtml(grade.code)}</span>
+      </td>
+      <td class="py-3.5 pr-3 text-slate-500 dark:text-slate-400 whitespace-nowrap">${escapeHtml(grade.semester)}</td>
+      <td class="py-3.5 pr-3 text-center font-bold text-slate-700 dark:text-slate-200">${grade.ects}</td>
+      <td class="py-3.5 pr-3 text-slate-500 dark:text-slate-400 whitespace-nowrap">${escapeHtml(grade.date)}</td>
+      <td class="py-3.5 pr-3 text-slate-500 dark:text-slate-400 hidden xl:table-cell">${escapeHtml(grade.professor)}</td>
+      <td class="py-3.5 text-right">
+        <span class="inline-flex w-9 h-9 items-center justify-center rounded-xl text-sm font-extrabold ${gradeBadgeClass(grade.grade)}" aria-label="Ocjena ${grade.grade}">${grade.grade}</span>
+      </td>
+    </tr>
+  `).join("");
+
+  cards.innerHTML = filtered.map((grade) => `
+    <article class="bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-soft">
+      <div class="flex items-start justify-between gap-3">
+        <div class="min-w-0">
+          <h4 class="font-bold text-sm text-slate-900 dark:text-white">${escapeHtml(grade.name)}</h4>
+          <p class="text-[10px] font-mono text-slate-400 mt-0.5">${escapeHtml(grade.code)}</p>
+        </div>
+        <span class="inline-flex w-10 h-10 shrink-0 items-center justify-center rounded-xl text-base font-extrabold ${gradeBadgeClass(grade.grade)}" aria-label="Ocjena ${grade.grade}">${grade.grade}</span>
+      </div>
+      <div class="mt-3 grid grid-cols-3 gap-2 text-[11px]">
+        <div class="p-2 rounded-xl bg-slate-50 dark:bg-slate-800/60"><span class="block text-slate-400 text-[10px]">Semestar</span><strong class="text-slate-700 dark:text-slate-200">${escapeHtml(grade.semester)}</strong></div>
+        <div class="p-2 rounded-xl bg-slate-50 dark:bg-slate-800/60"><span class="block text-slate-400 text-[10px]">ECTS</span><strong class="text-slate-700 dark:text-slate-200">${grade.ects}</strong></div>
+        <div class="p-2 rounded-xl bg-slate-50 dark:bg-slate-800/60"><span class="block text-slate-400 text-[10px]">Datum</span><strong class="text-slate-700 dark:text-slate-200">${escapeHtml(grade.date)}</strong></div>
+      </div>
+      <p class="text-[10px] text-slate-400 mt-2">${escapeHtml(grade.professor)}</p>
+    </article>
+  `).join("");
+
+  refreshIcons();
+}
+
+/* =========================================================
+   MATERIJALI KOLEGIJA
+   ========================================================= */
+
+function renderMaterialCoursePills() {
+  const container = $("#material-course-pills");
+  if (!container) return;
+
+  const options = [{ id: "all", label: "Svi kolegiji" }].concat(
+    COURSES.map((course) => ({ id: course.id, label: course.name }))
+  );
+
+  container.innerHTML = options.map((option) => {
+    const count = option.id === "all"
+      ? MATERIALS.length
+      : MATERIALS.filter((material) => material.courseId === option.id).length;
+    const isActive = state.materialCourse === option.id;
+    return `
+      <button type="button" class="filter-pill ${isActive ? "is-active" : ""}" data-material-course="${option.id}" aria-pressed="${isActive}">
+        <span>${escapeHtml(option.label)}</span>
+        <span class="filter-pill__count">${count}</span>
+      </button>
+    `;
+  }).join("");
+}
+
+function renderMaterialTypeFilter() {
+  const select = $("#material-type-filter");
+  if (!select) return;
+
+  const options = [{ id: "all", label: "Svi tipovi" }].concat(
+    Object.keys(MATERIAL_TYPES).map((type) => ({
+      id: type,
+      label: MATERIAL_TYPES[type].label
+    }))
+  );
+
+  select.innerHTML = options.map((option) => `
+    <option value="${option.id}">${escapeHtml(option.label)}</option>
+  `).join("");
+  select.value = state.materialType;
+}
+
+function renderMaterials() {
+  const list = $("#materials-list");
+  const empty = $("#materials-empty");
+  const countLabel = $("#materials-count");
+  if (!list) return;
+
+  renderMaterialCoursePills();
+  renderMaterialTypeFilter();
+
+  const query = state.materialsQuery.trim().toLowerCase();
+  const filtered = MATERIALS.filter((material) => {
+    if (state.materialCourse !== "all" && material.courseId !== state.materialCourse) return false;
+    if (state.materialType !== "all" && material.type !== state.materialType) return false;
+    if (!query) return true;
+    const course = getCourse(material.courseId);
+    return [material.title, material.section, material.description, course ? course.name : ""]
+      .join(" ")
+      .toLowerCase()
+      .includes(query);
+  });
+
+  if (countLabel) {
+    countLabel.textContent = `${filtered.length} ${filtered.length === 1 ? "materijal" : "materijala"}`;
+  }
+  if (empty) empty.classList.toggle("hidden", filtered.length > 0);
+
+  const grouped = COURSES.map((course) => ({
+    course,
+    items: filtered.filter((material) => material.courseId === course.id)
+  })).filter((group) => group.items.length > 0);
+
+  list.innerHTML = grouped.map((group) => {
+    const sections = [];
+    group.items.forEach((material) => {
+      let section = sections.find((entry) => entry.title === material.section);
+      if (!section) {
+        section = { title: material.section, items: [] };
+        sections.push(section);
+      }
+      section.items.push(material);
+    });
+
+    return `
+      <article class="bg-white dark:bg-slate-900 rounded-[28px] border border-slate-100 dark:border-slate-800 shadow-soft overflow-hidden">
+        <div class="p-5 sm:p-6 border-b border-slate-100 dark:border-slate-800 flex flex-wrap items-center justify-between gap-3 bg-slate-50/50 dark:bg-slate-800/20">
+          <div class="flex items-center gap-3 min-w-0">
+            <span class="w-10 h-10 rounded-2xl bg-gradient-to-br ${group.course.color} text-white flex items-center justify-center shrink-0">${icon("book-open", "w-4 h-4")}</span>
+            <div class="min-w-0">
+              <h3 class="font-display font-extrabold text-base text-slate-900 dark:text-white truncate">${escapeHtml(group.course.name)}</h3>
+              <p class="text-[11px] text-slate-400">${escapeHtml(group.course.code)} · ${escapeHtml(group.course.semester)} · ${group.course.ects} ECTS</p>
+            </div>
+          </div>
+          <span class="text-[10px] font-bold px-2.5 py-1 rounded-full bg-studia-100 dark:bg-studia-900 text-studia-700 dark:text-studia-300">${group.items.length} materijala</span>
+        </div>
+
+        <div class="divide-y divide-slate-100 dark:divide-slate-800">
+          ${sections.map((section) => `
+            <div class="p-5 sm:p-6">
+              <h4 class="text-[11px] font-extrabold uppercase tracking-wider text-slate-400 mb-3">${escapeHtml(section.title)}</h4>
+              <div class="space-y-2">
+                ${section.items.map((material) => {
+                  const type = getMaterialType(material.type);
+                  const isNew = isMaterialNew(material);
+                  const action = material.url
+                    ? `<a href="${escapeHtml(material.url)}" target="_blank" rel="noopener" class="shrink-0 inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl bg-white dark:bg-slate-700 text-studia-700 dark:text-studia-300 font-bold text-[11px] border border-slate-200 dark:border-slate-600 hover:bg-studia-50 dark:hover:bg-slate-600 transition">${icon("external-link", "w-3.5 h-3.5")}<span>Otvori</span></a>`
+                    : `<button type="button" data-download-material="${material.id}" class="shrink-0 inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl bg-white dark:bg-slate-700 text-studia-700 dark:text-studia-300 font-bold text-[11px] border border-slate-200 dark:border-slate-600 hover:bg-studia-50 dark:hover:bg-slate-600 transition">${icon("download", "w-3.5 h-3.5")}<span>Preuzmi</span></button>`;
+
+                  return `
+                    <div class="flex flex-col sm:flex-row sm:items-center gap-3 p-3.5 rounded-2xl bg-slate-50/70 dark:bg-slate-800/40 border border-transparent hover:border-studia-200 dark:hover:border-studia-800 transition">
+                      <span class="w-10 h-10 rounded-xl ${type.color} flex items-center justify-center shrink-0">${icon(type.icon, "w-4 h-4")}</span>
+                      <div class="flex-1 min-w-0">
+                        <div class="flex flex-wrap items-center gap-2">
+                          <h5 class="font-bold text-xs text-slate-900 dark:text-white">${escapeHtml(material.title)}</h5>
+                          ${isNew ? `<span class="text-[9px] font-extrabold uppercase px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-400">Novo</span>` : ""}
+                        </div>
+                        <p class="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5 line-clamp-2">${escapeHtml(material.description)}</p>
+                        <p class="text-[10px] text-slate-400 mt-1">${escapeHtml(type.label)} · ${escapeHtml(material.size)} · ${escapeHtml(formatDateISO(material.dateISO))}</p>
+                      </div>
+                      ${action}
+                    </div>
+                  `;
+                }).join("")}
+              </div>
+            </div>
+          `).join("")}
+        </div>
+      </article>
+    `;
+  }).join("");
+
+  refreshIcons();
+}
+
+/* =========================================================
+   CENTAR OBAVIJESTI I PODSJETNICI
+   ========================================================= */
+
+function renderNotifications() {
+  const list = $("#notification-list");
+  const badge = $("#notification-badge");
+  const button = $("#notification-btn");
+  const label = $("#notification-unread-label");
+  const readAll = $("#notification-read-all");
+  if (!list) return;
+
+  const unread = getNotificationUnreadCount();
+
+  if (badge) {
+    badge.textContent = String(unread);
+    badge.classList.toggle("hidden", unread === 0);
+  }
+  if (button) {
+    button.setAttribute("aria-label", unread > 0 ? `Obavijesti, ${unread} nepročitanih` : "Obavijesti");
+  }
+  if (label) label.textContent = unread > 0 ? `${unread} nepročitanih` : "Sve pročitano";
+  if (readAll) {
+    readAll.disabled = unread === 0;
+    readAll.classList.toggle("opacity-50", unread === 0);
+    readAll.classList.toggle("cursor-not-allowed", unread === 0);
+  }
+
+  list.innerHTML = state.notifications.map((notification) => {
+    const type = NOTIFICATION_TYPES[notification.type] || NOTIFICATION_TYPES.system;
+    const unreadClass = notification.unread
+      ? "bg-studia-50/80 dark:bg-studia-950/25"
+      : "hover:bg-slate-50 dark:hover:bg-slate-800/50";
+
+    return `
+      <button type="button" data-notification-open="${notification.id}" class="w-full text-left flex items-start gap-3 p-3.5 rounded-2xl transition ${unreadClass}">
+        <span class="w-9 h-9 rounded-xl ${type.color} flex items-center justify-center shrink-0">${icon(type.icon, "w-4 h-4")}</span>
+        <span class="flex-1 min-w-0">
+          <span class="flex items-start justify-between gap-2">
+            <span class="font-bold text-xs text-slate-900 dark:text-white leading-snug">${escapeHtml(notification.title)}</span>
+            ${notification.unread ? `<span class="w-2 h-2 rounded-full bg-studia-500 shrink-0 mt-1" aria-label="Nepročitano"></span>` : ""}
+          </span>
+          <span class="block text-[11px] text-slate-500 dark:text-slate-400 mt-0.5 leading-relaxed line-clamp-2">${escapeHtml(notification.text)}</span>
+          <span class="block text-[10px] text-slate-400 mt-1">${escapeHtml(notification.time)}</span>
+        </span>
+      </button>
+    `;
+  }).join("");
+
+  refreshIcons();
+}
+
+function renderReminderSettings() {
+  ["deadlines", "grades", "materials", "forums"].forEach((key) => {
+    const input = $(`#reminder-${key}`);
+    if (input) input.checked = Boolean(state.reminderSettings[key]);
+  });
+
+  const leadDays = $("#reminder-lead-days");
+  if (leadDays) leadDays.value = state.reminderSettings.leadDays;
+}

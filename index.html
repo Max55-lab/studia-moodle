@@ -31,6 +31,7 @@
     <script src="assets/js/core.js" defer></script>
     <script src="assets/js/render.js" defer></script>
     <script src="assets/js/views.js" defer></script>
+    <script src="assets/js/moodle-api.js" defer></script>
     <script src="assets/js/app.js" defer></script>
 </head>
 
@@ -89,6 +90,20 @@
             <button type="button" data-tab="courses" class="nav-btn w-full flex items-center gap-3.5 px-4 py-3 rounded-2xl text-sm font-medium transition">
                 <i data-lucide="book-open" class="w-5 h-5"></i>
                 <span>Kolegiji i UniHub</span>
+            </button>
+            <button type="button" data-tab="grades" class="nav-btn w-full flex items-center justify-between px-4 py-3 rounded-2xl text-sm font-medium transition">
+                <span class="flex items-center gap-3.5">
+                    <i data-lucide="award" class="w-5 h-5"></i>
+                    <span>Ocjene i ECTS</span>
+                </span>
+                <span class="px-2 py-0.5 text-xs font-bold rounded-full bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-400">4.70</span>
+            </button>
+            <button type="button" data-tab="materials" class="nav-btn w-full flex items-center justify-between px-4 py-3 rounded-2xl text-sm font-medium transition">
+                <span class="flex items-center gap-3.5">
+                    <i data-lucide="file-text" class="w-5 h-5"></i>
+                    <span>Materijali kolegija</span>
+                </span>
+                <span class="px-2 py-0.5 text-xs font-bold rounded-full bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400">25</span>
             </button>
             <button type="button" data-tab="assignments" class="nav-btn w-full flex items-center justify-between px-4 py-3 rounded-2xl text-sm font-medium transition">
                 <span class="flex items-center gap-3.5">
@@ -160,7 +175,32 @@
         </button>
 
         <div class="flex items-center gap-2 sm:gap-2.5">
-            <button type="button" data-open-ai class="p-2.5 rounded-full bg-studia-50 dark:bg-studia-950/80 hover:bg-studia-100 dark:hover:bg-studia-900 text-studia-600 dark:text-studia-300 border border-studia-200/70 dark:border-studia-800 transition" title="AI asistent za skripte i ispite" aria-label="Otvori AI asistenta">
+            <div class="relative">
+                <button type="button" id="notification-btn" class="relative p-2.5 rounded-full bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 transition" aria-expanded="false" aria-controls="notification-panel" aria-label="Obavijesti">
+                    <i data-lucide="bell" class="w-4 h-4"></i>
+                    <span id="notification-badge" class="absolute -top-0.5 -right-0.5 min-w-[16px] h-4 px-1 rounded-full bg-rose-500 text-white text-[9px] font-extrabold flex items-center justify-center">4</span>
+                </button>
+
+                <div id="notification-panel" class="hidden fixed left-4 right-auto top-[4.5rem] w-[calc(100vw-2rem)] max-w-sm md:absolute md:left-auto md:right-0 md:top-auto md:mt-3 md:w-96 md:max-w-none bg-white dark:bg-slate-900 rounded-3xl shadow-2xl border border-slate-100 dark:border-slate-800 overflow-hidden z-50">
+                    <div class="flex items-center justify-between gap-3 px-4 pt-4 pb-3 border-b border-slate-100 dark:border-slate-800">
+                        <div>
+                            <div class="font-display font-extrabold text-sm text-slate-900 dark:text-white">Obavijesti</div>
+                            <div id="notification-unread-label" class="text-[10px] text-slate-400">4 nepročitana</div>
+                        </div>
+                        <button type="button" id="notification-read-all" class="text-[10px] font-bold text-studia-600 dark:text-studia-400 hover:underline">Sve pročitano</button>
+                    </div>
+                    <div id="notification-list" class="p-2 space-y-1 max-h-[60vh] overflow-y-auto"></div>
+                    <div class="p-3 border-t border-slate-100 dark:border-slate-800 flex gap-2">
+                        <button type="button" data-open-reminders class="flex-1 py-2 rounded-xl bg-studia-50 dark:bg-studia-950 text-studia-700 dark:text-studia-300 text-[11px] font-bold hover:bg-studia-100 dark:hover:bg-studia-900 transition flex items-center justify-center gap-1.5">
+                            <i data-lucide="settings" class="w-3.5 h-3.5"></i>
+                            <span>Podsjetnici</span>
+                        </button>
+                        <button type="button" data-tab="inbox" class="flex-1 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-[11px] font-bold hover:bg-slate-200 dark:hover:bg-slate-700 transition">Otvori inbox</button>
+                    </div>
+                </div>
+            </div>
+
+            <button type="button" data-open-ai class="hidden sm:inline-flex p-2.5 rounded-full bg-studia-50 dark:bg-studia-950/80 hover:bg-studia-100 dark:hover:bg-studia-900 text-studia-600 dark:text-studia-300 border border-studia-200/70 dark:border-studia-800 transition" title="AI asistent za skripte i ispite" aria-label="Otvori AI asistenta">
                 <i data-lucide="sparkles" class="w-4 h-4"></i>
             </button>
 
@@ -606,6 +646,123 @@
         </div>
     </section>
 
+    <!-- ======================= OCJENE I ECTS ======================= -->
+    <section id="view-grades" class="space-y-6 hidden">
+        <div class="flex flex-wrap items-center justify-between gap-4">
+            <div>
+                <h2 class="font-display font-extrabold text-2xl sm:text-3xl text-slate-900 dark:text-white">Ocjene i ECTS bodovi</h2>
+                <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1">Pregled položenih ispita, prosjeka i napretka prema 180 ECTS</p>
+            </div>
+            <button type="button" data-export-grades class="px-4 py-2.5 rounded-xl bg-studia-50 dark:bg-studia-950 text-studia-700 dark:text-studia-300 border border-studia-200 dark:border-studia-800 font-bold text-xs transition flex items-center gap-2">
+                <i data-lucide="download" class="w-4 h-4"></i>
+                <span>Preuzmi ocjene (.csv)</span>
+            </button>
+        </div>
+
+        <div id="grades-summary" class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4"></div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div class="lg:col-span-2 bg-white dark:bg-slate-900 rounded-[28px] p-5 sm:p-6 border border-slate-100 dark:border-slate-800 shadow-soft">
+                <div class="flex items-center justify-between gap-3 mb-3">
+                    <div>
+                        <h3 class="font-display font-extrabold text-base text-slate-900 dark:text-white">Napredak prema diplomi</h3>
+                        <p class="text-[11px] text-slate-400 mt-0.5">Ostvareni i trenutno upisani ECTS bodovi</p>
+                    </div>
+                    <span id="grades-ects-text" class="text-xs font-bold text-studia-600 dark:text-studia-400">60 / 180 ECTS</span>
+                </div>
+                <div class="w-full bg-slate-100 dark:bg-slate-800 h-3 rounded-full overflow-hidden">
+                    <div id="grades-ects-bar" class="h-full hero-gradient rounded-full transition-all duration-500" style="width: 33%"></div>
+                </div>
+                <div class="grid grid-cols-3 gap-3 mt-5 text-xs">
+                    <div class="p-3 rounded-2xl bg-emerald-50/70 dark:bg-emerald-950/30">
+                        <span class="block text-[10px] text-emerald-600 dark:text-emerald-400 font-semibold mb-0.5">Ostvareno</span>
+                        <strong class="text-slate-800 dark:text-slate-100">60 ECTS</strong>
+                    </div>
+                    <div class="p-3 rounded-2xl bg-amber-50/70 dark:bg-amber-950/30">
+                        <span class="block text-[10px] text-amber-600 dark:text-amber-400 font-semibold mb-0.5">U tijeku</span>
+                        <strong class="text-slate-800 dark:text-slate-100">27 ECTS</strong>
+                    </div>
+                    <div class="p-3 rounded-2xl bg-slate-50 dark:bg-slate-800/60">
+                        <span class="block text-[10px] text-slate-400 font-semibold mb-0.5">Preostalo</span>
+                        <strong class="text-slate-800 dark:text-slate-100">120 ECTS</strong>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white dark:bg-slate-900 rounded-[28px] p-5 sm:p-6 border border-slate-100 dark:border-slate-800 shadow-soft">
+                <h3 class="font-display font-extrabold text-base text-slate-900 dark:text-white">Distribucija ocjena</h3>
+                <p class="text-[11px] text-slate-400 mt-0.5 mb-4">Sve položene ocjene na studiju</p>
+                <div id="grades-distribution" class="space-y-3"></div>
+            </div>
+        </div>
+
+        <div class="bg-white dark:bg-slate-900 rounded-[28px] p-5 sm:p-6 border border-slate-100 dark:border-slate-800 shadow-soft">
+            <div class="flex flex-wrap items-center justify-between gap-3">
+                <div>
+                    <h3 class="font-display font-extrabold text-base text-slate-900 dark:text-white">Položeni ispiti</h3>
+                    <p class="text-[11px] text-slate-400 mt-0.5">Ocjene 1–5 prema Pravilniku o studiranju SUM-a</p>
+                </div>
+                <div id="grade-filter-pills" class="flex flex-wrap items-center gap-2" role="group" aria-label="Filtriraj ocjene po semestru"></div>
+            </div>
+
+            <div id="grades-table-wrap" class="hidden md:block overflow-x-auto mt-4">
+                <table class="w-full text-left text-xs min-w-[640px]">
+                    <thead class="text-[10px] uppercase tracking-wider text-slate-400">
+                        <tr>
+                            <th class="pb-2 pr-3 font-bold">Kolegij</th>
+                            <th class="pb-2 pr-3 font-bold">Semestar</th>
+                            <th class="pb-2 pr-3 font-bold text-center">ECTS</th>
+                            <th class="pb-2 pr-3 font-bold">Datum polaganja</th>
+                            <th class="pb-2 pr-3 font-bold hidden xl:table-cell">Profesor</th>
+                            <th class="pb-2 font-bold text-right">Ocjena</th>
+                        </tr>
+                    </thead>
+                    <tbody id="grades-table-body"></tbody>
+                </table>
+            </div>
+
+            <div id="grades-cards" class="md:hidden space-y-3 mt-4"></div>
+            <p id="grades-empty" class="hidden text-sm text-slate-500 dark:text-slate-400 py-10 text-center">Nema ocjena za odabrani semestar.</p>
+
+            <p class="text-[10px] text-slate-400 mt-4 pt-3 border-t border-slate-100 dark:border-slate-800">Ocjene i ECTS bodovi preuzimaju se iz Studomata / ISVU sustava. Moodle prikazuje bodove aktivnosti, ali ne zamjenjuje službenu evidenciju ocjena.</p>
+        </div>
+    </section>
+
+    <!-- ======================= MATERIJALI ======================= -->
+    <section id="view-materials" class="space-y-6 hidden">
+        <div class="flex flex-wrap items-center justify-between gap-4">
+            <div>
+                <h2 class="font-display font-extrabold text-2xl sm:text-3xl text-slate-900 dark:text-white">Materijali kolegija</h2>
+                <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1">Predavanja, prezentacije, vježbe i poveznice preuzete iz Moodle kolegija</p>
+            </div>
+            <button type="button" data-open-moodle class="inline-flex items-center gap-2 px-3 py-2 rounded-xl bg-emerald-50 dark:bg-emerald-950/50 border border-emerald-200 dark:border-emerald-900 text-emerald-700 dark:text-emerald-400 text-[11px] font-bold hover:bg-emerald-100 dark:hover:bg-emerald-950 transition">
+                <span class="w-2 h-2 rounded-full bg-emerald-500" aria-hidden="true"></span>
+                Moodle sinkronizacija
+            </button>
+        </div>
+
+        <div class="bg-white dark:bg-slate-900 rounded-[28px] p-4 sm:p-5 border border-slate-100 dark:border-slate-800 shadow-soft space-y-4">
+            <div class="flex flex-wrap items-center justify-between gap-3">
+                <div id="material-course-pills" class="flex flex-wrap items-center gap-2" role="group" aria-label="Filtriraj materijale po kolegiju"></div>
+                <span id="materials-count" class="text-[11px] font-bold text-slate-400">25 materijala</span>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                <div>
+                    <label for="material-type-filter" class="sr-only">Tip materijala</label>
+                    <select id="material-type-filter" class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs font-semibold text-slate-800 dark:text-slate-100 focus:outline-none focus:border-studia-500"></select>
+                </div>
+                <div class="sm:col-span-2 lg:col-span-2">
+                    <label for="material-search-input" class="sr-only">Pretraži materijale</label>
+                    <input id="material-search-input" type="search" autocomplete="off" placeholder="Pretraži naslov, sekciju ili opis materijala..." class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs text-slate-800 dark:text-slate-100 placeholder-slate-400 focus:outline-none focus:border-studia-500">
+                </div>
+            </div>
+        </div>
+
+        <div id="materials-list" class="space-y-5"></div>
+        <p id="materials-empty" class="hidden text-sm text-slate-500 dark:text-slate-400 py-10 text-center">Nema materijala koji odgovaraju odabranim filtrima.</p>
+        <p class="text-[10px] text-slate-400">Materijali u demo načinu su primjeri. U live načinu adapter ih povlači preko backend proxyja, a poveznice otvaraju izvorni Moodle sadržaj.</p>
+    </section>
+
     <!-- ======================= ZADAĆE ======================= -->
     <section id="view-assignments" class="space-y-6 hidden">
         <div>
@@ -697,7 +854,7 @@
 
 <!-- Moodle API -->
 <div id="moodle-modal" class="modal fixed inset-0 z-50 bg-slate-950/60 backdrop-blur-xs flex items-center justify-center p-4 hidden" role="dialog" aria-modal="true" aria-labelledby="moodle-title">
-    <form id="moodle-form" class="bg-white dark:bg-slate-900 w-full max-w-md rounded-[32px] shadow-2xl border border-slate-100 dark:border-slate-800 p-6 space-y-5">
+    <form id="moodle-form" class="bg-white dark:bg-slate-900 w-full max-w-lg rounded-[32px] shadow-2xl border border-slate-100 dark:border-slate-800 p-6 space-y-5 max-h-[92vh] overflow-y-auto" novalidate>
         <div class="flex items-center justify-between">
             <div class="flex items-center gap-3">
                 <div class="w-10 h-10 rounded-2xl bg-emerald-100 dark:bg-emerald-950 text-emerald-600 dark:text-emerald-400 flex items-center justify-center">
@@ -705,7 +862,7 @@
                 </div>
                 <div>
                     <h3 id="moodle-title" class="font-display font-extrabold text-lg text-slate-900 dark:text-white">SUM Moodle API</h3>
-                    <p class="text-xs text-slate-500">eucenje.sum.ba sinkronizacija</p>
+                    <p class="text-xs text-slate-500">Sinkronizacija i status veze</p>
                 </div>
             </div>
             <button type="button" data-close-modal class="p-2 rounded-xl text-slate-400 hover:text-slate-700 dark:hover:text-slate-200" aria-label="Zatvori postavke">
@@ -713,25 +870,109 @@
             </button>
         </div>
 
-        <div class="space-y-4 text-xs">
-            <div>
-                <label for="moodle-url-input" class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Moodle WebService URL</label>
-                <input id="moodle-url-input" type="url" value="https://eucenje.sum.ba/moodle/" class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-100 font-mono text-xs">
+        <div class="grid grid-cols-2 gap-1.5 p-1.5 rounded-2xl bg-slate-100 dark:bg-slate-800" role="group" aria-label="Način rada Moodle adaptera">
+            <button type="button" data-moodle-mode="demo" class="py-2.5 rounded-xl text-xs font-bold transition">Demo</button>
+            <button type="button" data-moodle-mode="live" class="py-2.5 rounded-xl text-xs font-bold transition">Live proxy</button>
+        </div>
+
+        <div id="moodle-demo-panel" class="space-y-3">
+            <p class="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">Demo način koristi ugrađene podatke i ne šalje nijedan mrežni zahtjev. Idealno za GitHub Pages prezentaciju i testiranje sučelja.</p>
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-center">
+                <div class="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/60"><strong class="block text-sm text-slate-800 dark:text-slate-100">5</strong><span class="text-[10px] text-slate-400">kolegija</span></div>
+                <div class="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/60"><strong class="block text-sm text-slate-800 dark:text-slate-100">10</strong><span class="text-[10px] text-slate-400">ocjena</span></div>
+                <div class="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/60"><strong class="block text-sm text-slate-800 dark:text-slate-100">25</strong><span class="text-[10px] text-slate-400">materijala</span></div>
+                <div class="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/60"><strong class="block text-sm text-slate-800 dark:text-slate-100">8</strong><span class="text-[10px] text-slate-400">zadaća</span></div>
             </div>
+        </div>
+
+        <div id="moodle-live-panel" class="hidden space-y-3">
             <div>
-                <label for="moodle-user-input" class="block font-bold text-slate-700 dark:text-slate-300 mb-1">EduID korisničko ime</label>
-                <input id="moodle-user-input" type="text" value="ivan.kovac@fpmoz.sum.ba" class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-100">
+                <label for="moodle-proxy-input" class="block font-bold text-slate-700 dark:text-slate-300 mb-1 text-xs">URL backend proxyja</label>
+                <input id="moodle-proxy-input" type="url" placeholder="https://tvoj-proxy.example.com" class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-100 font-mono text-xs">
+                <p class="text-[10px] text-slate-400 mt-1">Proxy mora biti dostupan preko HTTPS-a i podržavati <code class="font-mono">POST /api/moodle/sync</code>.</p>
             </div>
-            <div>
-                <label for="moodle-token-input" class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Moodle token / API ključ</label>
-                <input id="moodle-token-input" type="password" value="sum_moodle_demo_token" autocomplete="off" class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-100 font-mono">
-                <p class="text-[10px] text-slate-400 mt-1">Demo vrijednost. U stvarnoj aplikaciji token se ne pohranjuje u pregledniku.</p>
+            <div class="p-3.5 rounded-2xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-900 flex items-start gap-2.5">
+                <i data-lucide="info" class="w-4 h-4 text-amber-600 dark:text-amber-400 shrink-0 mt-0.5"></i>
+                <p class="text-[11px] text-amber-800 dark:text-amber-300 leading-relaxed">Moodle token i EduID podaci postavljaju se isključivo na poslužitelju (<code class="font-mono">MOODLE_TOKEN</code>). Nikada se ne upisuju u preglednik ni u localStorage.</p>
+            </div>
+        </div>
+
+        <div class="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-800 space-y-2">
+            <div class="flex items-center justify-between gap-3 text-[11px]">
+                <span class="text-slate-400">Zadnja sinkronizacija</span>
+                <strong id="moodle-last-sync" class="text-slate-700 dark:text-slate-200 text-right">Još nije sinkronizirano</strong>
+            </div>
+            <div id="moodle-summary" class="text-[11px] text-slate-500 dark:text-slate-400">Odaberi način rada i pokreni sinkronizaciju.</div>
+            <div class="flex items-center justify-between gap-3 text-[11px] pt-2 border-t border-slate-200/70 dark:border-slate-700/70">
+                <span class="text-slate-400">Status adaptera</span>
+                <span id="moodle-status" class="font-bold text-slate-600 dark:text-slate-300">Demo · spreman</span>
             </div>
         </div>
 
         <div class="pt-3 border-t border-slate-100 dark:border-slate-800 flex gap-3">
             <button type="button" data-close-modal class="flex-1 py-3 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold text-xs transition">Odustani</button>
-            <button type="submit" class="flex-1 py-3 rounded-xl hero-gradient text-white font-bold text-xs shadow-md transition">Poveži i sinkroniziraj</button>
+            <button type="submit" id="moodle-sync-btn" class="flex-1 py-3 rounded-xl hero-gradient text-white font-bold text-xs shadow-md transition flex items-center justify-center gap-2">
+                <i data-lucide="refresh-cw" class="w-4 h-4"></i>
+                <span id="moodle-sync-label">Sinkroniziraj sada</span>
+            </button>
+        </div>
+
+        <p class="text-[10px] text-slate-400 text-center">Live integracija zahtijeva backend proxy. <a href="https://github.com/Max55-lab/studia-moodle/tree/main/server" target="_blank" rel="noopener" class="text-studia-600 dark:text-studia-400 font-bold hover:underline">Upute za pokretanje</a></p>
+    </form>
+</div>
+
+<!-- Podsjetnici -->
+<div id="reminders-modal" class="modal fixed inset-0 z-50 bg-slate-950/60 backdrop-blur-xs flex items-center justify-center p-4 hidden" role="dialog" aria-modal="true" aria-labelledby="reminders-title">
+    <form id="reminders-form" class="bg-white dark:bg-slate-900 w-full max-w-md rounded-[32px] shadow-2xl border border-slate-100 dark:border-slate-800 p-6 space-y-5">
+        <div class="flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-2xl bg-studia-100 dark:bg-studia-950 text-studia-600 dark:text-studia-400 flex items-center justify-center">
+                    <i data-lucide="bell" class="w-5 h-5"></i>
+                </div>
+                <div>
+                    <h3 id="reminders-title" class="font-display font-extrabold text-lg text-slate-900 dark:text-white">Podsjetnici</h3>
+                    <p class="text-xs text-slate-500">Odaberi što želiš primati</p>
+                </div>
+            </div>
+            <button type="button" data-close-modal class="p-2 rounded-xl text-slate-400 hover:text-slate-700 dark:hover:text-slate-200" aria-label="Zatvori podsjetnike">
+                <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
+        </div>
+
+        <div class="space-y-2.5">
+            <label for="reminder-deadlines" class="flex items-start gap-3 p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800/60 cursor-pointer">
+                <input id="reminder-deadlines" type="checkbox" class="mt-0.5 w-4 h-4 rounded accent-studia-600">
+                <span><strong class="block text-xs text-slate-800 dark:text-slate-100">Rokovi zadaća</strong><span class="block text-[11px] text-slate-500 dark:text-slate-400">Podsjetnik prije isteka roka za predaju.</span></span>
+            </label>
+            <label for="reminder-grades" class="flex items-start gap-3 p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800/60 cursor-pointer">
+                <input id="reminder-grades" type="checkbox" class="mt-0.5 w-4 h-4 rounded accent-studia-600">
+                <span><strong class="block text-xs text-slate-800 dark:text-slate-100">Nove ocjene</strong><span class="block text-[11px] text-slate-500 dark:text-slate-400">Obavijest kada se u Moodleu pojavi nova ocjena.</span></span>
+            </label>
+            <label for="reminder-materials" class="flex items-start gap-3 p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800/60 cursor-pointer">
+                <input id="reminder-materials" type="checkbox" class="mt-0.5 w-4 h-4 rounded accent-studia-600">
+                <span><strong class="block text-xs text-slate-800 dark:text-slate-100">Novi materijali</strong><span class="block text-[11px] text-slate-500 dark:text-slate-400">Nove prezentacije, skripte i datoteke u kolegijima.</span></span>
+            </label>
+            <label for="reminder-forums" class="flex items-start gap-3 p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800/60 cursor-pointer">
+                <input id="reminder-forums" type="checkbox" class="mt-0.5 w-4 h-4 rounded accent-studia-600">
+                <span><strong class="block text-xs text-slate-800 dark:text-slate-100">Forum i poruke</strong><span class="block text-[11px] text-slate-500 dark:text-slate-400">Odgovori profesora i nove rasprave na kolegijima.</span></span>
+            </label>
+        </div>
+
+        <div>
+            <label for="reminder-lead-days" class="block font-bold text-slate-700 dark:text-slate-300 mb-1 text-xs">Podsjeti me prije roka</label>
+            <select id="reminder-lead-days" class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs font-semibold text-slate-800 dark:text-slate-100 focus:outline-none focus:border-studia-500">
+                <option value="1">1 dan prije</option>
+                <option value="3" selected>3 dana prije</option>
+                <option value="7">7 dana prije</option>
+            </select>
+        </div>
+
+        <div class="pt-3 border-t border-slate-100 dark:border-slate-800 flex flex-col gap-2">
+            <div class="flex gap-2">
+                <button type="button" id="reminder-test" class="flex-1 py-3 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold text-xs transition">Testni podsjetnik</button>
+                <button type="submit" class="flex-1 py-3 rounded-xl hero-gradient text-white font-bold text-xs shadow-md transition">Spremi postavke</button>
+            </div>
+            <p class="text-[10px] text-slate-400 text-center">Postavke se spremaju lokalno u ovom pregledniku.</p>
         </div>
     </form>
 </div>

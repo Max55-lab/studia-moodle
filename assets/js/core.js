@@ -9,19 +9,35 @@
 const STORAGE_KEYS = {
   academic: "studia:academic",
   moodle: "studia:moodle",
+  moodleConfig: "studia:moodle-config",
   submissions: "studia:submitted-assignments",
-  inboxRead: "studia:read-messages"
+  inboxRead: "studia:read-messages",
+  notificationsRead: "studia:read-notifications",
+  reminders: "studia:reminder-settings"
 };
 
 const state = {
   tab: "dashboard",
   courseFilter: "all",
   assignmentFilter: "all",
+  gradeFilter: "all",
+  materialCourse: "all",
+  materialType: "all",
+  materialsQuery: "",
   scriptsQuery: "",
   academic: { program: "fpmoz-rac", year: "2", semester: "zimski" },
   assignments: ASSIGNMENTS.map((assignment) => ({ ...assignment })),
   scripts: SCRIPTS.map((script) => ({ ...script })),
   inbox: INBOX.map((message) => ({ ...message })),
+  notifications: NOTIFICATIONS.map((notification) => ({ ...notification })),
+  reminderSettings: { ...DEFAULT_REMINDER_SETTINGS },
+  moodleConfig: {
+    mode: "demo",
+    proxyUrl: "",
+    lastSync: null,
+    lastSyncMode: null,
+    lastSummary: null
+  },
   moodleConnected: false,
   selectedAssignmentId: null,
   selectedMessageId: null,
@@ -110,6 +126,69 @@ function sortByDeadline(list, direction = 1) {
 
 function getUnreadCount() {
   return state.inbox.filter((message) => message.unread).length;
+}
+
+function getNotificationUnreadCount() {
+  return state.notifications.filter((notification) => notification.unread).length;
+}
+
+function formatDateISO(dateISO) {
+  if (!dateISO) return "";
+  const parts = String(dateISO).split("-");
+  if (parts.length !== 3) return String(dateISO);
+  return `${Number(parts[2])}. ${Number(parts[1])}. ${parts[0]}.`;
+}
+
+function getEctsInProgress() {
+  return COURSES.reduce((total, course) => total + Number(course.ects || 0), 0);
+}
+
+function getCompletedEcts() {
+  return GRADE_HISTORY.reduce((total, grade) => total + Number(grade.ects || 0), 0);
+}
+
+function calculateGradeAverage(entries = GRADE_HISTORY) {
+  if (!entries.length) return 0;
+  const totals = entries.reduce((accumulator, entry) => {
+    const ects = Number(entry.ects) || 1;
+    accumulator.weighted += Number(entry.grade) * ects;
+    accumulator.ects += ects;
+    return accumulator;
+  }, { weighted: 0, ects: 0 });
+
+  if (!totals.ects) return 0;
+  return totals.weighted / totals.ects;
+}
+
+function getFilteredGrades() {
+  if (state.gradeFilter === "all") return GRADE_HISTORY;
+  return GRADE_HISTORY.filter((grade) => grade.semesterId === state.gradeFilter);
+}
+
+function getGradeDistribution(entries = GRADE_HISTORY) {
+  return [5, 4, 3, 2, 1].map((grade) => ({
+    grade,
+    count: entries.filter((entry) => entry.grade === grade).length
+  }));
+}
+
+function getMaterial(materialId) {
+  return MATERIALS.find((material) => material.id === Number(materialId));
+}
+
+function getMaterialType(type) {
+  return MATERIAL_TYPES[type] || MATERIAL_TYPES.pdf;
+}
+
+function isMaterialNew(material) {
+  const published = new Date(material.dateISO).getTime();
+  const demoDay = getStartOfDemoDay();
+  const week = 7 * 24 * 60 * 60 * 1000;
+  return published <= demoDay && demoDay - published <= week;
+}
+
+function getNotification(notificationId) {
+  return state.notifications.find((notification) => notification.id === Number(notificationId));
 }
 
 function getActiveUpcomingCount() {
@@ -262,6 +341,7 @@ function switchTab(tabId, options = {}) {
 
   closeSidebar(false);
   toggleProfileDropdown(false);
+  closeNotificationPanel();
 
   if (options.keepScroll !== true) {
     window.scrollTo({ top: 0, behavior: "smooth" });
@@ -273,6 +353,16 @@ function switchTab(tabId, options = {}) {
     } catch (error) {
       // Neke datoteke otvorene preko file:// ne dopuštaju promjenu povijesti.
     }
+  }
+
+  if (tabId === "grades" && typeof renderGrades === "function") {
+    renderGrades();
+    refreshIcons();
+  }
+
+  if (tabId === "materials" && typeof renderMaterials === "function") {
+    renderMaterials();
+    refreshIcons();
   }
 
   if (tabId === "dashboard") {
@@ -328,6 +418,26 @@ function toggleProfileDropdown(force) {
   const shouldOpen = typeof force === "boolean" ? force : dropdown.classList.contains("hidden");
   dropdown.classList.toggle("hidden", !shouldOpen);
   if (button) button.setAttribute("aria-expanded", String(shouldOpen));
+  if (shouldOpen) closeNotificationPanel();
+}
+
+function toggleNotificationPanel(force) {
+  const panel = $("#notification-panel");
+  const button = $("#notification-btn");
+  if (!panel) return;
+
+  const shouldOpen = typeof force === "boolean" ? force : panel.classList.contains("hidden");
+  panel.classList.toggle("hidden", !shouldOpen);
+  if (button) button.setAttribute("aria-expanded", String(shouldOpen));
+  if (shouldOpen) toggleProfileDropdown(false);
+}
+
+function closeNotificationPanel() {
+  const panel = $("#notification-panel");
+  const button = $("#notification-btn");
+  if (!panel || panel.classList.contains("hidden")) return;
+  panel.classList.add("hidden");
+  if (button) button.setAttribute("aria-expanded", "false");
 }
 
 /* =========================================================
@@ -465,30 +575,49 @@ function handleAcademicChange() {
    MOODLE STATUS
    ========================================================= */
 
+function formatSyncTime(isoValue, mode = state.moodleConfig.lastSyncMode || state.moodleConfig.mode) {
+  if (!isoValue) return "Još nije sinkronizirano";
+  if (mode === "demo") return `${DEMO_TODAY_LABEL} · 09:00`;
+
+  const date = new Date(isoValue);
+  if (Number.isNaN(date.getTime())) return "Nepoznato vrijeme";
+  const day = `${date.getDate()}. ${date.getMonth() + 1}. ${date.getFullYear()}.`;
+  const time = `${String(date.getHours()).padStart(2, "0")}:${String(date.getMinutes()).padStart(2, "0")}`;
+  return `${day} · ${time}`;
+}
+
 function applyMoodleState() {
   const sidebarStatus = $("#sidebar-api-status");
   const headerText = $("#header-sync-text");
   const headerDot = $("#header-sync-dot");
+  const config = state.moodleConfig;
+  const isLive = config.mode === "live";
+  const hasSync = Boolean(config.lastSync) && config.lastSyncMode === config.mode;
 
-  if (state.moodleConnected) {
-    if (sidebarStatus) {
-      sidebarStatus.textContent = "● Povezano (eucenje.sum.ba)";
-      sidebarStatus.className = "text-[11px] text-emerald-400 font-bold";
-    }
-    if (headerText) headerText.textContent = "Moodle API Online";
-    if (headerDot) {
-      headerDot.className = "w-2 h-2 rounded-full bg-emerald-500 live-dot";
-    }
-  } else {
-    if (sidebarStatus) {
-      sidebarStatus.textContent = "● Demo sinkronizacija";
-      sidebarStatus.className = "text-[11px] text-emerald-400 font-medium";
-    }
-    if (headerText) headerText.textContent = "SUM Moodle API";
-    if (headerDot) {
-      headerDot.className = "w-2 h-2 rounded-full bg-emerald-500 live-dot";
-    }
+  state.moodleConnected = isLive && hasSync;
+
+  if (sidebarStatus) {
+    sidebarStatus.textContent = isLive
+      ? (hasSync ? "● Live · sinkronizirano" : "● Live · čeka sync")
+      : "● Demo sinkronizacija";
+    sidebarStatus.className = isLive && hasSync
+      ? "text-[11px] text-emerald-400 font-bold"
+      : "text-[11px] text-emerald-400 font-medium";
   }
+
+  if (headerText) {
+    headerText.textContent = isLive
+      ? (hasSync ? "Moodle API · Live" : "SUM Moodle API · Live")
+      : "SUM Moodle API · Demo";
+  }
+
+  if (headerDot) {
+    headerDot.className = isLive && hasSync
+      ? "w-2 h-2 rounded-full bg-emerald-500 live-dot"
+      : "w-2 h-2 rounded-full bg-amber-400";
+  }
+
+  if (typeof renderMoodleStatus === "function") renderMoodleStatus();
 }
 
 /* =========================================================
@@ -673,6 +802,55 @@ function loadPreferences() {
 
   state.moodleConnected = safeGet(STORAGE_KEYS.moodle) === "true";
 
+  const savedMoodleConfig = safeGet(STORAGE_KEYS.moodleConfig);
+  if (savedMoodleConfig) {
+    try {
+      const parsed = JSON.parse(savedMoodleConfig);
+      if (parsed && typeof parsed === "object") {
+        state.moodleConfig = {
+          mode: parsed.mode === "live" ? "live" : "demo",
+          proxyUrl: typeof parsed.proxyUrl === "string" ? parsed.proxyUrl : "",
+          lastSync: typeof parsed.lastSync === "string" ? parsed.lastSync : null,
+          lastSyncMode: parsed.lastSyncMode === "live" ? "live" : parsed.lastSyncMode === "demo" ? "demo" : null,
+          lastSummary: parsed.lastSummary && typeof parsed.lastSummary === "object" ? parsed.lastSummary : null
+        };
+      }
+    } catch (error) {
+      // Neispravan zapis ignorira se i koristi se demo način.
+    }
+  }
+
+  const readNotifications = safeGet(STORAGE_KEYS.notificationsRead);
+  if (readNotifications) {
+    try {
+      const readIds = JSON.parse(readNotifications);
+      if (Array.isArray(readIds)) {
+        state.notifications.forEach((notification) => {
+          notification.unread = !readIds.includes(notification.id);
+        });
+      }
+    } catch (error) {
+      // Neispravan zapis ignorira se.
+    }
+  }
+
+  const savedReminders = safeGet(STORAGE_KEYS.reminders);
+  if (savedReminders) {
+    try {
+      const parsed = JSON.parse(savedReminders);
+      if (parsed && typeof parsed === "object") {
+        ["deadlines", "grades", "materials", "forums"].forEach((key) => {
+          if (typeof parsed[key] === "boolean") state.reminderSettings[key] = parsed[key];
+        });
+        if (["1", "3", "7"].includes(String(parsed.leadDays))) {
+          state.reminderSettings.leadDays = String(parsed.leadDays);
+        }
+      }
+    } catch (error) {
+      // Neispravan zapis ignorira se.
+    }
+  }
+
   const submitted = safeGet(STORAGE_KEYS.submissions);
   if (submitted) {
     try {
@@ -714,4 +892,37 @@ function persistInboxRead() {
     .filter((message) => !message.unread)
     .map((message) => message.id);
   safeSet(STORAGE_KEYS.inboxRead, JSON.stringify(readIds));
+}
+
+function persistNotificationRead() {
+  const readIds = state.notifications
+    .filter((notification) => !notification.unread)
+    .map((notification) => notification.id);
+  safeSet(STORAGE_KEYS.notificationsRead, JSON.stringify(readIds));
+}
+
+function persistReminderSettings() {
+  safeSet(STORAGE_KEYS.reminders, JSON.stringify(state.reminderSettings));
+}
+
+function persistMoodleConfig() {
+  safeSet(STORAGE_KEYS.moodleConfig, JSON.stringify(state.moodleConfig));
+}
+
+function markNotificationRead(notificationId) {
+  const notification = getNotification(notificationId);
+  if (!notification || !notification.unread) return false;
+  notification.unread = false;
+  persistNotificationRead();
+  return true;
+}
+
+function markAllNotificationsRead() {
+  const unread = state.notifications.filter((notification) => notification.unread);
+  if (unread.length === 0) return 0;
+  unread.forEach((notification) => {
+    notification.unread = false;
+  });
+  persistNotificationRead();
+  return unread.length;
 }

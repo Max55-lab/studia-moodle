@@ -239,6 +239,10 @@ function renderAll() {
   renderAssignments();
   renderInbox();
   renderScripts();
+  renderGrades();
+  renderMaterials();
+  renderNotifications();
+  renderReminderSettings();
   renderTimetable();
   renderMeetRooms();
   renderNotices();
