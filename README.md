@@ -1,5 +1,7 @@
 # Studia — studentski portal Sveučilišta u Mostaru
 
+[![Deploy na GitHub Pages](https://github.com/Max55-lab/studia-moodle/actions/workflows/deploy.yml/badge.svg)](https://github.com/Max55-lab/studia-moodle/actions/workflows/deploy.yml)
+
 Responzivan front-end demo studentskog portala izrađen prema priloženom dizajnu.
 Portal objedinjuje kolegije, zadaće, raspored, Moodle obavijesti i studentsku
 zajednicu (UniHub) na jednom mjestu.
@@ -9,6 +11,8 @@ u `assets/js/data.js`, a radnje poput predaje zadaće i čitanja poruka pamte se
 `localStorage`.
 
 **Live demo:** <https://max55-lab.github.io/studia-moodle/>
+
+![Pregled nadzorne ploče](docs/preview.png)
 
 Stranica se automatski objavljuje na GitHub Pages pri svakom pushu na `main`
 preko workflowa `.github/workflows/deploy.yml`.
