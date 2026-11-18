@@ -122,6 +122,10 @@ SCHOOL_PORTAL/
 
 ## Pogledi i značajke
 
+| Ocjene i ECTS | Materijali kolegija |
+| --- | --- |
+| ![Ocjene i ECTS bodovi](docs/grades.png) | ![Materijali kolegija](docs/materials.png) |
+
 - **Nadzorna ploča** — hero sa sljedećim predavanjem, brze zadaće, carousel
   kolegija s filtrima, tablica/lista nadolazećih obveza, statistika i profesori.
 - **Profil studenta** — podaci o studiju, prisustvo, upisani semestri, mini
