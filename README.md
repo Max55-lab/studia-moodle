@@ -8,6 +8,11 @@ Sve radi u običnom pregledniku, bez poslužiteljske strane. Podaci su demo poda
 u `assets/js/data.js`, a radnje poput predaje zadaće i čitanja poruka pamte se u
 `localStorage`.
 
+**Live demo:** <https://max55-lab.github.io/studia-moodle/>
+
+Stranica se automatski objavljuje na GitHub Pages pri svakom pushu na `main`
+preko workflowa `.github/workflows/deploy.yml`.
+
 ## Pokretanje
 
 Najbrže: dvaput klikni `index.html`.
