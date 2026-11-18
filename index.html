@@ -3,94 +3,52 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Studia · SUM e-Učenje Studentski Portal</title>
-    <!-- Tailwind CSS CDN -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Google Fonts: Plus Jakarta Sans & Inter -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet">
-    <!-- Lucide Icons -->
-    <script src="https://unpkg.com/lucide@latest"></script>
+    <meta name="description" content="Studia — studentski portal Sveučilišta u Mostaru: kolegiji, zadaće, raspored i Moodle obavijesti na jednom mjestu.">
+    <meta name="theme-color" content="#7c3aed">
+    <title>Studia · Studentski portal SUM</title>
+
+    <link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
+    <link rel="stylesheet" href="assets/css/tailwind.css">
+    <link rel="stylesheet" href="assets/css/style.css">
+
     <script>
-        tailwind.config = {
-            darkMode: 'class',
-            theme: {
-                extend: {
-                    fontFamily: {
-                        sans: ['Inter', 'sans-serif'],
-                        display: ['Plus Jakarta Sans', 'sans-serif'],
-                    },
-                    colors: {
-                        studia: {
-                            50: '#f5f3ff',
-                            100: '#ede9fe',
-                            200: '#ddd6fe',
-                            300: '#c4b5fd',
-                            400: '#a78bfa',
-                            500: '#8b5cf6',
-                            600: '#7c3aed',
-                            700: '#6d28d9',
-                            800: '#5b21b6',
-                            900: '#4c1d95',
-                        }
-                    },
-                    boxShadow: {
-                        'soft': '0 4px 20px -2px rgba(17, 24, 39, 0.05)',
-                        'card': '0 10px 30px -5px rgba(124, 58, 237, 0.07)',
-                        'glow': '0 12px 32px -4px rgba(109, 40, 217, 0.35)',
-                    }
+        // Primijeni spremljenu temu prije renderiranja da nema bijelog bljeska.
+        (function () {
+            try {
+                var saved = localStorage.getItem("studia:theme");
+                var prefersDark = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
+                if (saved === "dark" || (!saved && prefersDark)) {
+                    document.documentElement.classList.add("dark");
                 }
+            } catch (error) {
+                // localStorage može biti blokiran; aplikacija i dalje radi.
             }
-        }
+        })();
     </script>
-    <style>
-        body {
-            background-color: #f8f9fc;
-            color: #111827;
-            overflow-x: hidden;
-            transition: background-color 0.25s ease, color 0.25s ease;
-        }
-        html.dark body {
-            background-color: #0b0f19;
-            color: #f1f5f9;
-        }
-        .hero-gradient {
-            background: linear-gradient(135deg, #6d28d9 0%, #7c3aed 55%, #8b5cf6 100%);
-        }
-        .no-scrollbar::-webkit-scrollbar {
-            display: none;
-        }
-        .no-scrollbar {
-            -ms-overflow-style: none;
-            scrollbar-width: none;
-        }
-        .progress-ring-circle {
-            transition: stroke-dashoffset 0.7s cubic-bezier(0.4, 0, 0.2, 1);
-            transform: rotate(-90deg);
-            transform-origin: 50% 50%;
-        }
-        @keyframes pulse-dot {
-            0%, 100% { opacity: 1; transform: scale(1); }
-            50% { opacity: 0.6; transform: scale(1.25); }
-        }
-        .live-dot {
-            animation: pulse-dot 2s infinite;
-        }
-    </style>
+
+    <script src="assets/vendor/lucide.min.js" defer></script>
+    <script src="assets/js/data.js" defer></script>
+    <script src="assets/js/core.js" defer></script>
+    <script src="assets/js/render.js" defer></script>
+    <script src="assets/js/views.js" defer></script>
+    <script src="assets/js/app.js" defer></script>
 </head>
+
 <body class="antialiased selection:bg-studia-200 selection:text-studia-900">
 
-<!-- Toast Notification Container -->
-<div id="toast-container" class="fixed bottom-5 right-5 z-50 flex flex-col gap-2 pointer-events-none"></div>
+<a href="#main-content" class="skip-link">Preskoči na sadržaj</a>
 
-<!-- Left Navigation Drawer Overlay -->
-<div id="sidebar-backdrop" onclick="toggleSidebar(false)" class="fixed inset-0 bg-slate-900/50 backdrop-blur-xs z-40 hidden transition-opacity"></div>
+<!-- Toast obavijesti -->
+<div id="toast-container" class="fixed bottom-5 left-5 right-5 sm:left-auto z-[70] flex flex-col gap-2 pointer-events-none" aria-live="polite" aria-atomic="false"></div>
 
-<!-- Left Collapsible Sidebar -->
-<aside id="left-sidebar" class="fixed top-0 left-0 h-full w-72 bg-white dark:bg-slate-900 border-r border-slate-100 dark:border-slate-800 z-50 transform -translate-x-full transition-transform duration-300 ease-out flex flex-col justify-between shadow-2xl">
-    <div>
-        <!-- Sidebar Header -->
+<!-- Zatamnjenje iza bočne navigacije -->
+<div id="sidebar-backdrop" class="fixed inset-0 bg-slate-900/50 backdrop-blur-xs z-40 hidden" aria-hidden="true"></div>
+
+<!-- ========================================================= -->
+<!-- BOČNA NAVIGACIJA                                          -->
+<!-- ========================================================= -->
+<aside id="left-sidebar" class="fixed top-0 left-0 h-full w-72 bg-white dark:bg-slate-900 border-r border-slate-100 dark:border-slate-800 z-50 transform -translate-x-full transition-transform duration-300 ease-out flex flex-col justify-between shadow-2xl" aria-label="Glavna navigacija">
+    <div class="overflow-y-auto">
         <div class="p-6 flex items-center justify-between border-b border-slate-100 dark:border-slate-800">
             <div class="flex items-center gap-3">
                 <div class="w-10 h-10 rounded-2xl hero-gradient flex items-center justify-center text-white shadow-md">
@@ -101,160 +59,142 @@
                     <span class="block text-[11px] font-semibold text-studia-600 dark:text-studia-400 uppercase tracking-wider">SUM e-Učenje</span>
                 </div>
             </div>
-            <button onclick="toggleSidebar(false)" class="p-2 rounded-xl text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition">
+            <button type="button" data-close-sidebar class="p-2 rounded-xl text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition" aria-label="Zatvori navigaciju">
                 <i data-lucide="x" class="w-5 h-5"></i>
             </button>
         </div>
 
-        <!-- Academic Context Badge inside Sidebar -->
         <div class="mx-4 mt-4 p-3.5 rounded-2xl bg-studia-50 dark:bg-studia-950/60 border border-studia-100 dark:border-studia-900/60">
             <div class="text-[11px] font-bold uppercase tracking-wider text-studia-600 dark:text-studia-400 mb-1">Aktivni studij</div>
             <div id="sidebar-faculty-label" class="text-xs font-bold text-slate-800 dark:text-slate-100">FPMOZ · Računarstvo</div>
             <div id="sidebar-year-label" class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">2. godina · Zimski semestar</div>
         </div>
 
-        <!-- Navigation Links -->
-        <nav class="p-4 space-y-1.5" id="sidebar-nav">
-            <button onclick="switchTab('dashboard')" data-tab="dashboard" class="nav-btn w-full flex items-center gap-3.5 px-4 py-3 rounded-2xl text-sm font-semibold bg-studia-600 text-white shadow-sm transition">
+        <nav class="p-4 space-y-1.5" id="sidebar-nav" aria-label="Pogledi portala">
+            <button type="button" data-tab="dashboard" class="nav-btn is-active w-full flex items-center gap-3.5 px-4 py-3 rounded-2xl text-sm font-semibold transition" aria-current="page">
                 <i data-lucide="layout-grid" class="w-5 h-5"></i>
                 <span>Nadzorna ploča</span>
             </button>
-            <button onclick="switchTab('profile')" data-tab="profile" class="nav-btn w-full flex items-center gap-3.5 px-4 py-3 rounded-2xl text-sm font-medium text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition">
+            <button type="button" data-tab="profile" class="nav-btn w-full flex items-center gap-3.5 px-4 py-3 rounded-2xl text-sm font-medium transition">
                 <i data-lucide="user-circle" class="w-5 h-5"></i>
                 <span>Profil studenta</span>
             </button>
-            <button onclick="switchTab('inbox')" data-tab="inbox" class="nav-btn w-full flex items-center justify-between px-4 py-3 rounded-2xl text-sm font-medium text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition">
-                <div class="flex items-center gap-3.5">
+            <button type="button" data-tab="inbox" class="nav-btn w-full flex items-center justify-between px-4 py-3 rounded-2xl text-sm font-medium transition">
+                <span class="flex items-center gap-3.5">
                     <i data-lucide="inbox" class="w-5 h-5"></i>
-                    <span>Inbox & Obavijesti</span>
-                </div>
+                    <span>Inbox i obavijesti</span>
+                </span>
                 <span id="inbox-badge" class="px-2 py-0.5 text-xs font-bold rounded-full bg-rose-100 dark:bg-rose-950 text-rose-600 dark:text-rose-400">3</span>
             </button>
-            <button onclick="switchTab('courses')" data-tab="courses" class="nav-btn w-full flex items-center gap-3.5 px-4 py-3 rounded-2xl text-sm font-medium text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition">
+            <button type="button" data-tab="courses" class="nav-btn w-full flex items-center gap-3.5 px-4 py-3 rounded-2xl text-sm font-medium transition">
                 <i data-lucide="book-open" class="w-5 h-5"></i>
-                <span>Kolegiji & UniHub</span>
+                <span>Kolegiji i UniHub</span>
             </button>
-            <button onclick="switchTab('assignments')" data-tab="assignments" class="nav-btn w-full flex items-center justify-between px-4 py-3 rounded-2xl text-sm font-medium text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition">
-                <div class="flex items-center gap-3.5">
+            <button type="button" data-tab="assignments" class="nav-btn w-full flex items-center justify-between px-4 py-3 rounded-2xl text-sm font-medium transition">
+                <span class="flex items-center gap-3.5">
                     <i data-lucide="file-check-2" class="w-5 h-5"></i>
-                    <span>Zadaće & Kolokviji</span>
-                </div>
-                <span class="px-2 py-0.5 text-xs font-bold rounded-full bg-studia-100 dark:bg-studia-900 text-studia-700 dark:text-studia-300">3</span>
+                    <span>Zadaće i kolokviji</span>
+                </span>
+                <span id="assignments-nav-badge" class="px-2 py-0.5 text-xs font-bold rounded-full bg-studia-100 dark:bg-studia-900 text-studia-700 dark:text-studia-300">6</span>
             </button>
-            <button onclick="switchTab('timetable')" data-tab="timetable" class="nav-btn w-full flex items-center gap-3.5 px-4 py-3 rounded-2xl text-sm font-medium text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition">
+            <button type="button" data-tab="timetable" class="nav-btn w-full flex items-center gap-3.5 px-4 py-3 rounded-2xl text-sm font-medium transition">
                 <i data-lucide="calendar-days" class="w-5 h-5"></i>
                 <span>Raspored predavanja</span>
             </button>
-            <button onclick="switchTab('meet')" data-tab="meet" class="nav-btn w-full flex items-center justify-between px-4 py-3 rounded-2xl text-sm font-medium text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition">
-                <div class="flex items-center gap-3.5">
+            <button type="button" data-tab="meet" class="nav-btn w-full flex items-center justify-between px-4 py-3 rounded-2xl text-sm font-medium transition">
+                <span class="flex items-center gap-3.5">
                     <i data-lucide="video" class="w-5 h-5 text-emerald-600 dark:text-emerald-400"></i>
                     <span>Google Meet sobe</span>
-                </div>
-                <span class="w-2 h-2 rounded-full bg-emerald-500 live-dot"></span>
+                </span>
+                <span class="w-2 h-2 rounded-full bg-emerald-500 live-dot" aria-hidden="true"></span>
             </button>
-            <button onclick="openAiModal(); toggleSidebar(false);" class="w-full flex items-center justify-between px-4 py-3 rounded-2xl text-sm font-semibold text-studia-700 dark:text-studia-300 bg-studia-50/80 dark:bg-studia-950/70 hover:bg-studia-100 dark:hover:bg-studia-900/70 transition">
-                <div class="flex items-center gap-3.5">
+            <button type="button" data-open-ai class="w-full flex items-center justify-between px-4 py-3 rounded-2xl text-sm font-semibold text-studia-700 dark:text-studia-300 bg-studia-50/80 dark:bg-studia-950/70 hover:bg-studia-100 dark:hover:bg-studia-900/70 transition">
+                <span class="flex items-center gap-3.5">
                     <i data-lucide="sparkles" class="w-5 h-5 text-studia-600 dark:text-studia-400"></i>
-                    <span>AI Asistent za ispite</span>
-                </div>
+                    <span>AI asistent za ispite</span>
+                </span>
                 <span class="text-[10px] font-extrabold uppercase px-1.5 py-0.5 rounded bg-studia-600 text-white">Novo</span>
             </button>
         </nav>
     </div>
 
-    <!-- Sidebar Footer: Moodle API Connection Status -->
     <div class="p-4 border-t border-slate-100 dark:border-slate-800">
-        <button onclick="openMoodleModal(); toggleSidebar(false);" class="w-full p-3.5 rounded-2xl bg-slate-900 dark:bg-slate-800 text-white hover:bg-slate-800 dark:hover:bg-slate-700 transition flex items-center justify-between text-left">
-            <div class="flex items-center gap-3">
-                <div class="w-8 h-8 rounded-xl bg-white/10 flex items-center justify-center">
+        <button type="button" data-open-moodle class="w-full p-3.5 rounded-2xl bg-slate-900 dark:bg-slate-800 text-white hover:bg-slate-800 dark:hover:bg-slate-700 transition flex items-center justify-between text-left">
+            <span class="flex items-center gap-3">
+                <span class="w-8 h-8 rounded-xl bg-white/10 flex items-center justify-center">
                     <i data-lucide="refresh-cw" class="w-4 h-4 text-studia-300"></i>
-                </div>
-                <div>
-                    <div class="text-xs font-bold">eucenje.sum.ba API</div>
-                    <div id="sidebar-api-status" class="text-[11px] text-emerald-400 font-medium">● Demo Sinkronizacija</div>
-                </div>
-            </div>
+                </span>
+                <span>
+                    <span class="block text-xs font-bold">eucenje.sum.ba API</span>
+                    <span id="sidebar-api-status" class="text-[11px] text-emerald-400 font-medium">● Demo sinkronizacija</span>
+                </span>
+            </span>
             <i data-lucide="chevron-right" class="w-4 h-4 text-slate-400"></i>
         </button>
     </div>
 </aside>
 
-<!-- Sticky Top Header Bar -->
+<!-- ========================================================= -->
+<!-- GLAVNO ZAGLAVLJE                                          -->
+<!-- ========================================================= -->
 <header class="sticky top-0 z-30 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border-b border-slate-100 dark:border-slate-800 transition-colors">
     <div class="max-w-6xl mx-auto px-4 sm:px-6 h-16 sm:h-20 flex items-center justify-between gap-2 sm:gap-3">
-        <!-- Left: Hamburger Menu Button & API Badge -->
         <div class="flex items-center gap-2 sm:gap-3">
-            <button onclick="toggleSidebar(true)" aria-label="Otvori izbornik" class="p-2.5 rounded-xl text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition active:scale-95">
+            <button type="button" data-open-sidebar class="p-2.5 rounded-xl text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition active:scale-95" aria-label="Otvori izbornik" aria-controls="left-sidebar" aria-expanded="false">
                 <i data-lucide="menu" class="w-6 h-6"></i>
             </button>
-            <button onclick="openMoodleModal()" class="hidden md:inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-studia-50 dark:bg-studia-950/80 hover:bg-studia-100 dark:hover:bg-studia-900 text-studia-700 dark:text-studia-300 border border-studia-200/70 dark:border-studia-800 text-xs font-semibold transition">
+            <button type="button" data-open-moodle class="hidden md:inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-studia-50 dark:bg-studia-950/80 hover:bg-studia-100 dark:hover:bg-studia-900 text-studia-700 dark:text-studia-300 border border-studia-200/70 dark:border-studia-800 text-xs font-semibold transition">
                 <span id="header-sync-dot" class="w-2 h-2 rounded-full bg-emerald-500 live-dot"></span>
                 <span id="header-sync-text">SUM Moodle API</span>
             </button>
         </div>
 
-        <!-- Center: Studia Brand Logo -->
-        <button onclick="switchTab('dashboard')" class="flex items-center gap-2.5 group focus:outline-none">
-            <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-2xl hero-gradient flex items-center justify-center text-white shadow-md group-hover:scale-105 transition-transform">
+        <button type="button" data-tab="dashboard" class="flex items-center gap-2.5 group focus:outline-none" aria-label="Studia — nadzorna ploča">
+            <span class="w-9 h-9 sm:w-10 sm:h-10 rounded-2xl hero-gradient flex items-center justify-center text-white shadow-md group-hover:scale-105 transition-transform">
                 <i data-lucide="graduation-cap" class="w-5 h-5"></i>
-            </div>
-            <div class="text-left">
+            </span>
+            <span class="text-left">
                 <span class="font-display font-extrabold text-xl sm:text-2xl tracking-tight text-slate-900 dark:text-white">Studia</span>
                 <span class="hidden sm:inline-block ml-1.5 text-[11px] font-bold px-2 py-0.5 rounded-md bg-studia-100 dark:bg-studia-900/80 text-studia-700 dark:text-studia-300 align-middle">SUM</span>
-            </div>
+            </span>
         </button>
 
-        <!-- Right: AI Assistant Quick Button + Dark Mode Toggle + User Profile Switcher -->
         <div class="flex items-center gap-2 sm:gap-2.5">
-            <button onclick="openAiModal()" title="AI Asistent za skripte i ispite" class="p-2.5 rounded-full bg-studia-50 dark:bg-studia-950/80 hover:bg-studia-100 dark:hover:bg-studia-900 text-studia-600 dark:text-studia-300 border border-studia-200/70 dark:border-studia-800 transition">
+            <button type="button" data-open-ai class="p-2.5 rounded-full bg-studia-50 dark:bg-studia-950/80 hover:bg-studia-100 dark:hover:bg-studia-900 text-studia-600 dark:text-studia-300 border border-studia-200/70 dark:border-studia-800 transition" title="AI asistent za skripte i ispite" aria-label="Otvori AI asistenta">
                 <i data-lucide="sparkles" class="w-4 h-4"></i>
             </button>
 
-            <!-- Dark Mode Toggle -->
-            <button id="theme-toggle-btn" onclick="toggleDarkMode()" aria-label="Promijeni temu" title="Tamni / Svijetli način rada" class="p-2.5 rounded-full bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-amber-300 transition">
+            <button type="button" id="theme-toggle-btn" class="p-2.5 rounded-full bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-amber-300 transition" aria-label="Promijeni temu" title="Tamni / svijetli način rada" aria-pressed="false">
                 <i id="theme-icon-moon" data-lucide="moon" class="w-4 h-4"></i>
                 <i id="theme-icon-sun" data-lucide="sun" class="w-4 h-4 hidden"></i>
             </button>
 
-            <!-- Profile Menu -->
             <div class="relative">
-                <button id="profile-menu-btn" onclick="toggleProfileDropdown()" class="flex items-center gap-2.5 p-1.5 sm:pr-3 rounded-full bg-white dark:bg-slate-800 border border-slate-200/80 dark:border-slate-700 hover:border-studia-300 shadow-xs transition">
-                    <div class="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-gradient-to-tr from-studia-600 to-indigo-500 p-0.5">
-                        <div class="w-full h-full rounded-full bg-indigo-100 flex items-center justify-center overflow-hidden">
-                            <svg viewBox="0 0 36 36" class="w-full h-full">
-                                <rect width="36" height="36" fill="#e0e7ff"/>
-                                <circle cx="18" cy="14" r="6" fill="#4f46e5"/>
-                                <path d="M7 33c0-6.5 5-10 11-10s11 3.5 11 10" fill="#4f46e5"/>
-                            </svg>
-                        </div>
-                    </div>
-                    <div class="hidden sm:block text-left">
-                        <div id="header-student-name" class="text-xs font-bold text-slate-800 dark:text-slate-100 leading-tight">Ivan Kovač</div>
-                        <div id="header-student-meta" class="text-[10px] font-semibold text-studia-600 dark:text-studia-400">2. god · Računarstvo</div>
-                    </div>
+                <button type="button" id="profile-menu-btn" class="flex items-center gap-2.5 p-1.5 sm:pr-3 rounded-full bg-white dark:bg-slate-800 border border-slate-200/80 dark:border-slate-700 hover:border-studia-300 shadow-xs transition" aria-expanded="false" aria-controls="profile-dropdown" aria-label="Otvori profilni izbornik">
+                    <span class="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-gradient-to-tr from-studia-600 to-indigo-500 p-0.5">
+                        <img src="assets/img/student-ivan.svg" alt="" class="w-full h-full rounded-full bg-indigo-100 object-cover">
+                    </span>
+                    <span class="hidden sm:block text-left">
+                        <span id="header-student-name" class="block text-xs font-bold text-slate-800 dark:text-slate-100 leading-tight">Ivan Kovač</span>
+                        <span id="header-student-meta" class="block text-[10px] font-semibold text-studia-600 dark:text-studia-400">2. god · Računarstvo</span>
+                    </span>
                     <i data-lucide="chevron-down" class="hidden sm:block w-4 h-4 text-slate-400"></i>
                 </button>
 
-                <!-- Profile & Academic Context Switcher Dropdown -->
-                <div id="profile-dropdown" class="hidden absolute right-0 mt-3 w-80 bg-white dark:bg-slate-900 rounded-3xl shadow-2xl border border-slate-100 dark:border-slate-800 p-5 z-50">
+                <div id="profile-dropdown" class="hidden absolute right-0 mt-3 w-80 max-w-[calc(100vw-2rem)] bg-white dark:bg-slate-900 rounded-3xl shadow-2xl border border-slate-100 dark:border-slate-800 p-5 z-50">
                     <div class="flex items-center gap-3 pb-4 border-b border-slate-100 dark:border-slate-800">
-                        <div class="w-11 h-11 rounded-2xl hero-gradient text-white flex items-center justify-center font-display font-bold text-base">
-                            IK
-                        </div>
+                        <div class="w-11 h-11 rounded-2xl hero-gradient text-white flex items-center justify-center font-display font-bold text-base">IK</div>
                         <div class="min-w-0 flex-1">
                             <div class="text-sm font-bold text-slate-900 dark:text-white truncate">Ivan Kovač</div>
                             <div class="text-xs text-slate-500 dark:text-slate-400 truncate">ivan.kovac@fpmoz.sum.ba</div>
-                            <span class="inline-flex items-center gap-1 mt-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800">
-                                    ● EduID SUM Aktivan
-                                </span>
+                            <span class="inline-flex items-center gap-1 mt-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800">● EduID SUM aktivan</span>
                         </div>
                     </div>
 
-                    <!-- Switch Smjer, Godina & Semestar -->
                     <div class="py-4 space-y-3">
                         <div>
-                            <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-1">Fakultet i Smjer</label>
-                            <select id="select-smjer" onchange="handleAcademicChange()" class="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs font-semibold text-slate-800 dark:text-slate-100 focus:outline-none focus:border-studia-500">
+                            <label for="select-smjer" class="block text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-1">Fakultet i smjer</label>
+                            <select id="select-smjer" class="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs font-semibold text-slate-800 dark:text-slate-100 focus:outline-none focus:border-studia-500">
                                 <option value="fpmoz-rac">FPMOZ · Računarstvo</option>
                                 <option value="fsre-rac">FSRE · Računarstvo</option>
                                 <option value="ff-inf">Filozofski · Informacijske znanosti</option>
@@ -263,16 +203,16 @@
 
                         <div class="grid grid-cols-2 gap-2.5">
                             <div>
-                                <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-1">Godina studija</label>
-                                <select id="select-godina" onchange="handleAcademicChange()" class="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs font-semibold text-slate-800 dark:text-slate-100 focus:outline-none focus:border-studia-500">
+                                <label for="select-godina" class="block text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-1">Godina studija</label>
+                                <select id="select-godina" class="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs font-semibold text-slate-800 dark:text-slate-100 focus:outline-none focus:border-studia-500">
                                     <option value="1">1. godina</option>
                                     <option value="2" selected>2. godina</option>
                                     <option value="3">3. godina</option>
                                 </select>
                             </div>
                             <div>
-                                <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-1">Semestar</label>
-                                <select id="select-semestar" onchange="handleAcademicChange()" class="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs font-semibold text-slate-800 dark:text-slate-100 focus:outline-none focus:border-studia-500">
+                                <label for="select-semestar" class="block text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-1">Semestar</label>
+                                <select id="select-semestar" class="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs font-semibold text-slate-800 dark:text-slate-100 focus:outline-none focus:border-studia-500">
                                     <option value="zimski" selected>Zimski 2026/27</option>
                                     <option value="ljetni">Ljetni 2026/27</option>
                                 </select>
@@ -281,11 +221,11 @@
                     </div>
 
                     <div class="pt-3 border-t border-slate-100 dark:border-slate-800 flex flex-col gap-2">
-                        <button onclick="switchTab('profile'); toggleProfileDropdown(false);" class="w-full py-2.5 px-3 rounded-xl bg-studia-600 hover:bg-studia-700 text-white text-xs font-bold flex items-center justify-center gap-2 transition">
+                        <button type="button" data-tab="profile" class="w-full py-2.5 px-3 rounded-xl bg-studia-600 hover:bg-studia-700 text-white text-xs font-bold flex items-center justify-center gap-2 transition">
                             <i data-lucide="user-circle" class="w-4 h-4"></i>
                             Otvori detaljni profil
                         </button>
-                        <button onclick="openMoodleModal(); toggleProfileDropdown(false);" class="w-full py-2.5 px-3 rounded-xl bg-studia-50 dark:bg-studia-950 hover:bg-studia-100 dark:hover:bg-studia-900 text-studia-700 dark:text-studia-300 text-xs font-bold flex items-center justify-center gap-2 transition">
+                        <button type="button" data-open-moodle class="w-full py-2.5 px-3 rounded-xl bg-studia-50 dark:bg-studia-950 hover:bg-studia-100 dark:hover:bg-studia-900 text-studia-700 dark:text-studia-300 text-xs font-bold flex items-center justify-center gap-2 transition">
                             <i data-lucide="plug-zap" class="w-4 h-4"></i>
                             Postavke SUM Moodle API-ja
                         </button>
@@ -300,91 +240,91 @@
     </div>
 </header>
 
-<!-- Main Container -->
-<main class="max-w-6xl mx-auto px-4 sm:px-6 pt-6 pb-20">
+<!-- ========================================================= -->
+<!-- SADRŽAJ                                                   -->
+<!-- ========================================================= -->
+<main id="main-content" class="max-w-6xl mx-auto px-4 sm:px-6 pt-6 pb-20">
 
-    <!-- ========================================================= -->
-    <!-- TAB 1: DASHBOARD VIEW                                     -->
-    <!-- ========================================================= -->
+    <!-- ======================= NADZORNA PLOČA ======================= -->
     <section id="view-dashboard" class="space-y-8">
 
-        <!-- 1. Global Instant Search Bar (Ctrl + K Shortcut) -->
         <div class="relative">
             <div class="flex items-center bg-white dark:bg-slate-900 rounded-2xl shadow-soft border border-slate-100 dark:border-slate-800 px-4 sm:px-5 py-3.5 focus-within:border-studia-400 focus-within:ring-4 focus-within:ring-studia-500/10 transition">
                 <i data-lucide="search" class="w-5 h-5 text-slate-400 mr-3 shrink-0"></i>
-                <input id="global-search-input" type="text" oninput="handleGlobalSearch(this.value)" placeholder="Pretraži kolegije, skripte, zadaće, rokove ili profesore..." class="w-full bg-transparent text-sm sm:text-base text-slate-800 dark:text-slate-100 placeholder-slate-400 focus:outline-none">
-                <kbd id="search-kbd-hint" class="hidden sm:inline-flex items-center gap-1 px-2 py-1 text-[11px] font-bold text-slate-400 bg-slate-100 dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700 shrink-0">
-                    Ctrl K
-                </kbd>
-                <button id="clear-search-btn" onclick="clearGlobalSearch()" class="hidden text-xs font-semibold text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 px-2 py-1 rounded-lg">
-                    Očisti
-                </button>
+                <label for="global-search-input" class="sr-only">Pretraži kolegije, zadaće, skripte i profesore</label>
+                <input id="global-search-input" type="search" autocomplete="off" placeholder="Pretraži kolegije, skripte, zadaće, rokove ili profesore..." class="w-full bg-transparent text-sm sm:text-base text-slate-800 dark:text-slate-100 placeholder-slate-400 focus:outline-none">
+                <kbd class="hidden sm:inline-flex items-center gap-1 px-2 py-1 text-[11px] font-bold text-slate-400 bg-slate-100 dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700 shrink-0">Ctrl K</kbd>
+                <button type="button" id="clear-search-btn" class="hidden text-xs font-semibold text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 px-2 py-1 rounded-lg">Očisti</button>
             </div>
-            <!-- Instant Search Results Dropdown -->
             <div id="search-results-panel" class="hidden absolute left-0 right-0 mt-2 bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border border-slate-100 dark:border-slate-800 p-4 z-20 max-h-80 overflow-y-auto space-y-1.5"></div>
         </div>
 
-        <!-- 2. Purple Gradient Hero Banner -->
         <div class="hero-gradient rounded-[28px] p-7 sm:p-10 text-white relative overflow-hidden shadow-glow">
-            <div class="hidden sm:block absolute -bottom-24 right-16 w-64 h-64 rounded-full border border-white/15 pointer-events-none"></div>
-            <div class="hidden sm:block absolute -top-16 -right-12 w-48 h-48 rounded-full bg-white/5 pointer-events-none"></div>
+            <div class="hidden sm:block absolute -bottom-24 right-16 w-64 h-64 rounded-full border border-white/15 pointer-events-none" aria-hidden="true"></div>
+            <div class="hidden sm:block absolute -top-16 -right-12 w-48 h-48 rounded-full bg-white/5 pointer-events-none" aria-hidden="true"></div>
 
-            <div class="relative z-10 max-w-2xl">
-                <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/15 backdrop-blur-xs text-xs font-bold tracking-wider uppercase mb-5">
-                    <span id="hero-semester-pill">ZIMSKI SEMESTAR 2026/27</span>
-                    <span class="opacity-60">•</span>
-                    <span id="hero-year-pill">2. GODINA</span>
+            <div class="relative z-10 flex flex-col xl:flex-row xl:items-center xl:justify-between gap-8">
+                <div class="max-w-2xl">
+                    <div class="inline-flex flex-wrap items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/15 backdrop-blur-xs text-xs font-bold tracking-wider uppercase mb-5">
+                        <span id="hero-semester-pill">ZIMSKI SEMESTAR 2026/27</span>
+                        <span class="opacity-60">•</span>
+                        <span id="hero-year-pill">2. GODINA</span>
+                    </div>
+                    <h1 class="font-display font-extrabold text-3xl sm:text-4xl lg:text-[42px] leading-[1.15] tracking-tight mb-3.5">Tvoj semestar, sve na jednom mjestu.</h1>
+                    <p class="text-studia-100 text-sm sm:text-base leading-relaxed mb-7 max-w-lg">
+                        Prati kolegije s <span class="font-semibold text-white">eucenje.sum.ba</span>, dijeli skripte s kolegama, organiziraj rokove i pripremi ispite uz AI asistenta.
+                    </p>
+                    <div class="flex flex-wrap items-center gap-3">
+                        <button type="button" data-scroll-courses class="px-6 py-3.5 rounded-2xl bg-slate-950 hover:bg-slate-900 text-white font-semibold text-sm inline-flex items-center gap-2.5 shadow-lg transition active:scale-98">
+                            <span>Pregledaj kolegije</span>
+                            <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                        </button>
+                        <button type="button" data-open-ai class="px-5 py-3.5 rounded-2xl bg-white/15 hover:bg-white/25 text-white font-semibold text-sm inline-flex items-center gap-2 backdrop-blur-xs transition">
+                            <i data-lucide="sparkles" class="w-4 h-4"></i>
+                            <span>AI sažetak i kviz</span>
+                        </button>
+                    </div>
                 </div>
-                <h1 class="font-display font-extrabold text-3xl sm:text-4xl lg:text-[42px] leading-[1.15] tracking-tight mb-3.5">
-                    Tvoj semestar, sve na jednom mjestu.
-                </h1>
-                <p class="text-studia-100 text-sm sm:text-base leading-relaxed mb-7 max-w-lg">
-                    Prati kolegije s <span class="font-semibold text-white">eucenje.sum.ba</span>, dijeli skripte s kolegama, pronađi tim za projekt i pripremi ispite uz AI asistenta.
-                </p>
-                <div class="flex flex-wrap items-center gap-3">
-                    <button onclick="scrollToCourses()" class="px-6 py-3.5 rounded-2xl bg-slate-950 hover:bg-slate-900 text-white font-semibold text-sm inline-flex items-center gap-2.5 shadow-lg transition active:scale-98">
-                        <span>Pregledaj kolegije</span>
-                        <i data-lucide="arrow-right" class="w-4 h-4"></i>
-                    </button>
-                    <button onclick="openAiModal()" class="px-5 py-3.5 rounded-2xl bg-white/15 hover:bg-white/25 text-white font-semibold text-sm inline-flex items-center gap-2 backdrop-blur-xs transition">
-                        <i data-lucide="sparkles" class="w-4 h-4"></i>
-                        <span>AI Sažetak i Kviz</span>
-                    </button>
+
+                <div class="hidden xl:flex flex-col gap-3 w-72 shrink-0 p-5 rounded-3xl bg-white/10 border border-white/20 backdrop-blur-sm">
+                    <span class="text-[10px] font-extrabold uppercase tracking-[0.16em] text-studia-100">Sljedeće predavanje</span>
+                    <strong class="font-display text-xl leading-tight">UI/UX Dizajn</strong>
+                    <span class="text-sm text-studia-100">Danas · 14:00 – 16:30</span>
+                    <span class="text-xs text-studia-200/90">Sala 2 · Izv. prof. dr. sc. Mario Zovko</span>
+                    <button type="button" data-join-meet="design" class="mt-1 w-max px-3.5 py-2 rounded-xl bg-white text-studia-700 text-xs font-bold hover:bg-studia-50 transition">Pridruži se</button>
                 </div>
             </div>
         </div>
 
-        <!-- 3. Horizontal Assignment Quick-Filter Cards -->
         <div>
-            <div class="flex items-center justify-between mb-3 px-1">
+            <div class="flex items-center justify-between gap-3 mb-3 px-1">
                 <span class="text-xs font-bold uppercase tracking-wider text-slate-400">Aktivne zadaće i vježbe (klikni za predaju)</span>
-                <button onclick="switchTab('assignments')" class="text-xs font-bold text-studia-600 dark:text-studia-400 hover:underline">Sve zadaće →</button>
+                <button type="button" data-tab="assignments" class="text-xs font-bold text-studia-600 dark:text-studia-400 hover:underline shrink-0">Sve zadaće →</button>
             </div>
             <div id="quick-tasks-grid" class="grid grid-cols-1 md:grid-cols-3 gap-4"></div>
         </div>
 
-        <!-- 4. Moji Kolegiji -->
         <div id="my-courses-section" class="pt-2">
             <div class="flex flex-wrap items-center justify-between gap-3 mb-5">
                 <div class="flex flex-wrap items-center gap-2.5">
                     <h2 class="font-display font-extrabold text-2xl text-slate-900 dark:text-white">Moji kolegiji</h2>
-                    <div id="course-filter-pills" class="flex flex-wrap items-center gap-2"></div>
+                    <div id="course-filter-pills" class="flex flex-wrap items-center gap-2" role="group" aria-label="Filtriraj kolegije"></div>
                 </div>
 
                 <div class="flex items-center gap-2">
-                    <button onclick="scrollCoursesCarousel(-1)" aria-label="Prethodni kolegiji" class="w-10 h-10 rounded-full bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-700 text-slate-500 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white flex items-center justify-center shadow-xs transition">
+                    <button type="button" id="courses-prev" class="w-10 h-10 rounded-full bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-700 text-slate-500 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white flex items-center justify-center shadow-xs transition disabled:opacity-40 disabled:cursor-not-allowed" aria-label="Prethodni kolegiji">
                         <i data-lucide="chevron-left" class="w-5 h-5"></i>
                     </button>
-                    <button onclick="scrollCoursesCarousel(1)" aria-label="Sljedeći kolegiji" class="w-10 h-10 rounded-full bg-studia-100 dark:bg-studia-900 text-studia-700 dark:text-studia-300 hover:bg-studia-200 dark:hover:bg-studia-800 flex items-center justify-center transition">
+                    <button type="button" id="courses-next" class="w-10 h-10 rounded-full bg-studia-100 dark:bg-studia-900 text-studia-700 dark:text-studia-300 hover:bg-studia-200 dark:hover:bg-studia-800 flex items-center justify-center transition disabled:opacity-40 disabled:cursor-not-allowed" aria-label="Sljedeći kolegiji">
                         <i data-lucide="chevron-right" class="w-5 h-5"></i>
                     </button>
                 </div>
             </div>
 
-            <div id="courses-carousel" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5"></div>
+            <div id="courses-carousel" class="courses-carousel flex gap-5 overflow-x-auto snap-x snap-mandatory no-scrollbar pb-2" aria-label="Kolegiji"></div>
+            <p id="courses-empty" class="hidden text-sm text-slate-500 dark:text-slate-400 py-10 text-center">Nema kolegija za odabrani filtar.</p>
         </div>
 
-        <!-- 5. Nadolazeće obveze + Export to Calendar (.ics) -->
         <div class="bg-white dark:bg-slate-900 rounded-[28px] p-6 sm:p-7 shadow-soft border border-slate-100 dark:border-slate-800">
             <div class="flex flex-wrap items-center justify-between gap-3 mb-5">
                 <div>
@@ -392,48 +332,47 @@
                     <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Pregled kolokvija, laboratorijskih vježbi i zadaća s Moodle kalendara</p>
                 </div>
                 <div class="flex flex-wrap items-center gap-2.5">
-                    <button onclick="exportCalendarICS()" class="px-3.5 py-2 rounded-xl bg-studia-50 dark:bg-studia-950 hover:bg-studia-100 dark:hover:bg-studia-900 text-studia-700 dark:text-studia-300 border border-studia-200/70 dark:border-studia-800 text-xs font-bold inline-flex items-center gap-1.5 transition">
+                    <button type="button" data-export-ics class="px-3.5 py-2 rounded-xl bg-studia-50 dark:bg-studia-950 hover:bg-studia-100 dark:hover:bg-studia-900 text-studia-700 dark:text-studia-300 border border-studia-200/70 dark:border-studia-800 text-xs font-bold inline-flex items-center gap-1.5 transition">
                         <i data-lucide="calendar-plus" class="w-4 h-4"></i>
                         <span>Izvezi u kalendar (.ics)</span>
                     </button>
                     <span class="px-3 py-1.5 rounded-full bg-amber-50 dark:bg-amber-950/70 text-amber-700 dark:text-amber-400 border border-amber-200/70 dark:border-amber-800 text-xs font-bold">
-                            <span id="upcoming-count-badge">3 aktivna</span> roka
-                        </span>
+                        <span id="upcoming-count-badge">6</span> nadolazećih
+                    </span>
                 </div>
             </div>
 
-            <div class="overflow-x-auto">
-                <table class="w-full text-left border-collapse">
+            <div class="hidden lg:block overflow-x-auto">
+                <table class="w-full min-w-[760px] text-left border-collapse">
                     <thead>
                     <tr class="border-b border-slate-100 dark:border-slate-800 text-[11px] font-bold uppercase tracking-wider text-slate-400">
                         <th class="pb-3 pr-4">Kolegij</th>
                         <th class="pb-3 px-4">Vrsta</th>
-                        <th class="pb-3 px-4">Zadatak / Obveza</th>
-                        <th class="pb-3 px-4">Rok (Datum i vrijeme)</th>
+                        <th class="pb-3 px-4">Zadatak / obveza</th>
+                        <th class="pb-3 px-4">Rok</th>
                         <th class="pb-3 pl-4 text-right">Status</th>
                     </tr>
                     </thead>
                     <tbody id="upcoming-table-body" class="divide-y divide-slate-100 dark:divide-slate-800 text-sm"></tbody>
                 </table>
             </div>
+            <div id="upcoming-cards" class="lg:hidden grid grid-cols-1 sm:grid-cols-2 gap-3"></div>
         </div>
 
-        <!-- 6. Bottom Split: Statistics + Mini Timetable & Professors -->
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-            <!-- Statistics Card (5 cols) -->
             <div class="lg:col-span-5 bg-white dark:bg-slate-900 rounded-[28px] p-6 sm:p-7 shadow-soft border border-slate-100 dark:border-slate-800 flex flex-col justify-between">
                 <div class="flex items-center justify-between mb-4">
-                    <h3 class="font-display font-extrabold text-xl text-slate-900 dark:text-white">Statistika</h3>
-                    <button onclick="showToast('Podaci osvježeni sa SUM Moodle sustava')" class="p-2 rounded-xl text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800 transition">
+                    <h2 class="font-display font-extrabold text-xl text-slate-900 dark:text-white">Statistika</h2>
+                    <button type="button" data-toast="Statistika je osvježena sa SUM Moodle sustava." class="p-2 rounded-xl text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800 transition" aria-label="Osvježi statistiku">
                         <i data-lucide="more-horizontal" class="w-5 h-5"></i>
                     </button>
                 </div>
 
                 <div class="flex flex-col items-center my-2">
                     <div class="relative w-36 h-36 flex items-center justify-center">
-                        <svg class="w-full h-full" viewBox="0 0 120 120">
-                            <circle cx="60" cy="60" r="50" fill="none" class="stroke-studia-100 dark:stroke-slate-800" stroke-width="10" />
-                            <circle id="semester-progress-circle" class="progress-ring-circle" cx="60" cy="60" r="50" fill="none" stroke="#7c3aed" stroke-width="10" stroke-linecap="round" stroke-dasharray="314.16" stroke-dashoffset="78.54" />
+                        <svg class="w-full h-full" viewBox="0 0 120 120" role="img" aria-label="Napredak semestra">
+                            <circle cx="60" cy="60" r="50" fill="none" class="stroke-studia-100 dark:stroke-slate-800" stroke-width="10"/>
+                            <circle id="semester-progress-circle" class="progress-ring-circle" cx="60" cy="60" r="50" fill="none" stroke="#7c3aed" stroke-width="10" stroke-linecap="round" stroke-dasharray="314.16" stroke-dashoffset="78.54"/>
                         </svg>
                         <div class="absolute inset-0 flex flex-col items-center justify-center">
                             <span id="semester-percent-text" class="font-display font-extrabold text-3xl text-slate-900 dark:text-white">75%</span>
@@ -442,251 +381,207 @@
                     </div>
                 </div>
 
-                <div class="space-y-3 mt-4 pt-4 border-t border-slate-100 dark:border-slate-800 text-xs">
+                <div class="space-y-4 mt-4 pt-4 border-t border-slate-100 dark:border-slate-800 text-xs">
                     <div>
                         <div class="flex justify-between font-semibold mb-1">
                             <span class="text-slate-600 dark:text-slate-300">Pohađanje predavanja</span>
                             <span class="text-emerald-600 dark:text-emerald-400 font-bold">88%</span>
                         </div>
                         <div class="w-full bg-slate-100 dark:bg-slate-800 h-2 rounded-full overflow-hidden">
-                            <div class="bg-emerald-500 h-full rounded-full w-[88%]"></div>
+                            <div class="bg-emerald-500 h-full rounded-full" style="width: 88%"></div>
                         </div>
                     </div>
                     <div>
                         <div class="flex justify-between font-semibold mb-1">
-                            <span class="text-slate-600 dark:text-slate-300">Predane zadaće na Moodle</span>
-                            <span class="text-studia-600 dark:text-studia-400 font-bold">6/8</span>
+                            <span class="text-slate-600 dark:text-slate-300">Predane zadaće</span>
+                            <span id="stats-submitted-label" class="text-studia-600 dark:text-studia-400 font-bold">3/8</span>
                         </div>
                         <div class="w-full bg-slate-100 dark:bg-slate-800 h-2 rounded-full overflow-hidden">
-                            <div class="bg-studia-600 h-full rounded-full w-[75%]"></div>
+                            <div id="stats-submitted-bar" class="bg-studia-600 h-full rounded-full transition-all" style="width: 37.5%"></div>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Right Column: Professors & Timetable preview (7 cols) -->
             <div class="lg:col-span-7 bg-white dark:bg-slate-900 rounded-[28px] p-6 sm:p-7 shadow-soft border border-slate-100 dark:border-slate-800 flex flex-col justify-between">
                 <div>
                     <div class="flex items-center justify-between mb-4">
-                        <h3 class="font-display font-extrabold text-xl text-slate-900 dark:text-white">Profesori i konzultacije</h3>
-                        <button onclick="switchTab('timetable')" class="text-xs font-bold text-studia-600 dark:text-studia-400 hover:underline">Raspored →</button>
+                        <h2 class="font-display font-extrabold text-xl text-slate-900 dark:text-white">Profesori i konzultacije</h2>
+                        <button type="button" data-tab="timetable" class="text-xs font-bold text-studia-600 dark:text-studia-400 hover:underline">Raspored →</button>
                     </div>
                     <div id="professors-list" class="space-y-3"></div>
                 </div>
 
-                <div class="mt-6 pt-5 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between text-xs">
+                <div class="mt-6 pt-5 border-t border-slate-100 dark:border-slate-800 flex flex-wrap items-center justify-between gap-2 text-xs">
                     <div class="flex items-center gap-2 text-slate-500 dark:text-slate-400">
                         <i data-lucide="info" class="w-4 h-4 text-studia-500 shrink-0"></i>
                         <span>Sveučilište u Mostaru · EduID prijava aktivna</span>
                     </div>
-                    <button onclick="switchTab('profile')" class="font-bold text-studia-600 dark:text-studia-400 hover:underline">
-                        Osobni karton studenta →
-                    </button>
+                    <button type="button" data-tab="profile" class="font-bold text-studia-600 dark:text-studia-400 hover:underline">Osobni karton studenta →</button>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- ========================================================= -->
-    <!-- TAB 2: DETALJNI PROFIL STUDENTA (Prema priloženoj slici)   -->
-    <!-- ========================================================= -->
+    <!-- ======================= PROFIL STUDENTA ======================= -->
     <section id="view-profile" class="space-y-8 hidden">
         <div class="flex flex-wrap items-center justify-between gap-4">
             <div>
                 <h2 class="font-display font-extrabold text-2xl sm:text-3xl text-slate-900 dark:text-white">Profil studenta</h2>
                 <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1">Službeni podaci o studiju, indeksu, pohađanju i upisanim semestrima sa SUM sustava</p>
             </div>
-            <div class="flex items-center gap-2.5">
-                <button onclick="showToast('Službena potvrda o studiranju generirana (PDF)')" class="px-4 py-2.5 rounded-xl bg-studia-600 hover:bg-studia-700 text-white font-bold text-xs shadow-md transition flex items-center gap-2">
-                    <i data-lucide="file-text" class="w-4 h-4"></i>
-                    <span>Preuzmi potvrdu (PDF)</span>
-                </button>
-            </div>
+            <button type="button" id="download-certificate" class="px-4 py-2.5 rounded-xl bg-studia-600 hover:bg-studia-700 text-white font-bold text-xs shadow-md transition flex items-center gap-2">
+                <i data-lucide="file-text" class="w-4 h-4"></i>
+                <span>Preuzmi potvrdu</span>
+            </button>
         </div>
 
-        <!-- Top Grid: Student ID Card & Department Stats (Slika layout) -->
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-            <!-- Student ID Card (8 cols) -->
             <div class="lg:col-span-8 bg-white dark:bg-slate-900 p-6 sm:p-8 rounded-[28px] shadow-soft border border-slate-100 dark:border-slate-800 flex flex-col md:flex-row items-center md:items-start gap-6">
                 <div class="shrink-0 flex flex-col items-center">
                     <div class="w-36 h-44 rounded-2xl overflow-hidden shadow-md border-2 border-studia-500 bg-slate-100 dark:bg-slate-800">
-                        <svg viewBox="0 0 140 170" class="w-full h-full object-cover">
-                            <rect width="140" height="170" fill="#e2e8f0"/>
-                            <circle cx="70" cy="65" r="32" fill="#4f46e5"/>
-                            <path d="M15 155c0-28 22-42 55-42s55 14 55 42" fill="#4f46e5"/>
-                        </svg>
+                        <img src="assets/img/student-ivan.svg" alt="Ivan Kovač" class="w-full h-full object-cover">
                     </div>
                     <h3 id="profile-card-name" class="font-display font-extrabold text-lg text-slate-900 dark:text-white mt-3 text-center">Ivan Kovač</h3>
+                    <span class="text-[11px] font-semibold text-emerald-600 dark:text-emerald-400 mt-0.5">● Redoviti student</span>
                 </div>
 
-                <div class="flex-1 w-full grid grid-cols-1 sm:grid-cols-2 gap-y-3 gap-x-4 text-xs">
-                    <div><span class="text-slate-400 font-medium">Id No:</span> <strong id="profile-id-no" class="text-slate-800 dark:text-slate-100 font-bold ml-1">689302</strong></div>
-                    <div><span class="text-slate-400 font-medium">Father's Name:</span> <strong class="text-slate-800 dark:text-slate-100 font-bold ml-1">Marko Kovač</strong></div>
-                    <div><span class="text-slate-400 font-medium">Mobile Number:</span> <strong class="text-slate-800 dark:text-slate-100 font-bold ml-1">063 123 456</strong></div>
-                    <div><span class="text-slate-400 font-medium">Mother's Name:</span> <strong class="text-slate-800 dark:text-slate-100 font-bold ml-1">Ana Kovač</strong></div>
-                    <div><span class="text-slate-400 font-medium">Department:</span> <strong id="profile-dept-name" class="text-slate-800 dark:text-slate-100 font-bold ml-1">Računarstvo i IT</strong></div>
-                    <div><span class="text-slate-400 font-medium">Guardian Mobile:</span> <strong class="text-slate-800 dark:text-slate-100 font-bold ml-1">063 987 654</strong></div>
-                    <div><span class="text-slate-400 font-medium">Credit:</span> <strong class="text-slate-800 dark:text-slate-100 font-bold ml-1">120 ECTS</strong></div>
-                    <div><span class="text-slate-400 font-medium">Address:</span> <strong class="text-slate-800 dark:text-slate-100 font-bold ml-1">Trg hrvatskih velikana 1, Mostar</strong></div>
-                    <div><span class="text-slate-400 font-medium">Session:</span> <strong class="text-slate-800 dark:text-slate-100 font-bold ml-1">25-26</strong></div>
-                    <div><span class="text-slate-400 font-medium">Academic Standing:</span> <strong class="text-emerald-600 dark:text-emerald-400 font-bold ml-1">Odličan (5.0)</strong></div>
+                <div class="flex-1 w-full grid grid-cols-1 sm:grid-cols-2 gap-y-4 gap-x-5 text-xs">
+                    <div><span class="block text-slate-400 font-semibold mb-0.5">Broj indeksa</span><strong id="profile-id-no" class="text-slate-800 dark:text-slate-100 font-bold">689302</strong></div>
+                    <div><span class="block text-slate-400 font-semibold mb-0.5">E-mail</span><strong class="text-slate-800 dark:text-slate-100 font-bold break-all">ivan.kovac@fpmoz.sum.ba</strong></div>
+                    <div><span class="block text-slate-400 font-semibold mb-0.5">Smjer</span><strong id="profile-dept-name" class="text-slate-800 dark:text-slate-100 font-bold">FPMOZ · Računarstvo</strong></div>
+                    <div><span class="block text-slate-400 font-semibold mb-0.5">Godina i semestar</span><strong id="profile-year-semester" class="text-slate-800 dark:text-slate-100 font-bold">2. godina · Zimski 2026/27</strong></div>
+                    <div><span class="block text-slate-400 font-semibold mb-0.5">Mobitel</span><strong class="text-slate-800 dark:text-slate-100 font-bold">063 123 456</strong></div>
+                    <div><span class="block text-slate-400 font-semibold mb-0.5">Datum rođenja</span><strong class="text-slate-800 dark:text-slate-100 font-bold">15. 03. 2005.</strong></div>
+                    <div><span class="block text-slate-400 font-semibold mb-0.5">Adresa</span><strong class="text-slate-800 dark:text-slate-100 font-bold">Trg hrvatskih velikana 1, Mostar</strong></div>
+                    <div><span class="block text-slate-400 font-semibold mb-0.5">Upisan od</span><strong class="text-slate-800 dark:text-slate-100 font-bold">2025./2026.</strong></div>
+                    <div><span class="block text-slate-400 font-semibold mb-0.5">Ostvareni ECTS</span><strong class="text-slate-800 dark:text-slate-100 font-bold">60 ECTS</strong></div>
+                    <div><span class="block text-slate-400 font-semibold mb-0.5">Prosjek ocjena</span><strong class="text-emerald-600 dark:text-emerald-400 font-bold">4.7 · Odličan</strong></div>
                 </div>
             </div>
 
-            <!-- Department Stats (4 cols) -->
             <div class="lg:col-span-4 bg-white dark:bg-slate-900 p-6 sm:p-7 rounded-[28px] shadow-soft border border-slate-100 dark:border-slate-800 flex flex-col justify-between">
                 <div>
-                    <div class="flex items-center justify-between mb-4">
-                        <span class="text-xs font-bold text-slate-700 dark:text-slate-200">Department: Computer Science</span>
-                        <div class="flex items-center gap-1.5">
-                            <span class="px-2.5 py-0.5 rounded-full bg-studia-600 text-white text-[10px] font-bold">Active</span>
-                            <span class="px-2.5 py-0.5 rounded-full bg-indigo-900 text-white text-[10px] font-bold">Regular</span>
-                        </div>
+                    <div class="flex items-center justify-between gap-2 mb-4">
+                        <span class="text-xs font-bold text-slate-700 dark:text-slate-200">Odjel: <span id="profile-department-name">Računarstvo</span></span>
+                        <span class="flex items-center gap-1.5">
+                            <span class="px-2.5 py-0.5 rounded-full bg-studia-600 text-white text-[10px] font-bold">Aktivan</span>
+                            <span class="px-2.5 py-0.5 rounded-full bg-indigo-900 text-white text-[10px] font-bold">Redovni</span>
+                        </span>
                     </div>
 
-                    <div class="space-y-3.5 text-xs">
+                    <div class="space-y-4 text-xs">
                         <div>
-                            <div class="flex justify-between mb-1"><span class="text-slate-500">Complete Classes</span><span class="font-bold">70%</span></div>
-                            <div class="w-full bg-slate-100 dark:bg-slate-800 h-2 rounded-full overflow-hidden"><div class="bg-studia-600 h-full w-[70%] rounded-full"></div></div>
+                            <div class="flex justify-between mb-1"><span class="text-slate-500 dark:text-slate-400">Održana predavanja</span><span class="font-bold">70%</span></div>
+                            <div class="w-full bg-slate-100 dark:bg-slate-800 h-2 rounded-full overflow-hidden"><div class="bg-studia-600 h-full rounded-full" style="width: 70%"></div></div>
                         </div>
                         <div>
-                            <div class="flex justify-between mb-1"><span class="text-slate-500">Total Present</span><span class="font-bold">83%</span></div>
-                            <div class="w-full bg-slate-100 dark:bg-slate-800 h-2 rounded-full overflow-hidden"><div class="bg-emerald-500 h-full w-[83%] rounded-full"></div></div>
+                            <div class="flex justify-between mb-1"><span class="text-slate-500 dark:text-slate-400">Prisustvo predavanjima</span><span class="font-bold">88%</span></div>
+                            <div class="w-full bg-slate-100 dark:bg-slate-800 h-2 rounded-full overflow-hidden"><div class="bg-emerald-500 h-full rounded-full" style="width: 88%"></div></div>
                         </div>
                         <div>
-                            <div class="flex justify-between mb-1"><span class="text-rose-500 font-semibold">Total Absent</span><span class="font-bold">17%</span></div>
-                            <div class="w-full bg-slate-100 dark:bg-slate-800 h-2 rounded-full overflow-hidden"><div class="bg-rose-400 h-full w-[17%] rounded-full"></div></div>
+                            <div class="flex justify-between mb-1"><span class="text-slate-500 dark:text-slate-400">Prisustvo vježbama</span><span class="font-bold">83%</span></div>
+                            <div class="w-full bg-slate-100 dark:bg-slate-800 h-2 rounded-full overflow-hidden"><div class="bg-sky-500 h-full rounded-full" style="width: 83%"></div></div>
                         </div>
                         <div>
-                            <div class="flex justify-between mb-1"><span class="text-slate-500">Assignment</span><span class="font-bold">60%</span></div>
-                            <div class="w-full bg-slate-100 dark:bg-slate-800 h-2 rounded-full overflow-hidden"><div class="bg-studia-500 h-full w-[60%] rounded-full"></div></div>
+                            <div class="flex justify-between mb-1"><span class="text-rose-500 font-semibold">Izostanci</span><span class="font-bold">8%</span></div>
+                            <div class="w-full bg-slate-100 dark:bg-slate-800 h-2 rounded-full overflow-hidden"><div class="bg-rose-400 h-full rounded-full" style="width: 8%"></div></div>
+                        </div>
+                        <div>
+                            <div class="flex justify-between mb-1"><span class="text-slate-500 dark:text-slate-400">Predane zadaće</span><span id="profile-submitted-label" class="font-bold">3/8</span></div>
+                            <div class="w-full bg-slate-100 dark:bg-slate-800 h-2 rounded-full overflow-hidden"><div id="profile-submitted-bar" class="bg-studia-500 h-full rounded-full" style="width: 37.5%"></div></div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Enroll Semester & Calendar / Notice Grid -->
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-            <!-- Left 8 cols: Enroll Semester & Complete Semesters -->
             <div class="lg:col-span-8 space-y-6">
                 <div class="bg-white dark:bg-slate-900 p-6 sm:p-7 rounded-[28px] shadow-soft border border-slate-100 dark:border-slate-800">
                     <div class="flex items-center justify-between mb-4">
-                        <h3 class="font-display font-extrabold text-lg text-slate-900 dark:text-white">Enroll Semester</h3>
-                        <button onclick="showToast('Svi upisani semestri su ažurni')" class="text-xs text-studia-600 dark:text-studia-400 font-semibold hover:underline">See all</button>
+                        <h3 class="font-display font-extrabold text-lg text-slate-900 dark:text-white">Upisani semestri</h3>
+                        <button type="button" data-toast="Svi upisani semestri su ažurni." class="text-xs text-studia-600 dark:text-studia-400 font-semibold hover:underline">Detalji</button>
                     </div>
                     <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                        <div class="p-4 rounded-2xl border border-slate-200 dark:border-slate-800 text-center space-y-2">
+                            <h4 class="font-bold text-sm text-slate-900 dark:text-white">1. semestar</h4>
+                            <p class="text-[11px] text-slate-500">5 kolegija · 30 ECTS</p>
+                            <span class="inline-flex items-center gap-1 text-[11px] text-emerald-600 dark:text-emerald-400 font-semibold"><i data-lucide="check-circle-2" class="w-3 h-3"></i> Završen</span>
+                        </div>
+                        <div class="p-4 rounded-2xl border border-slate-200 dark:border-slate-800 text-center space-y-2">
+                            <h4 class="font-bold text-sm text-slate-900 dark:text-white">2. semestar</h4>
+                            <p class="text-[11px] text-slate-500">5 kolegija · 30 ECTS</p>
+                            <span class="inline-flex items-center gap-1 text-[11px] text-emerald-600 dark:text-emerald-400 font-semibold"><i data-lucide="check-circle-2" class="w-3 h-3"></i> Završen</span>
+                        </div>
                         <div class="p-4 rounded-2xl border-2 border-studia-600 bg-studia-50/70 dark:bg-studia-950/40 text-center space-y-2">
-                            <h4 class="font-bold text-sm text-slate-900 dark:text-white">1st semester</h4>
-                            <p class="text-[11px] text-slate-500">13 theory + 21 practical = 34</p>
-                            <p class="text-xs font-bold text-studia-700 dark:text-studia-300">Credit : 20</p>
-                            <span class="inline-flex items-center gap-1 text-[11px] text-slate-500"><i data-lucide="clock" class="w-3 h-3"></i> 6 Months</span>
-                        </div>
-                        <div class="p-4 rounded-2xl border border-slate-200 dark:border-slate-800 text-center space-y-2">
-                            <h4 class="font-bold text-sm text-slate-900 dark:text-white">2nd semester</h4>
-                            <p class="text-[11px] text-slate-500">14 theory + 21 practical = 35</p>
-                            <p class="text-xs font-bold text-slate-800 dark:text-slate-100">Credit : 21</p>
-                            <span class="inline-flex items-center gap-1 text-[11px] text-slate-500"><i data-lucide="clock" class="w-3 h-3"></i> 6 Months</span>
-                        </div>
-                        <div class="p-4 rounded-2xl border border-slate-200 dark:border-slate-800 text-center space-y-2">
-                            <h4 class="font-bold text-sm text-slate-900 dark:text-white">3rd semester</h4>
-                            <p class="text-[11px] text-slate-500">14 theory + 21 practical = 35</p>
-                            <p class="text-xs font-bold text-slate-800 dark:text-slate-100">Credit : 21</p>
-                            <span class="inline-flex items-center gap-1 text-[11px] text-slate-500"><i data-lucide="clock" class="w-3 h-3"></i> 6 Months</span>
+                            <h4 class="font-bold text-sm text-slate-900 dark:text-white">3. semestar</h4>
+                            <p class="text-[11px] text-slate-500">5 kolegija · 27 ECTS</p>
+                            <span class="inline-flex items-center gap-1 text-[11px] text-studia-700 dark:text-studia-300 font-semibold"><i data-lucide="clock" class="w-3 h-3"></i> U tijeku</span>
                         </div>
                     </div>
                 </div>
 
-                <!-- Complete Semester List -->
                 <div class="bg-white dark:bg-slate-900 p-6 sm:p-7 rounded-[28px] shadow-soft border border-slate-100 dark:border-slate-800 space-y-3">
                     <div class="flex items-center justify-between mb-2">
-                        <h3 class="font-display font-extrabold text-lg text-slate-900 dark:text-white">Complete Semester</h3>
-                        <button class="text-xs text-studia-600 dark:text-studia-400 font-semibold hover:underline">See all</button>
-                    </div>
-                    <div class="flex items-center justify-between p-3.5 rounded-2xl border border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/40 text-xs font-semibold">
-                        <span class="text-slate-800 dark:text-slate-200">4. semestar (Tekući)</span> <span class="px-3 py-1 rounded-full bg-amber-100 dark:bg-amber-950 text-amber-700 dark:text-amber-400 text-[10px] font-bold">Ongoing</span>
+                        <h3 class="font-display font-extrabold text-lg text-slate-900 dark:text-white">Završeni semestri</h3>
+                        <button type="button" data-toast="Prikazani su svi završeni semestri." class="text-xs text-studia-600 dark:text-studia-400 font-semibold hover:underline">Svi</button>
                     </div>
                     <div class="flex items-center justify-between p-3.5 rounded-2xl border border-slate-100 dark:border-slate-800 text-xs font-semibold">
-                        <span class="text-slate-800 dark:text-slate-200">3. semestar</span> <span class="px-3 py-1 rounded-full bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-400 text-[10px] font-bold">Complete</span>
+                        <span class="text-slate-800 dark:text-slate-200">2. semestar</span>
+                        <span class="px-3 py-1 rounded-full bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-400 text-[10px] font-bold">Završen</span>
                     </div>
                     <div class="flex items-center justify-between p-3.5 rounded-2xl border border-slate-100 dark:border-slate-800 text-xs font-semibold">
-                        <span class="text-slate-800 dark:text-slate-200">2. semestar</span> <span class="px-3 py-1 rounded-full bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-400 text-[10px] font-bold">Complete</span>
-                    </div>
-                    <div class="flex items-center justify-between p-3.5 rounded-2xl border border-slate-100 dark:border-slate-800 text-xs font-semibold">
-                        <span class="text-slate-800 dark:text-slate-200">1. semestar</span> <span class="px-3 py-1 rounded-full bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-400 text-[10px] font-bold">Complete</span>
+                        <span class="text-slate-800 dark:text-slate-200">1. semestar</span>
+                        <span class="px-3 py-1 rounded-full bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-400 text-[10px] font-bold">Završen</span>
                     </div>
                 </div>
             </div>
 
-            <!-- Right 4 cols: November 2026 Calendar & Notice Board -->
             <div class="lg:col-span-4 space-y-6">
                 <div class="bg-white dark:bg-slate-900 p-6 sm:p-7 rounded-[28px] shadow-soft border border-slate-100 dark:border-slate-800 space-y-4">
-                    <h3 class="font-display font-extrabold text-base text-slate-900 dark:text-white text-center">November 2026</h3>
-                    <div class="grid grid-cols-5 text-center gap-1.5 text-xs">
-                        <div class="p-2 rounded-xl border border-slate-200 dark:border-slate-800"><span class="block text-[10px] text-slate-400">27</span><span class="font-bold">27</span></div>
-                        <div class="p-2 rounded-xl border border-slate-200 dark:border-slate-800"><span class="block text-[10px] text-slate-400">28</span><span class="font-bold">28</span></div>
-                        <div class="p-2 rounded-xl border border-slate-200 dark:border-slate-800"><span class="block text-[10px] text-slate-400">29</span><span class="font-bold">29</span></div>
-                        <div class="p-2 rounded-xl border-2 border-studia-600 bg-studia-600 text-white rounded-xl shadow-xs"><span class="block text-[10px] text-studia-100">30</span><span class="font-bold">30</span></div>
-                        <div class="p-2 rounded-xl border border-slate-200 dark:border-slate-800"><span class="block text-[10px] text-slate-400">01</span><span class="font-bold">01</span></div>
+                    <h3 id="mini-calendar-title" class="font-display font-extrabold text-base text-slate-900 dark:text-white text-center">Studeni 2026.</h3>
+                    <div class="grid grid-cols-7 gap-1 text-center text-[10px] font-bold uppercase tracking-wide text-slate-400" aria-hidden="true">
+                        <span>Pon</span><span>Uto</span><span>Sri</span><span>Čet</span><span>Pet</span><span>Sub</span><span>Ned</span>
                     </div>
-                    <div class="pt-3 border-t border-slate-100 dark:border-slate-800 text-xs space-y-2.5">
-                        <div class="flex justify-between font-bold text-slate-400 uppercase text-[10px]">
-                            <span>Subject</span><span>Teacher</span><span>Time</span>
-                        </div>
-                        <div class="flex justify-between items-center">
-                            <span class="font-semibold text-slate-800 dark:text-slate-200">Web aplikacije</span>
-                            <span class="text-slate-500">M. Ivanković</span>
-                            <span class="font-mono text-studia-600 dark:text-studia-400">08:00</span>
-                        </div>
-                        <div class="flex justify-between items-center">
-                            <span class="font-semibold text-slate-800 dark:text-slate-200">Baze podataka 2</span>
-                            <span class="text-slate-500">S. Delić</span>
-                            <span class="font-mono text-studia-600 dark:text-studia-400">09:00</span>
-                        </div>
+                    <div id="mini-calendar-grid" class="grid grid-cols-7 gap-1 text-center text-xs" aria-label="Mini kalendar"></div>
+                    <div class="flex items-center justify-center gap-3 pt-2 border-t border-slate-100 dark:border-slate-800 text-[10px] font-semibold text-slate-400">
+                        <span class="inline-flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-studia-600"></span> Rok za zadaću</span>
+                        <span class="inline-flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> Danas</span>
                     </div>
                 </div>
 
-                <!-- Notice Board -->
                 <div class="bg-white dark:bg-slate-900 p-6 sm:p-7 rounded-[28px] shadow-soft border border-slate-100 dark:border-slate-800 space-y-3">
                     <div class="flex justify-between items-center">
-                        <h3 class="font-display font-extrabold text-base text-slate-900 dark:text-white">Notice Board</h3>
-                        <span class="text-[10px] font-semibold text-slate-400">18 Nov 2026</span>
+                        <h3 class="font-display font-extrabold text-base text-slate-900 dark:text-white">Oglasna ploča</h3>
+                        <span class="text-[10px] font-semibold text-slate-400" id="notice-date">18. 11. 2026.</span>
                     </div>
-                    <div class="p-3.5 rounded-2xl border border-slate-100 dark:border-slate-800 hover:border-studia-300 transition cursor-pointer flex justify-between items-center text-xs">
-                        <span class="font-medium text-slate-800 dark:text-slate-200">Obavijest o održavanju kolokvija iz Web aplikacija na Moodle sustavu</span>
-                        <i data-lucide="chevron-right" class="w-4 h-4 text-slate-400"></i>
-                    </div>
+                    <div id="notice-list" class="space-y-2.5"></div>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- ========================================================= -->
-    <!-- TAB 3: INBOX & OBAVIJESTI                                 -->
-    <!-- ========================================================= -->
+    <!-- ======================= INBOX ======================= -->
     <section id="view-inbox" class="space-y-6 hidden">
         <div class="flex flex-wrap items-center justify-between gap-4">
             <div>
-                <h2 class="font-display font-extrabold text-2xl sm:text-3xl text-slate-900 dark:text-white">Inbox & Obavijesti</h2>
+                <h2 class="font-display font-extrabold text-2xl sm:text-3xl text-slate-900 dark:text-white">Inbox i obavijesti</h2>
                 <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1">Poruke profesora i obavijesti sa SUM Moodle foruma</p>
             </div>
-            <button onclick="markAllInboxRead()" class="px-4 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 text-xs font-bold transition">
-                Označi sve pročitanim
-            </button>
+            <button type="button" id="mark-all-read" class="px-4 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 text-xs font-bold transition">Označi sve pročitanim</button>
         </div>
         <div id="inbox-messages-list" class="space-y-3"></div>
     </section>
 
-    <!-- ========================================================= -->
-    <!-- TAB 4: KOLEGIJI & UNIHUB SKRIPTE                          -->
-    <!-- ========================================================= -->
+    <!-- ======================= KOLEGIJI ======================= -->
     <section id="view-courses" class="space-y-8 hidden">
         <div class="flex flex-wrap items-center justify-between gap-4">
             <div>
-                <h2 class="font-display font-extrabold text-2xl sm:text-3xl text-slate-900 dark:text-white">Moji Kolegiji i UniHub baza</h2>
+                <h2 class="font-display font-extrabold text-2xl sm:text-3xl text-slate-900 dark:text-white">Moji kolegiji i UniHub baza</h2>
                 <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1">Svi kolegiji sinkronizirani s Moodle sustava + skripte studenata i timovi</p>
             </div>
-            <button onclick="openUploadModal()" class="px-4 py-2.5 rounded-xl hero-gradient text-white font-bold text-xs shadow-md transition flex items-center gap-2">
+            <button type="button" data-open-upload class="px-4 py-2.5 rounded-xl hero-gradient text-white font-bold text-xs shadow-md transition flex items-center gap-2">
                 <i data-lucide="upload-cloud" class="w-4 h-4"></i>
                 <span>Objavi novu skriptu</span>
             </button>
@@ -694,72 +589,71 @@
 
         <div id="full-courses-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
 
-        <!-- UniHub Community Section -->
-        <div class="bg-white dark:bg-slate-900 rounded-[28px] p-6 sm:p-8 shadow-soft border border-slate-100 dark:border-slate-800 mt-10">
+        <div id="unihub-section" class="bg-white dark:bg-slate-900 rounded-[28px] p-6 sm:p-8 shadow-soft border border-slate-100 dark:border-slate-800 mt-10">
             <div class="flex flex-wrap items-center justify-between gap-4 mb-6">
                 <div>
-                    <span class="text-xs font-extrabold uppercase tracking-wider text-studia-600 dark:text-studia-400">UniHub Zajednica</span>
+                    <span class="text-xs font-extrabold uppercase tracking-wider text-studia-600 dark:text-studia-400">UniHub zajednica</span>
                     <h3 class="font-display font-extrabold text-xl text-slate-900 dark:text-white mt-1">Najpopularnije skripte i materijali kolega</h3>
                 </div>
-                <div class="flex items-center gap-2">
-                    <input type="text" id="script-search-input" oninput="filterScripts(this.value)" placeholder="Pretraži skripte..." class="px-3.5 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs font-medium focus:outline-none focus:border-studia-500">
+                <div>
+                    <label for="script-search-input" class="sr-only">Pretraži skripte</label>
+                    <input id="script-search-input" type="search" placeholder="Pretraži skripte..." class="w-full sm:w-64 px-3.5 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs font-medium focus:outline-none focus:border-studia-500">
                 </div>
             </div>
 
             <div id="unihub-scripts-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5"></div>
+            <p id="scripts-empty" class="hidden text-sm text-slate-500 dark:text-slate-400 py-10 text-center">Nema skripti koje odgovaraju pretrazi.</p>
         </div>
     </section>
 
-    <!-- ========================================================= -->
-    <!-- TAB 5: ZADAĆE & KOLOKVIJI                                 -->
-    <!-- ========================================================= -->
+    <!-- ======================= ZADAĆE ======================= -->
     <section id="view-assignments" class="space-y-6 hidden">
         <div>
             <h2 class="font-display font-extrabold text-2xl sm:text-3xl text-slate-900 dark:text-white">Predaja zadaća i rokovi</h2>
             <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1">Popis svih aktivnih i predanih Moodle zadaća za tekući semestar</p>
         </div>
 
+        <div id="assignment-filter-pills" class="flex flex-wrap items-center gap-2" role="group" aria-label="Filtriraj zadaće"></div>
         <div id="full-assignments-list" class="space-y-4"></div>
+        <p id="assignments-empty" class="hidden text-sm text-slate-500 dark:text-slate-400 py-10 text-center">Nema zadaća za odabrani filtar.</p>
     </section>
 
-    <!-- ========================================================= -->
-    <!-- TAB 6: RASPORED PREDAVANJA                                -->
-    <!-- ========================================================= -->
+    <!-- ======================= RASPORED ======================= -->
     <section id="view-timetable" class="space-y-6 hidden">
         <div class="flex flex-wrap items-center justify-between gap-4">
             <div>
                 <h2 class="font-display font-extrabold text-2xl sm:text-3xl text-slate-900 dark:text-white">Tjedni raspored predavanja i vježbi</h2>
                 <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1">Raspored po danima za FPMOZ · Računarstvo</p>
             </div>
-            <button onclick="exportCalendarICS()" class="px-4 py-2.5 rounded-xl bg-studia-50 dark:bg-studia-950 text-studia-700 dark:text-studia-300 border border-studia-200 dark:border-studia-800 font-bold text-xs transition flex items-center gap-2">
+            <button type="button" data-export-ics class="px-4 py-2.5 rounded-xl bg-studia-50 dark:bg-studia-950 text-studia-700 dark:text-studia-300 border border-studia-200 dark:border-studia-800 font-bold text-xs transition flex items-center gap-2">
                 <i data-lucide="calendar-plus" class="w-4 h-4"></i>
                 <span>Preuzmi cijeli raspored (.ics)</span>
             </button>
         </div>
-
         <div id="timetable-days-container" class="space-y-6"></div>
     </section>
 
-    <!-- ========================================================= -->
-    <!-- TAB 7: GOOGLE MEET SOBE                                   -->
-    <!-- ========================================================= -->
+    <!-- ======================= MEET ======================= -->
     <section id="view-meet" class="space-y-6 hidden">
         <div>
-            <h2 class="font-display font-extrabold text-2xl sm:text-3xl text-slate-900 dark:text-white">Online Google Meet Sobe</h2>
+            <h2 class="font-display font-extrabold text-2xl sm:text-3xl text-slate-900 dark:text-white">Online Google Meet sobe</h2>
             <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1">Aktivne video poveznice za predavanja uživo i konzultacije profesora</p>
         </div>
-
         <div id="meet-rooms-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
     </section>
 
+    <footer class="mt-12 pt-6 border-t border-slate-200/70 dark:border-slate-800 flex flex-wrap items-center justify-between gap-3 text-[11px] text-slate-400">
+        <p>Studia · Demo studentski portal · Sveučilište u Mostaru</p>
+        <p>Demo podaci · <span>18. 11. 2026.</span></p>
+    </footer>
 </main>
 
 <!-- ========================================================= -->
-<!-- MODALS (AI Assistant, Moodle API Config, Assignment Modal) -->
+<!-- MODALI                                                    -->
 <!-- ========================================================= -->
 
-<!-- AI Assistant Modal -->
-<div id="ai-modal" class="fixed inset-0 z-50 bg-slate-950/60 backdrop-blur-xs flex items-center justify-center p-4 hidden">
+<!-- AI asistent -->
+<div id="ai-modal" class="modal fixed inset-0 z-50 bg-slate-950/60 backdrop-blur-xs flex items-center justify-center p-4 hidden" role="dialog" aria-modal="true" aria-labelledby="ai-title">
     <div class="bg-white dark:bg-slate-900 w-full max-w-xl rounded-[32px] shadow-2xl border border-slate-100 dark:border-slate-800 overflow-hidden flex flex-col max-h-[85vh]">
         <div class="p-6 hero-gradient text-white flex items-center justify-between shrink-0">
             <div class="flex items-center gap-3">
@@ -767,662 +661,259 @@
                     <i data-lucide="sparkles" class="w-5 h-5 text-white"></i>
                 </div>
                 <div>
-                    <h3 class="font-display font-extrabold text-lg">Studia AI Asistent za ispite</h3>
-                    <p class="text-xs text-studia-100">Trenutačni sažeci skripti i generiranje probnih kolokvija</p>
+                    <h3 id="ai-title" class="font-display font-extrabold text-lg">Studia AI asistent za ispite</h3>
+                    <p class="text-xs text-studia-100">Sažeci skripti i generiranje probnih kolokvija</p>
                 </div>
             </div>
-            <button onclick="closeAiModal()" class="p-2 rounded-xl bg-white/10 hover:bg-white/20 transition">
+            <button type="button" data-close-modal class="p-2 rounded-xl bg-white/10 hover:bg-white/20 transition" aria-label="Zatvori AI asistenta">
                 <i data-lucide="x" class="w-5 h-5"></i>
             </button>
         </div>
 
-        <div id="ai-chat-body" class="p-6 overflow-y-auto space-y-4 flex-1 text-sm">
+        <div id="ai-chat-body" class="p-6 overflow-y-auto space-y-4 flex-1 text-sm bg-slate-50/50 dark:bg-slate-950/20">
             <div class="flex items-start gap-3">
                 <div class="w-8 h-8 rounded-xl hero-gradient text-white flex items-center justify-center font-bold shrink-0">AI</div>
                 <div class="bg-slate-100 dark:bg-slate-800 p-4 rounded-2xl rounded-tl-sm text-slate-800 dark:text-slate-100 space-y-2">
                     <p>Pozdrav! Ja sam tvoj AI asistent za učenje povezan s Moodle gradivom kolegija. Kako ti mogu pomoći danas?</p>
                     <div class="flex flex-wrap gap-2 pt-1">
-                        <button onclick="sendAiPrompt('Generiraj 5 probnih pitanja iz Web aplikacija (Laravel)')" class="px-3 py-1.5 rounded-xl bg-white dark:bg-slate-700 text-studia-600 dark:text-studia-300 text-xs font-semibold shadow-xs hover:bg-studia-50 transition">
-                            📝 Probni kviz iz Laravel-a
-                        </button>
-                        <button onclick="sendAiPrompt('Sažmi ključne pojmove za ispit iz Baza podataka 2')" class="px-3 py-1.5 rounded-xl bg-white dark:bg-slate-700 text-studia-600 dark:text-studia-300 text-xs font-semibold shadow-xs hover:bg-studia-50 transition">
-                            📚 Sažetak Baza podataka
-                        </button>
+                        <button type="button" data-ai-prompt="Generiraj 5 probnih pitanja iz Web aplikacija (Laravel)" class="px-3 py-1.5 rounded-xl bg-white dark:bg-slate-700 text-studia-600 dark:text-studia-300 text-xs font-semibold shadow-xs hover:bg-studia-50 dark:hover:bg-slate-600 transition">Probni kviz iz Laravela</button>
+                        <button type="button" data-ai-prompt="Sažmi ključne pojmove za ispit iz Baza podataka 2" class="px-3 py-1.5 rounded-xl bg-white dark:bg-slate-700 text-studia-600 dark:text-studia-300 text-xs font-semibold shadow-xs hover:bg-studia-50 dark:hover:bg-slate-600 transition">Sažetak Baza podataka</button>
+                        <button type="button" data-ai-prompt="Napravi plan učenja za ispitni tjedan" class="px-3 py-1.5 rounded-xl bg-white dark:bg-slate-700 text-studia-600 dark:text-studia-300 text-xs font-semibold shadow-xs hover:bg-studia-50 dark:hover:bg-slate-600 transition">Plan učenja</button>
                     </div>
                 </div>
             </div>
         </div>
 
-        <div class="p-4 border-t border-slate-100 dark:border-slate-800 shrink-0 bg-slate-50 dark:bg-slate-900/50 flex gap-2">
-            <input type="text" id="ai-input" onkeydown="if(event.key==='Enter') sendAiMessage()" placeholder="Pitaj nešto o skriptama ili ispitima..." class="flex-1 px-4 py-3 rounded-2xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm focus:outline-none focus:border-studia-500">
-            <button onclick="sendAiMessage()" class="px-5 py-3 rounded-2xl hero-gradient text-white font-bold text-sm shadow-md transition">
-                Pošalji
+        <form id="ai-form" class="p-4 border-t border-slate-100 dark:border-slate-800 flex gap-2 shrink-0">
+            <label for="ai-input" class="sr-only">Pitanje za AI asistenta</label>
+            <input id="ai-input" type="text" autocomplete="off" placeholder="Pitaj nešto o skriptama ili ispitima..." class="flex-1 min-w-0 px-4 py-3 rounded-2xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm focus:outline-none focus:border-studia-500">
+            <button type="submit" class="px-5 py-3 rounded-2xl hero-gradient text-white font-bold text-sm shadow-md transition" aria-label="Pošalji pitanje">
+                <i data-lucide="send" class="w-4 h-4"></i>
             </button>
-        </div>
+        </form>
+        <p class="px-4 pb-3 text-[10px] text-slate-400 shrink-0">Demo asistent — odgovori su pripremljeni unaprijed i ne zamjenjuju službene materijale kolegija.</p>
     </div>
 </div>
 
-<!-- Moodle API Connection Modal -->
-<div id="moodle-modal" class="fixed inset-0 z-50 bg-slate-950/60 backdrop-blur-xs flex items-center justify-center p-4 hidden">
-    <div class="bg-white dark:bg-slate-900 w-full max-w-md rounded-[32px] shadow-2xl border border-slate-100 dark:border-slate-800 p-6 space-y-5">
+<!-- Moodle API -->
+<div id="moodle-modal" class="modal fixed inset-0 z-50 bg-slate-950/60 backdrop-blur-xs flex items-center justify-center p-4 hidden" role="dialog" aria-modal="true" aria-labelledby="moodle-title">
+    <form id="moodle-form" class="bg-white dark:bg-slate-900 w-full max-w-md rounded-[32px] shadow-2xl border border-slate-100 dark:border-slate-800 p-6 space-y-5">
         <div class="flex items-center justify-between">
             <div class="flex items-center gap-3">
                 <div class="w-10 h-10 rounded-2xl bg-emerald-100 dark:bg-emerald-950 text-emerald-600 dark:text-emerald-400 flex items-center justify-center">
                     <i data-lucide="plug-zap" class="w-5 h-5"></i>
                 </div>
                 <div>
-                    <h3 class="font-display font-extrabold text-lg text-slate-900 dark:text-white">SUM Moodle API</h3>
+                    <h3 id="moodle-title" class="font-display font-extrabold text-lg text-slate-900 dark:text-white">SUM Moodle API</h3>
                     <p class="text-xs text-slate-500">eucenje.sum.ba sinkronizacija</p>
                 </div>
             </div>
-            <button onclick="closeMoodleModal()" class="p-2 rounded-xl text-slate-400 hover:text-slate-700 dark:hover:text-slate-200">
+            <button type="button" data-close-modal class="p-2 rounded-xl text-slate-400 hover:text-slate-700 dark:hover:text-slate-200" aria-label="Zatvori postavke">
                 <i data-lucide="x" class="w-5 h-5"></i>
             </button>
         </div>
 
         <div class="space-y-4 text-xs">
             <div>
-                <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Moodle WebService URL</label>
-                <input type="text" id="moodle-url-input" value="https://eucenje.sum.ba/moodle/" class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-100 font-mono text-xs">
+                <label for="moodle-url-input" class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Moodle WebService URL</label>
+                <input id="moodle-url-input" type="url" value="https://eucenje.sum.ba/moodle/" class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-100 font-mono text-xs">
             </div>
             <div>
-                <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">EduID Korisničko ime</label>
-                <input type="text" id="moodle-user-input" value="ivan.kovac@fpmoz.sum.ba" class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-100">
+                <label for="moodle-user-input" class="block font-bold text-slate-700 dark:text-slate-300 mb-1">EduID korisničko ime</label>
+                <input id="moodle-user-input" type="text" value="ivan.kovac@fpmoz.sum.ba" class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-100">
             </div>
             <div>
-                <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Moodle Token / API Key</label>
-                <input type="password" id="moodle-token-input" value="sum_moodle_live_token_98241x" class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-100 font-mono">
+                <label for="moodle-token-input" class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Moodle token / API ključ</label>
+                <input id="moodle-token-input" type="password" value="sum_moodle_demo_token" autocomplete="off" class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-100 font-mono">
+                <p class="text-[10px] text-slate-400 mt-1">Demo vrijednost. U stvarnoj aplikaciji token se ne pohranjuje u pregledniku.</p>
             </div>
         </div>
 
         <div class="pt-3 border-t border-slate-100 dark:border-slate-800 flex gap-3">
-            <button onclick="closeMoodleModal()" class="flex-1 py-3 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold text-xs transition">
-                Odustani
-            </button>
-            <button onclick="saveMoodleConfig()" class="flex-1 py-3 rounded-xl hero-gradient text-white font-bold text-xs shadow-md transition">
-                Poveži i sinkroniziraj
-            </button>
+            <button type="button" data-close-modal class="flex-1 py-3 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold text-xs transition">Odustani</button>
+            <button type="submit" class="flex-1 py-3 rounded-xl hero-gradient text-white font-bold text-xs shadow-md transition">Poveži i sinkroniziraj</button>
         </div>
-    </div>
+    </form>
 </div>
 
-<!-- Assignment Upload / Submit Modal -->
-<div id="assignment-modal" class="fixed inset-0 z-50 bg-slate-950/60 backdrop-blur-xs flex items-center justify-center p-4 hidden">
-    <div class="bg-white dark:bg-slate-900 w-full max-w-lg rounded-[32px] shadow-2xl border border-slate-100 dark:border-slate-800 p-6 sm:p-8 space-y-6">
-        <div class="flex items-center justify-between">
+<!-- Predaja zadaće -->
+<div id="assignment-modal" class="modal fixed inset-0 z-50 bg-slate-950/60 backdrop-blur-xs flex items-center justify-center p-4 hidden" role="dialog" aria-modal="true" aria-labelledby="assignment-title">
+    <form id="assignment-form" class="bg-white dark:bg-slate-900 w-full max-w-lg rounded-[32px] shadow-2xl border border-slate-100 dark:border-slate-800 p-6 sm:p-8 space-y-5 max-h-[90vh] overflow-y-auto">
+        <div class="flex items-start justify-between gap-4">
             <div>
                 <span id="modal-asg-course" class="text-xs font-bold text-studia-600 dark:text-studia-400 uppercase tracking-wider">Web aplikacije</span>
-                <h3 id="modal-asg-title" class="font-display font-extrabold text-xl text-slate-900 dark:text-white mt-0.5">Predaja DZ1 - Laravel CRUD sustav</h3>
+                <h3 id="assignment-title" class="font-display font-extrabold text-xl text-slate-900 dark:text-white mt-0.5">Predaja zadaće</h3>
             </div>
-            <button onclick="closeAssignmentModal()" class="p-2 rounded-xl text-slate-400 hover:text-slate-700 dark:hover:text-slate-200">
+            <button type="button" data-close-modal class="p-2 rounded-xl text-slate-400 hover:text-slate-700 dark:hover:text-slate-200" aria-label="Zatvori predaju">
                 <i data-lucide="x" class="w-5 h-5"></i>
             </button>
         </div>
 
-        <div class="space-y-4 text-xs">
-            <div class="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/60 space-y-1">
-                <div class="flex justify-between text-slate-500">
-                    <span>Rok za predaju:</span>
-                    <strong id="modal-asg-deadline" class="text-amber-600 dark:text-amber-400">Sutra, 23:59</strong>
-                </div>
-                <div class="flex justify-between text-slate-500">
-                    <span>Maksimalno bodova:</span>
-                    <strong class="text-slate-800 dark:text-slate-100">10.0 bodova</strong>
-                </div>
-            </div>
+        <p id="modal-asg-description" class="text-xs leading-relaxed text-slate-500 dark:text-slate-400"></p>
 
-            <div>
-                <label class="block font-bold text-slate-700 dark:text-slate-300 mb-2">Priloži datoteku (ZIP, PDF, RAR)</label>
-                <div class="border-2 border-dashed border-slate-200 dark:border-slate-700 rounded-2xl p-6 text-center hover:border-studia-400 transition cursor-pointer">
-                    <i data-lucide="upload-cloud" class="w-8 h-8 mx-auto text-studia-500 mb-2"></i>
-                    <span class="text-xs font-semibold text-slate-700 dark:text-slate-200 block">Povuci datoteku ovdje ili klikni za odabir</span>
-                    <span class="text-[10px] text-slate-400 mt-1 block">Podržani formati: .zip, .rar, .pdf (maks. 50MB)</span>
-                </div>
+        <div class="grid grid-cols-2 gap-3 text-xs">
+            <div class="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800/60">
+                <span class="block text-slate-400 mb-0.5">Rok za predaju</span>
+                <strong id="modal-asg-deadline" class="text-amber-600 dark:text-amber-400">19. 11. 2026. · 23:59</strong>
             </div>
-
-            <div>
-                <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Komentar za profesora / asistenta</label>
-                <textarea rows="3" placeholder="Unesi napomenu uz predaju..." class="w-full p-3 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs text-slate-800 dark:text-slate-100 focus:outline-none focus:border-studia-500"></textarea>
+            <div class="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800/60">
+                <span class="block text-slate-400 mb-0.5">Maksimalno bodova</span>
+                <strong id="modal-asg-points" class="text-slate-800 dark:text-slate-100">10 bodova</strong>
             </div>
         </div>
 
-        <div class="flex gap-3 pt-2">
-            <button onclick="closeAssignmentModal()" class="flex-1 py-3 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold text-xs transition">
-                Odustani
+        <div>
+            <label for="assignment-file" class="block font-bold text-slate-700 dark:text-slate-300 mb-2 text-xs">Priloži datoteku</label>
+            <input id="assignment-file" type="file" accept=".zip,.rar,.pdf,.doc,.docx" class="sr-only">
+            <label for="assignment-file" id="assignment-dropzone" class="border-2 border-dashed border-slate-200 dark:border-slate-700 rounded-2xl p-6 text-center hover:border-studia-400 focus-within:border-studia-400 transition cursor-pointer block">
+                <i data-lucide="upload-cloud" class="w-8 h-8 mx-auto text-studia-500 mb-2"></i>
+                <span class="text-xs font-semibold text-slate-700 dark:text-slate-200 block">Povuci datoteku ovdje ili klikni za odabir</span>
+                <span id="assignment-file-name" class="text-[10px] text-slate-400 mt-1 block">Podržani formati: .zip, .rar, .pdf, .doc, .docx (maks. 50 MB)</span>
+            </label>
+        </div>
+
+        <div>
+            <label for="assignment-comment" class="block font-bold text-slate-700 dark:text-slate-300 mb-1 text-xs">Komentar za profesora</label>
+            <textarea id="assignment-comment" rows="3" placeholder="Unesi napomenu uz predaju..." class="w-full p-3 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs text-slate-800 dark:text-slate-100 focus:outline-none focus:border-studia-500"></textarea>
+        </div>
+
+        <div class="flex gap-3 pt-1">
+            <button type="button" data-close-modal class="flex-1 py-3 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold text-xs transition">Odustani</button>
+            <button type="submit" class="flex-1 py-3 rounded-xl hero-gradient text-white font-bold text-xs shadow-md transition">Predaj rad</button>
+        </div>
+    </form>
+</div>
+
+<!-- Objava skripte -->
+<div id="upload-modal" class="modal fixed inset-0 z-50 bg-slate-950/60 backdrop-blur-xs flex items-center justify-center p-4 hidden" role="dialog" aria-modal="true" aria-labelledby="upload-title">
+    <form id="upload-form" class="bg-white dark:bg-slate-900 w-full max-w-lg rounded-[32px] shadow-2xl border border-slate-100 dark:border-slate-800 p-6 sm:p-8 space-y-4 max-h-[90vh] overflow-y-auto">
+        <div class="flex items-start justify-between gap-4">
+            <div>
+                <span class="text-xs font-bold text-studia-600 dark:text-studia-400 uppercase tracking-wider">UniHub zajednica</span>
+                <h3 id="upload-title" class="font-display font-extrabold text-xl text-slate-900 dark:text-white mt-0.5">Objavi skriptu</h3>
+            </div>
+            <button type="button" data-close-modal class="p-2 rounded-xl text-slate-400 hover:text-slate-700 dark:hover:text-slate-200" aria-label="Zatvori objavu">
+                <i data-lucide="x" class="w-5 h-5"></i>
             </button>
-            <button onclick="submitAssignmentAction()" class="flex-1 py-3 rounded-xl hero-gradient text-white font-bold text-xs shadow-md transition">
-                Predaj rad na Moodle
+        </div>
+
+        <div>
+            <label for="upload-title-input" class="block font-bold text-slate-700 dark:text-slate-300 mb-1 text-xs">Naslov skripte</label>
+            <input id="upload-title-input" type="text" required maxlength="120" placeholder="npr. Sažetak predavanja za drugi kolokvij" class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs text-slate-800 dark:text-slate-100 focus:outline-none focus:border-studia-500">
+        </div>
+
+        <div>
+            <label for="upload-course" class="block font-bold text-slate-700 dark:text-slate-300 mb-1 text-xs">Kolegij</label>
+            <select id="upload-course" required class="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs font-semibold text-slate-800 dark:text-slate-100 focus:outline-none focus:border-studia-500"></select>
+        </div>
+
+        <div>
+            <label for="upload-description" class="block font-bold text-slate-700 dark:text-slate-300 mb-1 text-xs">Kratki opis</label>
+            <textarea id="upload-description" rows="3" maxlength="240" placeholder="Što skripta pokriva i kome je namijenjena?" class="w-full p-3 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs text-slate-800 dark:text-slate-100 focus:outline-none focus:border-studia-500"></textarea>
+        </div>
+
+        <div>
+            <label for="upload-file" class="block font-bold text-slate-700 dark:text-slate-300 mb-2 text-xs">Datoteka</label>
+            <input id="upload-file" type="file" accept=".pdf,.doc,.docx,.txt" required class="sr-only">
+            <label for="upload-file" id="upload-dropzone" class="border-2 border-dashed border-slate-200 dark:border-slate-700 rounded-2xl p-5 text-center hover:border-studia-400 transition cursor-pointer block">
+                <i data-lucide="upload-cloud" class="w-7 h-7 mx-auto text-studia-500 mb-1.5"></i>
+                <span class="text-xs font-semibold text-slate-700 dark:text-slate-200 block">Odaberi datoteku</span>
+                <span id="upload-file-name" class="text-[10px] text-slate-400 mt-1 block">.pdf, .doc, .docx ili .txt (maks. 20 MB)</span>
+            </label>
+        </div>
+
+        <div class="flex gap-3 pt-1">
+            <button type="button" data-close-modal class="flex-1 py-3 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold text-xs transition">Odustani</button>
+            <button type="submit" class="flex-1 py-3 rounded-xl hero-gradient text-white font-bold text-xs shadow-md transition">Objavi skriptu</button>
+        </div>
+    </form>
+</div>
+
+<!-- Poruka -->
+<div id="message-modal" class="modal fixed inset-0 z-50 bg-slate-950/60 backdrop-blur-xs flex items-center justify-center p-4 hidden" role="dialog" aria-modal="true" aria-labelledby="message-subject">
+    <div class="bg-white dark:bg-slate-900 w-full max-w-lg rounded-[32px] shadow-2xl border border-slate-100 dark:border-slate-800 p-6 sm:p-8 space-y-5 max-h-[90vh] overflow-y-auto">
+        <div class="flex items-start justify-between gap-4">
+            <div class="flex items-center gap-3">
+                <div id="message-avatar" class="w-11 h-11 rounded-2xl hero-gradient text-white flex items-center justify-center font-bold shrink-0">M</div>
+                <div>
+                    <div id="message-sender" class="text-sm font-bold text-slate-900 dark:text-white">Prof. dr. sc. Marin Ivanković</div>
+                    <div id="message-role" class="text-[11px] text-slate-500">Profesor · Web aplikacije</div>
+                </div>
+            </div>
+            <button type="button" data-close-modal class="p-2 rounded-xl text-slate-400 hover:text-slate-700 dark:hover:text-slate-200" aria-label="Zatvori poruku">
+                <i data-lucide="x" class="w-5 h-5"></i>
             </button>
+        </div>
+
+        <div>
+            <h3 id="message-subject" class="font-display font-extrabold text-lg text-slate-900 dark:text-white">Obavijest o kolokviju</h3>
+            <p id="message-time" class="text-[11px] text-slate-400 mt-0.5">Jučer · 14:20</p>
+        </div>
+
+        <p id="message-body" class="text-sm leading-relaxed text-slate-600 dark:text-slate-300 whitespace-pre-line"></p>
+
+        <div class="flex flex-wrap gap-3 pt-2 border-t border-slate-100 dark:border-slate-800">
+            <button type="button" id="message-reply" class="flex-1 py-3 rounded-xl hero-gradient text-white font-bold text-xs shadow-md transition">Odgovori</button>
+            <button type="button" id="message-toggle-read" class="px-4 py-3 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold text-xs transition">Označi nepročitanim</button>
         </div>
     </div>
 </div>
 
-<!-- ========================================================= -->
-<!-- JAVASCRIPT LOGIC & APP DATA                               -->
-<!-- ========================================================= -->
-<script>
-    // Mock Database & App State
-    const appState = {
-        currentTab: 'dashboard',
-        smjer: 'fpmoz-rac',
-        godina: '2',
-        semestar: 'zimski',
-        studentName: 'Ivan Kovač',
-        studentEmail: 'ivan.kovac@fpmoz.sum.ba',
-        darkMode: false
-    };
+<!-- Detalji kolegija -->
+<div id="course-modal" class="modal fixed inset-0 z-50 bg-slate-950/60 backdrop-blur-xs flex items-center justify-center p-4 hidden" role="dialog" aria-modal="true" aria-labelledby="course-modal-title">
+    <div class="bg-white dark:bg-slate-900 w-full max-w-xl rounded-[32px] shadow-2xl border border-slate-100 dark:border-slate-800 overflow-hidden max-h-[90vh] flex flex-col">
+        <div id="course-modal-header" class="h-28 bg-gradient-to-br from-purple-600 to-indigo-600 p-6 flex flex-col justify-between text-white relative overflow-hidden shrink-0">
+            <div class="absolute right-0 bottom-0 translate-x-4 translate-y-4 w-32 h-32 bg-white/10 rounded-full blur-xl" aria-hidden="true"></div>
+            <div class="flex items-center justify-between gap-3 relative z-10">
+                <span id="course-modal-code" class="text-[11px] font-bold uppercase tracking-wider bg-white/25 px-2.5 py-1 rounded-lg backdrop-blur-xs">SUM-RWA</span>
+                <button type="button" data-close-modal class="p-2 rounded-xl bg-white/15 hover:bg-white/25 transition" aria-label="Zatvori detalje kolegija">
+                    <i data-lucide="x" class="w-4 h-4"></i>
+                </button>
+            </div>
+            <h3 id="course-modal-title" class="font-display font-bold text-2xl leading-tight relative z-10">Web aplikacije</h3>
+        </div>
 
-    const coursesData = [
-        { id: 1, name: 'Web aplikacije', code: 'SUM-RWA', sem: '3. semestar', progress: 75, lectures: '6/8 predavanja', color: 'from-purple-600 to-indigo-600', prof: 'Prof. dr. sc. Marin Ivanković', deadline: 'Sutra, 23:59', meetUrl: 'https://meet.google.com/abc-defg-hij' },
-        { id: 2, name: 'Baze podataka 2', code: 'SUM-BP2', sem: '3. semestar', progress: 62, lectures: '5/8 predavanja', color: 'from-blue-600 to-cyan-600', prof: 'Doc. dr. sc. Sanja Delić', deadline: 'Za 3 dana', meetUrl: 'https://meet.google.com/xyz-uvwx-rst' },
-        { id: 3, name: 'UI/UX Dizajn', code: 'SUM-UIX', sem: '3. semestar', progress: 88, lectures: '7/8 predavanja', color: 'from-pink-600 to-rose-600', prof: 'Izv. prof. dr. sc. Mario Zovko', deadline: 'Za 5 dana', meetUrl: 'https://meet.google.com/qwe-rtyu-iop' },
-        { id: 4, name: 'Umjetna inteligencija', code: 'SUM-AI', sem: '4. semestar', progress: 40, lectures: '3/8 predavanja', color: 'from-emerald-600 to-teal-600', prof: 'Prof. dr. sc. Tomislav Volarić', deadline: 'Za 10 dana', meetUrl: 'https://meet.google.com/asd-fghj-klz' },
-        { id: 5, name: 'Projektni rad', code: 'SUM-PRJ', sem: '4. semestar', progress: 90, lectures: '8/8 predavanja', color: 'from-amber-600 to-orange-600', prof: 'Asist. Ana Marić', deadline: 'Za 14 dana', meetUrl: 'https://meet.google.com/zxc-vbnm-qwe' }
-    ];
+        <div class="p-6 space-y-5 overflow-y-auto text-sm">
+            <p id="course-modal-professor" class="text-xs text-slate-500 dark:text-slate-400 font-medium">Prof. dr. sc. Marin Ivanković</p>
+            <p id="course-modal-description" class="text-xs leading-relaxed text-slate-600 dark:text-slate-300"></p>
 
-    const assignmentsData = [
-        { id: 1, course: 'Web aplikacije', type: 'DZ', title: 'Laravel CRUD sustav i UniHub integracija', deadline: 'Sutra, 23:59', status: 'U tijeku', color: 'bg-amber-100 text-amber-700 dark:bg-amber-950 dark:text-amber-400' },
-        { id: 2, course: 'Baze podataka 2', type: 'Lab', title: 'SQL Optimizacija upita i indeksiranje', deadline: '20. Studeni 2026', status: 'Predano', color: 'bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-400' },
-        { id: 3, course: 'UI/UX Dizajn', type: 'Projekt', title: 'Figma prototip i korisničko testiranje', deadline: '25. Studeni 2026', status: 'Nije započeto', color: 'bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300' }
-    ];
-
-    const scriptsData = [
-        { id: 1, course: 'Web aplikacije', title: 'Laravel kompletan sažetak ispita i rješenja rokova (2026)', author: 'Marko M.', downloads: 42, rating: '⭐⭐⭐⭐⭐' },
-        { id: 2, course: 'Baze podataka 2', title: 'SQL joinovi, transakcije istored procedure - Skripta', author: 'Ivana P.', downloads: 29, rating: '⭐⭐⭐⭐☆' },
-        { id: 3, course: 'UI/UX Dizajn', title: 'Pravila dizajna sučelja i heuristička evaluacija', author: 'Luka B.', downloads: 35, rating: '⭐⭐⭐⭐⭐' }
-    ];
-
-    const inboxData = [
-        { id: 1, sender: 'Prof. dr. sc. Marin Ivanković', subject: 'Obavijest o kolokviju iz Web aplikacija', time: 'Jučer, 14:20', preview: 'Poštovani studenti, kolokvij iz Web aplikacija održat će se u računalnoj sali 3 s početkom u 09:00 sati...', unread: true },
-        { id: 2, sender: 'SUM Moodle Sustav', subject: 'Podsjetnik: Rok za predaju DZ1 istječe sutra', time: 'Prije 3 sata', preview: 'Podsjećamo vas da je rok za predaju zadaće iz kolegija Web aplikacije sutra u 23:59...', unread: true },
-        { id: 3, sender: 'Doc. dr. sc. Sanja Delić', subject: 'Objavljeni rezultati laboratorijskih vježbi', time: '14. Studeni', preview: 'Rezultati Lab 3 vježbi nalaze se na Moodle stranici kolegija Baze podataka 2...', unread: false }
-    ];
-
-    const timetableData = [
-        { day: 'Ponedjeljak', time: '09:00 - 11:30', course: 'Web aplikacije', type: 'Predavanja', room: 'Sala 3 (FPMOZ)' },
-        { day: 'Utorak', time: '11:00 - 13:15', course: 'Baze podataka 2', type: 'Laboratorij', room: 'Lab 1' },
-        { day: 'Srijeda', time: '14:00 - 16:30', course: 'UI/UX Dizajn', type: 'Auditorne', room: 'Sala 2' },
-        { day: 'Četvrtak', time: '10:00 - 12:15', course: 'Umjetna inteligencija', type: 'Predavanja', room: 'Sala 4' },
-        { day: 'Petak', time: '12:00 - 15:00', course: 'Projektni rad', type: 'Konzultacije', room: 'Računalna sala' }
-    ];
-
-    // Initialization on DOM Load
-    document.addEventListener('DOMContentLoaded', () => {
-        lucide.createIcons();
-        renderDashboard();
-        renderCourses();
-        renderAssignments();
-        renderInbox();
-        renderTimetable();
-        renderMeetRooms();
-        renderQuickTasks();
-
-        // Keyboard Shortcut Ctrl + K for Search
-        document.addEventListener('keydown', (e) => {
-            if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
-                e.preventDefault();
-                document.getElementById('global-search-input').focus();
-            }
-        });
-    });
-
-    // Tab Switching Engine
-    function switchTab(tabId) {
-        appState.currentTab = tabId;
-        const sections = ['dashboard', 'profile', 'inbox', 'courses', 'assignments', 'timetable', 'meet'];
-        sections.forEach(s => {
-            const el = document.getElementById('view-' + s);
-            if (el) el.classList.add('hidden');
-        });
-
-        const target = document.getElementById('view-' + tabId);
-        if (target) target.classList.remove('hidden');
-
-        // Update Sidebar active buttons
-        document.querySelectorAll('.nav-btn').forEach(btn => {
-            btn.classList.remove('bg-studia-600', 'text-white', 'shadow-sm');
-            btn.classList.add('text-slate-600', 'dark:text-slate-300', 'hover:bg-slate-50', 'dark:hover:bg-slate-800');
-        });
-        const activeBtn = document.querySelector(`[data-tab="${tabId}"]`);
-        if (activeBtn) {
-            activeBtn.classList.remove('text-slate-600', 'dark:text-slate-300', 'hover:bg-slate-50', 'dark:hover:bg-slate-800');
-            activeBtn.classList.add('bg-studia-600', 'text-white', 'shadow-sm');
-        }
-
-        toggleSidebar(false);
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-        lucide.createIcons();
-    }
-
-    // Sidebar Drawer Controls
-    function toggleSidebar(open) {
-        const sidebar = document.getElementById('left-sidebar');
-        const backdrop = document.getElementById('sidebar-backdrop');
-        if (open) {
-            sidebar.classList.remove('-translate-x-full');
-            backdrop.classList.remove('hidden');
-        } else {
-            sidebar.classList.add('-translate-x-full');
-            backdrop.classList.add('hidden');
-        }
-    }
-
-    // Profile Dropdown Toggle
-    function toggleProfileDropdown() {
-        const dropdown = document.getElementById('profile-dropdown');
-        dropdown.classList.toggle('hidden');
-    }
-
-    // Dark Mode Toggle
-    function toggleDarkMode() {
-        appState.darkMode = !appState.darkMode;
-        const html = document.documentElement;
-        const moonIcon = document.getElementById('theme-icon-moon');
-        const sunIcon = document.getElementById('theme-icon-sun');
-
-        if (appState.darkMode) {
-            html.classList.add('dark');
-            moonIcon.classList.add('hidden');
-            sunIcon.classList.remove('hidden');
-        } else {
-            html.classList.remove('dark');
-            moonIcon.classList.remove('hidden');
-            sunIcon.classList.add('hidden');
-        }
-        showToast(appState.darkMode ? 'Uključen tamni način rada' : 'Uključen svijetli način rada');
-    }
-
-    // Academic Context Switcher Handler
-    function handleAcademicChange() {
-        const smjerSelect = document.getElementById('select-smjer').value;
-        const godinaSelect = document.getElementById('select-godina').value;
-        const semestarSelect = document.getElementById('select-semestar').value;
-
-        appState.smjer = smjerSelect;
-        appState.godina = godinaSelect;
-        appState.semestar = semestarSelect;
-
-        let smjerText = 'FPMOZ · Računarstvo';
-        if (smjerSelect === 'fsre-rac') smjerText = 'FSRE · Računarstvo';
-        if (smjerSelect === 'ff-inf') smjerText = 'Filozofski · Informacijske znanosti';
-
-        document.getElementById('sidebar-faculty-label').innerText = smjerText;
-        document.getElementById('sidebar-year-label').innerText = godinaSelect + '. godina · ' + (semestarSelect === 'zimski' ? 'Zimski semestar' : 'Ljetni semestar');
-        document.getElementById('header-student-meta').innerText = godinaSelect + '. god · ' + (smjerSelect.includes('inf') ? 'Info. znanosti' : 'Računarstvo');
-
-        document.getElementById('hero-semester-pill').innerText = (semestarSelect === 'zimski' ? 'ZIMSKI SEMESTAR 2026/27' : 'LJETNI SEMESTAR 2026/27');
-        document.getElementById('hero-year-pill').innerText = godinaSelect + '. GODINA';
-
-        document.getElementById('profile-dept-name').innerText = smjerText;
-
-        toggleProfileDropdown();
-        showToast('Uspješno promijenjen kontekst studija');
-    }
-
-    // Render Dashboard Data
-    function renderDashboard() {
-        // Professors list
-        const profContainer = document.getElementById('professors-list');
-        if (profContainer) {
-            profContainer.innerHTML = coursesData.map(c => `
-                    <div class="flex items-center justify-between p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800/60 hover:bg-slate-100 dark:hover:bg-slate-800 transition">
-                        <div class="flex items-center gap-3">
-                            <div class="w-10 h-10 rounded-xl hero-gradient text-white flex items-center justify-center font-bold text-xs">
-                                ${c.prof.split(' ').pop().charAt(0)}
-                            </div>
-                            <div>
-                                <h4 class="font-bold text-xs text-slate-900 dark:text-white">${c.prof}</h4>
-                                <p class="text-[11px] text-slate-500">${c.name}</p>
-                            </div>
-                        </div>
-                        <button onclick="showToast('Poruka poslana profesoru ${c.prof}')" class="p-2 rounded-xl bg-white dark:bg-slate-700 text-stud-600 hover:bg-studia-50 shadow-xs transition">
-                            <i data-lucide="mail" class="w-4 h-4 text-studia-600 dark:text-studia-400"></i>
-                        </button>
-                    </div>
-                `).join('');
-        }
-
-        // Upcoming table
-        const tableBody = document.getElementById('upcoming-table-body');
-        if (tableBody) {
-            tableBody.innerHTML = assignmentsData.map(a => `
-                    <tr class="hover:bg-slate-50/50 dark:hover:bg-slate-800/40 transition">
-                        <td class="py-3.5 pr-4 font-bold text-slate-900 dark:text-white">${a.course}</td>
-                        <td class="py-3.5 px-4"><span class="px-2.5 py-1 rounded-lg text-xs font-bold bg-studia-50 dark:bg-studia-950 text-studia-700 dark:text-studia-300">${a.type}</span></td>
-                        <td class="py-3.5 px-4 font-medium text-slate-700 dark:text-slate-300">${a.title}</td>
-                        <td class="py-3.5 px-4 font-semibold text-amber-600 dark:text-amber-400">${a.deadline}</td>
-                        <td class="py-3.5 pl-4 text-right"><span class="px-3 py-1 rounded-full text-xs font-bold ${a.color}">${a.status}</span></td>
-                    </tr>
-                `).join('');
-        }
-    }
-
-    // Render Quick Tasks Grid
-    function renderQuickTasks() {
-        const grid = document.getElementById('quick-tasks-grid');
-        if (!grid) return;
-        grid.innerHTML = assignmentsData.map((a, idx) => `
-                <div onclick="openAssignmentModal(${idx + 1})" class="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-soft hover:border-studia-400 cursor-pointer transition group">
-                    <div class="flex justify-between items-start mb-3">
-                        <span class="text-xs font-bold text-studia-600 dark:text-studia-400 bg-studia-50 dark:bg-studia-950 px-2.5 py-1 rounded-lg">${a.course}</span>
-                        <span class="w-2.5 h-2.5 rounded-full ${idx === 0 ? 'bg-amber-500' : idx === 1 ? 'bg-emerald-500' : 'bg-slate-300'}"></span>
-                    </div>
-                    <h4 class="font-bold text-sm text-slate-900 dark:text-white mb-1 group-hover:text-studia-600 transition">${a.title}</h4>
-                    <p class="text-xs text-slate-400">Rok: ${a.deadline}</p>
+            <div>
+                <div class="flex justify-between text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1.5">
+                    <span>Napredak gradiva</span>
+                    <span id="course-modal-progress-text" class="text-studia-600 dark:text-studia-400">75%</span>
                 </div>
-            `).join('');
-    }
-
-    // Render Courses
-    function renderCourses() {
-        const carousel = document.getElementById('courses-carousel');
-        const fullGrid = document.getElementById('full-courses-grid');
-
-        const html = coursesData.map(c => `
-                <div onclick="openCourseDetail('${c.name}')" class="bg-white dark:bg-slate-900 rounded-[28px] border border-slate-100 dark:border-slate-800 overflow-hidden shadow-soft hover:shadow-card cursor-pointer transition group flex flex-col justify-between">
-                    <div class="h-32 bg-gradient-to-br ${c.color} p-6 flex flex-col justify-between text-white relative overflow-hidden">
-                        <div class="absolute right-0 bottom-0 translate-x-4 translate-y-4 w-28 h-28 bg-white/10 rounded-full blur-xl"></div>
-                        <span class="text-[11px] font-bold uppercase tracking-wider bg-white/25 px-2.5 py-1 rounded-lg w-max backdrop-blur-xs">${c.code}</span>
-                        <h3 class="font-display font-bold text-lg leading-snug">${c.name}</h3>
-                    </div>
-                    <div class="p-6 space-y-4 flex-1 flex flex-col justify-between">
-                        <div>
-                            <p class="text-xs text-slate-500 dark:text-slate-400 font-medium">${c.prof}</p>
-                            <div class="flex justify-between text-xs font-semibold text-slate-600 dark:text-slate-300 mt-4 mb-1.5">
-                                <span>Napredak gradiva</span>
-                                <span class="text-studia-600 dark:text-studia-400">${c.progress}%</span>
-                            </div>
-                            <div class="w-full bg-slate-100 dark:bg-slate-800 h-2 rounded-full overflow-hidden">
-                                <div class="bg-studia-600 h-full rounded-full transition-all duration-500" style="width: ${c.progress}%"></div>
-                            </div>
-                        </div>
-                        <div class="pt-3 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between text-xs font-bold text-studia-600 dark:text-studia-400">
-                            <span>Otvori Moodle kolegij</span>
-                            <i data-lucide="arrow-right" class="w-4 h-4 group-hover:translate-x-1 transition-transform"></i>
-                        </div>
-                    </div>
+                <div class="w-full bg-slate-100 dark:bg-slate-800 h-2 rounded-full overflow-hidden">
+                    <div id="course-modal-progress" class="bg-studia-600 h-full rounded-full transition-all duration-500" style="width: 75%"></div>
                 </div>
-            `).join('');
+            </div>
 
-        if (carousel) carousel.innerHTML = html;
-        if (fullGrid) fullGrid.innerHTML = html;
-
-        // Render UniHub Scripts
-        const scriptsGrid = document.getElementById('unihub-scripts-grid');
-        if (scriptsGrid) {
-            scriptsGrid.innerHTML = scriptsData.map(s => `
-                    <div class="p-5 rounded-2xl border border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/40 space-y-3 flex flex-col justify-between">
-                        <div>
-                            <div class="flex justify-between items-start mb-2">
-                                <span class="text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-studia-100 dark:bg-studia-900 text-studia-700 dark:text-studia-300">${s.course}</span>
-                                <span class="text-xs">${s.rating}</span>
-                            </div>
-                            <h4 class="font-bold text-sm text-slate-900 dark:text-white leading-snug">${s.title}</h4>
-                            <p class="text-xs text-slate-400 mt-1">Autor: ${s.author} · ${s.downloads} preuzimanja</p>
-                        </div>
-                        <button onclick="showToast('Preuzimanje skripte u tijeku (.pdf)...')" class="w-full py-2.5 rounded-xl bg-white dark:bg-slate-700 hover:bg-studia-50 text-studia-700 dark:text-studia-300 font-bold text-xs shadow-xs transition flex items-center justify-center gap-1.5">
-                            <i data-lucide="download" class="w-3.5 h-3.5"></i>
-                            <span>Preuzmi PDF skriptu</span>
-                        </button>
-                    </div>
-                `).join('');
-        }
-    }
-
-    // Render Assignments Full List
-    function renderAssignments() {
-        const container = document.getElementById('full-assignments-list');
-        if (!container) return;
-        container.innerHTML = assignmentsData.map((a, idx) => `
-                <div class="bg-white dark:bg-slate-900 p-6 rounded-[28px] shadow-soft border border-slate-100 dark:border-slate-800 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-                    <div class="space-y-1">
-                        <div class="flex items-center gap-2">
-                            <span class="text-xs font-bold text-studia-600 dark:text-studia-400 bg-studia-50 dark:bg-studia-950 px-2.5 py-0.5 rounded-md">${a.course}</span>
-                            <span class="text-xs text-slate-400 font-medium">Rok: ${a.deadline}</span>
-                        </div>
-                        <h4 class="font-display font-bold text-lg text-slate-900 dark:text-white">${a.title}</h4>
-                    </div>
-                    <div class="flex items-center gap-3 w-full sm:w-auto justify-end">
-                        <span class="px-3.5 py-1.5 rounded-full text-xs font-bold ${a.color}">${a.status}</span>
-                        <button onclick="openAssignmentModal(${idx + 1})" class="px-5 py-2.5 rounded-xl hero-gradient text-white font-bold text-xs shadow-md transition">
-                            Predaj rad
-                        </button>
-                    </div>
+            <div class="grid grid-cols-3 gap-3 text-xs">
+                <div class="p-3 rounded-2xl bg-slate-50 dark:bg-slate-800/60">
+                    <span class="block text-slate-400 mb-0.5">Semestar</span>
+                    <strong id="course-modal-semester" class="text-slate-800 dark:text-slate-100">3. semestar</strong>
                 </div>
-            `).join('');
-    }
-
-    // Render Inbox Messages
-    function renderInbox() {
-        const container = document.getElementById('inbox-messages-list');
-        if (!container) return;
-        container.innerHTML = inboxData.map(m => `
-                <div class="bg-white dark:bg-slate-900 p-5 rounded-2xl shadow-soft border ${m.unread ? 'border-studia-300 dark:border-studia-700 bg-studia-50/20' : 'border-slate-100 dark:border-slate-800'} flex items-start gap-4">
-                    <div class="w-10 h-10 rounded-2xl ${m.unread ? 'hero-gradient text-white' : 'bg-slate-200 dark:bg-slate-800 text-slate-600 dark:text-slate-300'} flex items-center justify-center font-bold shrink-0">
-                        ${m.sender.charAt(0)}
-                    </div>
-                    <div class="flex-1 min-w-0">
-                        <div class="flex justify-between items-center mb-1">
-                            <h4 class="font-bold text-sm text-slate-900 dark:text-white truncate">${m.sender}</h4>
-                            <span class="text-xs text-slate-400 shrink-0">${m.time}</span>
-                        </div>
-                        <h5 class="text-xs font-semibold text-studia-600 dark:text-studia-400 mb-1">${m.subject}</h5>
-                        <p class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">${m.preview}</p>
-                    </div>
+                <div class="p-3 rounded-2xl bg-slate-50 dark:bg-slate-800/60">
+                    <span class="block text-slate-400 mb-0.5">ECTS</span>
+                    <strong id="course-modal-ects" class="text-slate-800 dark:text-slate-100">6</strong>
                 </div>
-            `).join('');
-    }
-
-    // Render Timetable
-    function renderTimetable() {
-        const container = document.getElementById('timetable-days-container');
-        if (!container) return;
-        container.innerHTML = timetableData.map(t => `
-                <div class="bg-white dark:bg-slate-900 p-6 rounded-[28px] shadow-soft border border-slate-100 dark:border-slate-800 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-                    <div class="flex items-center gap-4">
-                        <div class="w-16 py-3 rounded-2xl hero-gradient text-white text-center font-display font-extrabold text-xs tracking-wider uppercase">
-                            ${t.day.substring(0, 3)}
-                        </div>
-                        <div>
-                            <div class="flex items-center gap-2">
-                                <h4 class="font-display font-bold text-lg text-slate-900 dark:text-white">${t.course}</h4>
-                                <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-studia-50 dark:bg-studia-950 text-studia-600">${t.type}</span>
-                            </div>
-                            <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Prostorija: <strong class="text-slate-800 dark:text-slate-200">${t.room}</strong></p>
-                        </div>
-                    </div>
-                    <div class="flex items-center gap-3">
-                        <span class="font-mono text-xs font-bold px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300">${t.time}</span>
-                        <button onclick="showToast('Otvaranje Google Meet predavanja...')" class="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-xs transition flex items-center gap-1.5">
-                            <i data-lucide="video" class="w-3.5 h-3.5"></i>
-                            <span>Pridruži se</span>
-                        </button>
-                    </div>
+                <div class="p-3 rounded-2xl bg-slate-50 dark:bg-slate-800/60">
+                    <span class="block text-slate-400 mb-0.5">Predavanja</span>
+                    <strong id="course-modal-lectures" class="text-slate-800 dark:text-slate-100">6/8</strong>
                 </div>
-            `).join('');
-    }
+            </div>
 
-    // Render Google Meet Rooms
-    function renderMeetRooms() {
-        const container = document.getElementById('meet-rooms-grid');
-        if (!container) return;
-        container.innerHTML = coursesData.map(c => `
-                <div class="bg-white dark:bg-slate-900 p-6 rounded-[28px] shadow-soft border border-slate-100 dark:border-slate-800 flex flex-col justify-between space-y-4">
-                    <div>
-                        <div class="flex items-center justify-between mb-2">
-                            <span class="text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-400">● Aktivno uživo</span>
-                            <span class="text-xs text-slate-400 font-mono">SUM Meet</span>
-                        </div>
-                        <h4 class="font-display font-bold text-lg text-slate-900 dark:text-white">${c.name}</h4>
-                        <p class="text-xs text-slate-500 mt-1">${c.prof}</p>
-                    </div>
-                    <button onclick="window.open('${c.meetUrl}', '_blank')" class="w-full py-3 rounded-xl hero-gradient text-white font-bold text-xs shadow-md transition flex items-center justify-center gap-2">
-                        <i data-lucide="video" class="w-4 h-4"></i>
-                        <span>Pokreni Google Meet sobu</span>
-                    </button>
-                </div>
-            `).join('');
-    }
+            <div>
+                <h4 class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">Aktivne obveze</h4>
+                <div id="course-modal-assignments" class="space-y-2 text-xs"></div>
+            </div>
 
-    // Global Search Handler
-    function handleGlobalSearch(query) {
-        const panel = document.getElementById('search-results-panel');
-        const clearBtn = document.getElementById('clear-search-btn');
-        if (!query.trim()) {
-            panel.classList.add('hidden');
-            clearBtn.classList.add('hidden');
-            return;
-        }
-        clearBtn.classList.remove('hidden');
-        panel.classList.remove('hidden');
+            <div class="flex flex-wrap gap-3 pt-1">
+                <button type="button" id="course-modal-moodle" class="flex-1 py-3 rounded-xl hero-gradient text-white font-bold text-xs shadow-md transition">Otvori Moodle kolegij</button>
+                <button type="button" id="course-modal-message" class="px-4 py-3 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold text-xs transition">Kontaktiraj profesora</button>
+            </div>
+        </div>
+    </div>
+</div>
 
-        const q = query.toLowerCase();
-        const matchedCourses = coursesData.filter(c => c.name.toLowerCase().includes(q) || c.prof.toLowerCase().includes(q));
-        const matchedAssignments = assignmentsData.filter(a => a.title.toLowerCase().includes(q) || a.course.toLowerCase().includes(q));
-
-        let html = '';
-        if (matchedCourses.length > 0) {
-            html += '<div class="text-[11px] font-bold uppercase text-slate-400 px-2 py-1">Kolegiji</div>';
-            html += matchedCourses.map(c => `
-                    <div onclick="openCourseDetail('${c.name}'); clearGlobalSearch();" class="p-2.5 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800 cursor-pointer flex justify-between items-center text-xs font-semibold">
-                        <span>📚 ${c.name} (${c.prof})</span>
-                        <span class="text-studia-600">Otvori →</span>
-                    </div>
-                `).join('');
-        }
-        if (matchedAssignments.length > 0) {
-            html += '<div class="text-[11px] font-bold uppercase text-slate-400 px-2 py-1 mt-2">Zadaće i rokovi</div>';
-            html += matchedAssignments.map(a => `
-                    <div onclick="switchTab('assignments'); clearGlobalSearch();" class="p-2.5 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800 cursor-pointer flex justify-between items-center text-xs font-semibold">
-                        <span>📝 ${a.title}</span>
-                        <span class="text-amber-600">${a.deadline}</span>
-                    </div>
-                `).join('');
-        }
-        if (!html) {
-            html = '<div class="p-3 text-xs text-slate-400 text-center">Nema rezultata pretrage za "' + query + '"</div>';
-        }
-        panel.innerHTML = html;
-    }
-
-    function clearGlobalSearch() {
-        document.getElementById('global-search-input').value = '';
-        document.getElementById('search-results-panel').classList.add('hidden');
-        document.getElementById('clear-search-btn').classList.add('hidden');
-    }
-
-    // Modals Control
-    function openAiModal() {
-        document.getElementById('ai-modal').classList.remove('hidden');
-    }
-    function closeAiModal() {
-        document.getElementById('ai-modal').classList.add('hidden');
-    }
-    function openMoodleModal() {
-        document.getElementById('moodle-modal').classList.remove('hidden');
-    }
-    function closeMoodleModal() {
-        document.getElementById('moodle-modal').classList.add('hidden');
-    }
-    function openAssignmentModal(id) {
-        document.getElementById('assignment-modal').classList.remove('hidden');
-    }
-    function closeAssignmentModal() {
-        document.getElementById('assignment-modal').classList.add('hidden');
-    }
-    function openCourseDetail(name) {
-        showToast('Učitavanje Moodle kolegija: ' + name);
-        switchTab('courses');
-    }
-
-    function saveMoodleConfig() {
-        closeMoodleModal();
-        document.getElementById('sidebar-api-status').innerText = '● Povezano (eucenje.sum.ba)';
-        document.getElementById('sidebar-api-status').className = 'text-[11px] text-emerald-400 font-bold';
-        document.getElementById('header-sync-text').innerText = 'Moodle API Online';
-        showToast('Uspješno povezano sa SUM Moodle sustavom!');
-    }
-
-    function submitAssignmentAction() {
-        closeAssignmentModal();
-        showToast('Zadaća uspješno predana na Moodle!');
-    }
-
-    function markAllInboxRead() {
-        showToast('Sve poruke označene kao pročitane');
-    }
-
-    function sendAiPrompt(promptText) {
-        document.getElementById('ai-input').value = promptText;
-        sendAiMessage();
-    }
-
-    function sendAiMessage() {
-        const input = document.getElementById('ai-input');
-        const val = input.value.trim();
-        if (!val) return;
-
-        const chatBody = document.getElementById('ai-chat-body');
-        chatBody.innerHTML += `
-                <div class="flex items-start gap-3 justify-end">
-                    <div class="bg-studia-600 text-white p-4 rounded-2xl rounded-tr-sm text-xs max-w-md">${val}</div>
-                </div>
-            `;
-        input.value = '';
-        chatBody.scrollTop = chatBody.scrollHeight;
-
-        setTimeout(() => {
-            chatBody.innerHTML += `
-                    <div class="flex items-start gap-3">
-                        <div class="w-8 h-8 rounded-xl hero-gradient text-white flex items-center justify-center font-bold shrink-0">AI</div>
-                        <div class="bg-slate-100 dark:bg-slate-800 p-4 rounded-2xl rounded-tl-sm text-xs text-slate-800 dark:text-slate-100 space-y-2">
-                            <p>Analizirao sam Moodle gradivo za tvoj upit. Evo sažetih ključnih tačaka za pripremu ispita:</p>
-                            <ul class="list-disc pl-4 space-y-1">
-                                <li><strong>Eloquent ORM</strong> relacije (One-to-Many, Many-to-Many).</li>
-                                <li><strong>Migration & Seeder</strong> struktura u Laravel 13 okruženju.</li>
-                                <li>Sigurnosna zaštita protiv CSRF napada i validacija zahtjeva.</li>
-                            </ul>
-                        </div>
-                    </div>
-                `;
-            chatBody.scrollTop = chatBody.scrollHeight;
-        }, 700);
-    }
-
-    function exportCalendarICS() {
-        const icsData = "BEGIN:VCALENDAR\nVERSION:2.0\nPRODID:-//Studia SUM Moodle//HR\nSUMMARY:Rok: Web aplikacije DZ1\nDTSTART:20261118T235900Z\nEND:VCALENDAR";
-        const blob = new Blob([icsData], { type: 'text/calendar;charset=utf-8' });
-        const url = window.URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = 'studia-sum-rokovi.ics';
-        a.click();
-        window.URL.revokeObjectURL(url);
-        showToast('Kalendar (.ics) uspješno preuzet!');
-    }
-
-    function scrollToCourses() {
-        document.getElementById('my-courses-section').scrollIntoView({ behavior: 'smooth' });
-    }
-
-    // Toast Notification System
-    function showToast(message) {
-        const container = document.getElementById('toast-container');
-        const toast = document.createElement('div');
-        toast.className = 'px-4 py-3 rounded-2xl bg-slate-900 text-white dark:bg-white dark:text-slate-900 text-xs font-bold shadow-2xl transition-all duration-300 translate-y-2 opacity-0 flex items-center gap-2.5';
-        toast.innerHTML = `<i data-lucide="check-circle-2" class="w-4 h-4 text-emerald-400"></i><span>${message}</span>`;
-        container.appendChild(toast);
-        lucide.createIcons();
-
-        setTimeout(() => {
-            toast.classList.remove('translate-y-2', 'opacity-0');
-        }, 10);
-
-        setTimeout(() => {
-            toast.classList.add('translate-y-2', 'opacity-0');
-            setTimeout(() => toast.remove(), 300);
-        }, 3000);
-    }
-</script>
 </body>
 </html>

@@ -1,0 +1,381 @@
+/* =========================================================
+   STUDIA — vlastiti stilovi
+   Ovdje je samo ono što Tailwind ne pokriva: fontovi, animacije,
+   carousel, kalendar i pristupačnost.
+   ========================================================= */
+
+/* ---------- Fontovi ---------- */
+@font-face {
+  font-family: "Plus Jakarta Sans";
+  src: url("../fonts/plus-jakarta-sans-latin-ext.woff2") format("woff2");
+  font-weight: 200 800;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+
+@font-face {
+  font-family: "Plus Jakarta Sans";
+  src: url("../fonts/plus-jakarta-sans-latin.woff2") format("woff2");
+  font-weight: 200 800;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+/* ---------- Osnova ---------- */
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  min-height: 100vh;
+  background-color: #f8f9fc;
+  color: #111827;
+  font-family: "Plus Jakarta Sans", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  overflow-x: hidden;
+  transition: background-color 0.25s ease, color 0.25s ease;
+}
+
+html.dark body {
+  background-color: #0b0f19;
+  color: #f1f5f9;
+}
+
+body.modal-open,
+body.drawer-open {
+  overflow: hidden;
+}
+
+::selection {
+  background: #ddd6fe;
+  color: #4c1d95;
+}
+
+html.dark ::selection {
+  background: #4c1d95;
+  color: #ede9fe;
+}
+
+/* Tailwind 3 nema xs varijante ovih utilitija, a preuzeti dizajn ih koristi. */
+.shadow-xs {
+  box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+}
+
+/* Sticky zaglavlje ne smije prekriti naslove kod skoka na sekciju. */
+#my-courses-section,
+#unihub-section {
+  scroll-margin-top: 6rem;
+}
+
+.backdrop-blur-xs {
+  -webkit-backdrop-filter: blur(2px);
+  backdrop-filter: blur(2px);
+}
+
+.active\:scale-98:active {
+  transform: scale(0.98);
+}
+
+/* ---------- Pristupačnost ---------- */
+.skip-link {
+  position: fixed;
+  top: 0.75rem;
+  left: 0.75rem;
+  z-index: 100;
+  padding: 0.75rem 1rem;
+  border-radius: 0.75rem;
+  background: #0f172a;
+  color: #ffffff;
+  font-size: 0.75rem;
+  font-weight: 700;
+  transform: translateY(-200%);
+  transition: transform 0.2s ease;
+}
+
+.skip-link:focus {
+  transform: translateY(0);
+}
+
+:where(a, button, input, select, textarea, [tabindex]):focus-visible {
+  outline: 2px solid #8b5cf6;
+  outline-offset: 2px;
+}
+
+/* ---------- Gradijenti i animacije ---------- */
+.hero-gradient {
+  background: linear-gradient(135deg, #6d28d9 0%, #7c3aed 55%, #8b5cf6 100%);
+}
+
+.progress-ring-circle {
+  transform: rotate(-90deg);
+  transform-origin: 50% 50%;
+  transition: stroke-dashoffset 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes pulse-dot {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.6;
+    transform: scale(1.25);
+  }
+}
+
+.live-dot {
+  animation: pulse-dot 2s infinite;
+}
+
+@keyframes modal-fade {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes modal-pop {
+  from { opacity: 0; transform: translateY(8px) scale(0.985); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.modal:not(.hidden) {
+  animation: modal-fade 0.18s ease-out;
+}
+
+.modal:not(.hidden) > div,
+.modal:not(.hidden) > form {
+  animation: modal-pop 0.2s ease-out;
+}
+
+/* ---------- Navigacija ---------- */
+.nav-btn {
+  color: #475569;
+}
+
+.nav-btn:hover {
+  background-color: #f8fafc;
+  color: #0f172a;
+}
+
+.dark .nav-btn {
+  color: #cbd5e1;
+}
+
+.dark .nav-btn:hover {
+  background-color: #1e293b;
+  color: #ffffff;
+}
+
+.nav-btn.is-active,
+.nav-btn.is-active:hover {
+  background-color: #7c3aed;
+  color: #ffffff;
+  box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+}
+
+/* ---------- Filtri ---------- */
+.filter-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.375rem 0.75rem;
+  border-radius: 9999px;
+  border: 1px solid #e2e8f0;
+  background: #ffffff;
+  color: #64748b;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  line-height: 1.25;
+  transition: border-color 0.2s ease, color 0.2s ease, background-color 0.2s ease;
+}
+
+.filter-pill:hover {
+  border-color: #c4b5fd;
+  color: #6d28d9;
+}
+
+.filter-pill.is-active,
+.filter-pill.is-active:hover {
+  background: #7c3aed;
+  border-color: #7c3aed;
+  color: #ffffff;
+}
+
+.filter-pill__count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.05rem;
+  height: 1.05rem;
+  padding: 0 0.3rem;
+  border-radius: 9999px;
+  background: rgba(124, 58, 237, 0.1);
+  color: #6d28d9;
+  font-size: 0.625rem;
+  font-weight: 800;
+}
+
+.filter-pill.is-active .filter-pill__count {
+  background: rgba(255, 255, 255, 0.2);
+  color: #ffffff;
+}
+
+.dark .filter-pill {
+  background: #0f172a;
+  border-color: #334155;
+  color: #94a3b8;
+}
+
+.dark .filter-pill:hover {
+  border-color: #7c3aed;
+  color: #c4b5fd;
+}
+
+.dark .filter-pill__count {
+  background: rgba(196, 181, 253, 0.12);
+  color: #c4b5fd;
+}
+
+.dark .filter-pill.is-active {
+  background: #7c3aed;
+  border-color: #7c3aed;
+  color: #ffffff;
+}
+
+/* ---------- Carousel kolegija ---------- */
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.courses-carousel {
+  scroll-behavior: smooth;
+  scroll-padding-left: 0;
+}
+
+.course-card {
+  flex: 0 0 100%;
+  min-width: 0;
+  scroll-snap-align: start;
+}
+
+@media (min-width: 640px) {
+  .course-card {
+    flex-basis: calc(50% - 0.625rem);
+  }
+}
+
+@media (min-width: 1024px) {
+  .course-card {
+    flex-basis: calc(33.333% - 0.834rem);
+  }
+}
+
+/* ---------- Mini kalendar ---------- */
+.mini-day {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  border: 1px solid transparent;
+  border-radius: 0.65rem;
+  color: #475569;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.mini-day:hover {
+  background-color: #f5f3ff;
+  color: #6d28d9;
+}
+
+.mini-day.is-muted {
+  color: #cbd5e1;
+  pointer-events: none;
+}
+
+.mini-day.has-deadline {
+  background-color: #f5f3ff;
+  color: #6d28d9;
+  font-weight: 800;
+}
+
+.mini-day.is-today,
+.mini-day.is-today:hover {
+  background-color: #10b981;
+  color: #ffffff;
+  font-weight: 800;
+  box-shadow: 0 4px 12px -3px rgba(16, 185, 129, 0.45);
+}
+
+.mini-day__dot {
+  width: 4px;
+  height: 4px;
+  border-radius: 9999px;
+  background-color: #7c3aed;
+}
+
+.mini-day.is-today .mini-day__dot {
+  background-color: #ffffff;
+}
+
+.dark .mini-day {
+  color: #cbd5e1;
+}
+
+.dark .mini-day:hover {
+  background-color: #1e1b4b;
+  color: #c4b5fd;
+}
+
+.dark .mini-day.is-muted {
+  color: #334155;
+}
+
+.dark .mini-day.has-deadline {
+  background-color: #2e1065;
+  color: #ddd6fe;
+}
+
+.dark .mini-day.is-today,
+.dark .mini-day.is-today:hover {
+  background-color: #059669;
+  color: #ffffff;
+}
+
+.dark .mini-day__dot {
+  background-color: #c4b5fd;
+}
+
+/* ---------- Scrollbar ---------- */
+html {
+  scrollbar-color: #cbd5e1 transparent;
+}
+
+html.dark {
+  scrollbar-color: #334155 transparent;
+}
+
+/* ---------- Smanjeno kretanje ---------- */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
