@@ -33,7 +33,9 @@ body {
   background-color: #f8f9fc;
   color: #111827;
   font-family: "Plus Jakarta Sans", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  /* overflow-x: clip (fallback hidden) — ne kreira scroll kontejner, da vertikalni scroll rade normalno. */
   overflow-x: hidden;
+  overflow-x: clip;
   transition: background-color 0.25s ease, color 0.25s ease;
 }
 
