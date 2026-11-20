@@ -1,0 +1,312 @@
+<!doctype html>
+<html lang="hr" data-theme="light">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Studia tema – pregled izgleda</title>
+  <style>
+    :root {
+      --studia-primary: #6d28d9;
+      --studia-primary-strong: #6d28d9;
+      --studia-primary-bright: #7c3aed;
+      --studia-primary-soft: #f0e9ff;
+      --studia-link: #5b21b6;
+      --studia-link-hover: #4c1d95;
+      --studia-bg: #f6f4fb;
+      --studia-surface: #ffffff;
+      --studia-surface-soft: #f1edfa;
+      --studia-text: #28243a;
+      --studia-muted: #6f6a84;
+      --studia-border: #e8e2f4;
+      --studia-border-strong: #d7cfec;
+      --studia-progress-bg: #ebe6f7;
+      --studia-shadow: 0 22px 50px rgba(63, 32, 120, 0.11);
+      --studia-shadow-sm: 0 10px 28px rgba(63, 32, 120, 0.07);
+      --studia-navbar: rgba(255, 255, 255, 0.88);
+      --studia-hero: linear-gradient(135deg, #3b0764 0%, #5b21b6 48%, #7c3aed 100%);
+      color-scheme: light;
+    }
+    html[data-theme="dark"] {
+      --studia-primary: #a78bfa;
+      --studia-primary-strong: #7c3aed;
+      --studia-primary-bright: #8b5cf6;
+      --studia-primary-soft: rgba(139, 92, 246, 0.16);
+      --studia-link: #c4b5fd;
+      --studia-link-hover: #ddd6fe;
+      --studia-bg: #0e0b18;
+      --studia-surface: #171226;
+      --studia-surface-soft: #211a35;
+      --studia-text: #f4f0ff;
+      --studia-muted: #b9b1ce;
+      --studia-border: rgba(167, 139, 250, 0.16);
+      --studia-border-strong: rgba(167, 139, 250, 0.3);
+      --studia-progress-bg: rgba(167, 139, 250, 0.16);
+      --studia-shadow: 0 22px 55px rgba(0, 0, 0, 0.4);
+      --studia-shadow-sm: 0 10px 30px rgba(0, 0, 0, 0.24);
+      --studia-navbar: rgba(16, 11, 27, 0.9);
+      color-scheme: dark;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "Inter", "Segoe UI", system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif;
+      background: var(--studia-bg);
+      color: var(--studia-text);
+      line-height: 1.45;
+      background-image:
+        radial-gradient(circle at 8% 4%, rgba(124, 58, 237, 0.1), transparent 32rem),
+        radial-gradient(circle at 94% 18%, rgba(109, 40, 217, 0.08), transparent 28rem);
+      background-attachment: fixed;
+    }
+    html[data-theme="dark"] body {
+      background-image:
+        radial-gradient(circle at 8% 4%, rgba(124, 58, 237, 0.18), transparent 32rem),
+        radial-gradient(circle at 94% 18%, rgba(167, 139, 250, 0.08), transparent 28rem);
+    }
+    a { color: var(--studia-link); text-decoration: none; }
+    a:hover { color: var(--studia-link-hover); }
+    .preview-note {
+      position: sticky; top: 0; z-index: 50;
+      padding: 0.5rem 1rem;
+      background: #111827; color: #e5e7eb;
+      font-size: 0.8rem; text-align: center;
+    }
+    .preview-note strong { color: #fff; }
+    .navbar {
+      position: sticky; top: 2rem; z-index: 40;
+      margin: 0.75rem auto 0;
+      max-width: 1280px;
+      padding: 0.55rem 1rem;
+      display: flex; align-items: center; gap: 0.75rem;
+      background: var(--studia-navbar);
+      border: 1px solid var(--studia-border);
+      border-radius: 18px;
+      backdrop-filter: blur(18px);
+      box-shadow: 0 10px 32px rgba(48, 24, 96, 0.06);
+    }
+    .brand { display: flex; align-items: center; gap: 0.65rem; font-weight: 750; color: var(--studia-text); }
+    .brand-mark {
+      width: 38px; height: 38px; border-radius: 12px; display: grid; place-items: center;
+      color: #fff; font-weight: 800; font-size: 1.1rem;
+      background: linear-gradient(135deg, var(--studia-primary), var(--studia-primary-bright));
+      box-shadow: 0 8px 18px rgba(109, 40, 217, 0.26);
+    }
+    .nav-links { display: flex; gap: 0.25rem; margin-left: 0.5rem; flex-wrap: wrap; }
+    .nav-links a { padding: 0.45rem 0.7rem; border-radius: 10px; color: var(--studia-muted); font-weight: 600; font-size: 0.9rem; }
+    .nav-links a.active, .nav-links a:hover { background: var(--studia-primary-soft); color: var(--studia-primary); }
+    .spacer { flex: 1; }
+    .icon-btn, .avatar {
+      width: 40px; height: 40px; border-radius: 12px; border: 1px solid var(--studia-border);
+      background: var(--studia-surface); color: var(--studia-muted); display: grid; place-items: center;
+      cursor: pointer;
+    }
+    .icon-btn:hover { background: var(--studia-primary-soft); color: var(--studia-primary); border-color: var(--studia-border-strong); }
+    .avatar { border-radius: 50%; font-weight: 700; color: var(--studia-primary); background: var(--studia-primary-soft); }
+    .container { max-width: 1280px; margin: 0 auto; padding: 1.25rem 1rem 3rem; }
+    .hero {
+      position: relative; overflow: hidden; isolation: isolate;
+      display: grid; grid-template-columns: minmax(0, 1.35fr) minmax(0, 0.75fr);
+      gap: clamp(1.5rem, 4vw, 3rem); align-items: end;
+      padding: clamp(1.6rem, 4.2vw, 3.15rem);
+      border-radius: 30px; background: var(--studia-hero); color: #fff;
+      box-shadow: 0 28px 60px rgba(64, 26, 138, 0.28);
+      margin-top: 1rem;
+    }
+    .hero::before, .hero::after { content: ""; position: absolute; border-radius: 50%; z-index: -1; }
+    .hero::before { top: -7rem; right: -5rem; width: 24rem; height: 24rem; background: rgba(255,255,255,0.12); }
+    .hero::after { bottom: -12rem; left: 34%; width: 28rem; height: 28rem; background: rgba(196,181,253,0.14); filter: blur(14px); }
+    .eyebrow {
+      display: inline-flex; align-items: center; gap: 0.45rem; margin-bottom: 1rem;
+      padding: 0.38rem 0.7rem; border: 1px solid rgba(255,255,255,0.2); border-radius: 999px;
+      background: rgba(255,255,255,0.12); color: rgba(255,255,255,0.88);
+      font-size: 0.72rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;
+    }
+    .eyebrow::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: #c4b5fd; box-shadow: 0 0 0 4px rgba(196,181,253,0.16); }
+    .hero h1 { margin: 0; font-size: clamp(1.9rem, 3.5vw, 3.2rem); line-height: 1.04; letter-spacing: -0.045em; }
+    .hero p { margin: 1rem 0 0; max-width: 48ch; color: rgba(255,255,255,0.72); font-size: 1rem; }
+    .actions { display: flex; gap: 0.65rem; flex-wrap: wrap; margin-top: 1.4rem; }
+    .btn { display: inline-flex; align-items: center; justify-content: center; min-height: 42px; padding: 0.58rem 1rem; border-radius: 12px; font-weight: 700; font-size: 0.86rem; }
+    .btn-primary { background: #fff; color: #4c1d95; box-shadow: 0 10px 22px rgba(20,8,48,0.18); }
+    .btn-ghost { border: 1px solid rgba(255,255,255,0.24); background: rgba(255,255,255,0.1); color: #fff; }
+    .stats { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 0.75rem; }
+    .stat { padding: 1rem; border: 1px solid rgba(255,255,255,0.16); border-radius: 18px; background: rgba(255,255,255,0.1); backdrop-filter: blur(10px); }
+    .stat-value { display: block; font-size: 1.8rem; font-weight: 800; letter-spacing: -0.04em; line-height: 1.05; }
+    .stat-label { display: block; margin-top: 0.4rem; color: rgba(255,255,255,0.68); font-size: 0.68rem; font-weight: 700; letter-spacing: 0.07em; text-transform: uppercase; }
+    .section { margin-top: 1.75rem; }
+    .section-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 1rem; margin-bottom: 1rem; }
+    .section-head h2 { margin: 0; font-size: 1.35rem; letter-spacing: -0.03em; }
+    .section-head p { margin: 0.2rem 0 0; color: var(--studia-muted); font-size: 0.84rem; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 1rem; }
+    .card {
+      position: relative; display: flex; flex-direction: column; gap: 0.85rem; overflow: hidden;
+      padding: 1.25rem; border: 1px solid var(--studia-border); border-radius: 22px;
+      background: var(--studia-surface); box-shadow: var(--studia-shadow-sm);
+    }
+    .card::before { content: ""; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, var(--studia-primary), var(--studia-primary-bright)); opacity: 0.85; }
+    .card-top { display: flex; align-items: center; justify-content: space-between; gap: 0.75rem; }
+    .mark { width: 44px; height: 44px; border-radius: 14px; display: grid; place-items: center; color: #fff; font-size: 1.15rem; font-weight: 800; background: linear-gradient(135deg, var(--studia-primary), var(--studia-primary-bright)); box-shadow: 0 8px 18px rgba(109,40,217,0.2); }
+    .short { padding: 0.28rem 0.58rem; border: 1px solid var(--studia-border); border-radius: 999px; background: var(--studia-surface-soft); color: var(--studia-muted); font-size: 0.68rem; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; }
+    .card h3 { margin: 0; font-size: 1.04rem; line-height: 1.35; letter-spacing: -0.02em; }
+    .teacher { margin: 0; color: var(--studia-muted); font-size: 0.8rem; }
+    .label { font-size: 0.68rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; }
+    .progress-row { display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; margin-bottom: 0.4rem; color: var(--studia-muted); font-size: 0.76rem; }
+    .progress-row strong { color: var(--studia-text); font-size: 0.8rem; }
+    .track { width: 100%; height: 8px; border-radius: 999px; background: var(--studia-progress-bg); overflow: hidden; }
+    .bar { height: 100%; border-radius: inherit; background: linear-gradient(90deg, var(--studia-primary), var(--studia-primary-bright)); }
+    .card-footer { margin-top: auto; color: var(--studia-link); font-size: 0.8rem; font-weight: 700; }
+    .panel-grid { display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 1rem; margin-top: 1.75rem; }
+    .panel { padding: 1.25rem; border: 1px solid var(--studia-border); border-radius: 22px; background: var(--studia-surface); box-shadow: var(--studia-shadow-sm); }
+    .panel h3 { margin: 0 0 0.8rem; font-size: 1.02rem; }
+    .timeline { list-style: none; padding: 0; margin: 0; }
+    .timeline li { padding: 0.8rem 0; border-bottom: 1px solid var(--studia-border); }
+    .timeline li:last-child { border-bottom: 0; }
+    .tl-title { font-weight: 700; font-size: 0.9rem; margin: 0 0 0.15rem; }
+    .tl-meta { color: var(--studia-muted); font-size: 0.78rem; }
+    .quick-links { display: grid; gap: 0.5rem; }
+    .quick-links a { display: flex; align-items: center; justify-content: space-between; padding: 0.7rem 0.8rem; border-radius: 14px; background: var(--studia-surface-soft); color: var(--studia-text); font-weight: 600; }
+    .quick-links a:hover { background: var(--studia-primary-soft); color: var(--studia-primary); }
+    @media (max-width: 991.98px) {
+      .hero { grid-template-columns: 1fr; }
+      .panel-grid { grid-template-columns: 1fr; }
+      .nav-links { display: none; }
+      .navbar { top: 2.2rem; }
+    }
+    @media (max-width: 767.98px) {
+      .grid { grid-template-columns: repeat(2, minmax(0,1fr)); gap: 0.8rem; }
+      .hero { padding: 1.4rem; border-radius: 23px; }
+      .card { padding: 1rem; border-radius: 18px; }
+    }
+    @media (max-width: 575.98px) {
+      .grid, .stats { grid-template-columns: 1fr; }
+      .section-head { flex-direction: column; align-items: flex-start; }
+      .actions { flex-direction: column; }
+      .btn { width: 100%; }
+      .stat { display: flex; align-items: baseline; justify-content: space-between; }
+      .stat-label { margin-top: 0; text-align: right; }
+    }
+  </style>
+</head>
+<body>
+  <div class="preview-note"><strong>Pregled dizajna (statički mockup)</strong> — prikazuje izgled Moodle teme <code>theme_studia</code>. Prava tema radi unutar Moodle instalacije (PHP/Mustache/sesije), a dark mode se ondje sprema kao Moodle korisnička postavka.</div>
+
+  <nav class="navbar" aria-label="Navigacija">
+    <div class="brand"><span class="brand-mark">S</span><span>Studia · SUM e-Učenje</span></div>
+    <div class="nav-links">
+      <a class="active" href="#">Nadzorna ploča</a>
+      <a href="#">Moji kolegiji</a>
+      <a href="#">Ocjene</a>
+      <a href="#">Kalendar</a>
+    </div>
+    <div class="spacer"></div>
+    <button class="icon-btn" id="themeToggle" title="Prebaci način prikaza" aria-label="Prebaci način prikaza">☾</button>
+    <div class="icon-btn" title="Brzi izbornik">▦</div>
+    <div class="avatar" title="Profil">AA</div>
+  </nav>
+
+  <main class="container">
+    <section class="hero">
+      <div>
+        <span class="eyebrow">Zimski semestar 2026/2027</span>
+        <h1>Dobar dan, Ana Anić</h1>
+        <p>Tvoj prostor za kolegije, obveze i napredak. Brz pristup sadržajima, aktivnostima i rokovima na jednom mjestu.</p>
+        <div class="actions">
+          <a class="btn btn-primary" href="#">Pregledaj kolegije</a>
+          <a class="btn btn-ghost" href="#">Kalendar</a>
+        </div>
+      </div>
+      <div class="stats">
+        <div class="stat"><span class="stat-value">6</span><span class="stat-label">Kolegija</span></div>
+        <div class="stat"><span class="stat-value">72%</span><span class="stat-label">Prosječan napredak</span></div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-head">
+        <div>
+          <h2>Moji kolegiji</h2>
+          <p>Pregled upisanih kolegija, nositelja i napretka</p>
+        </div>
+        <a href="#">Svi kolegiji →</a>
+      </div>
+      <div class="grid">
+        <article class="card">
+          <div class="card-top"><span class="mark">P</span><span class="short">PR-101</span></div>
+          <h3>Programiranje 1</h3>
+          <p class="teacher"><span class="label">Nositelj:</span> doc. dr. sc. Marko Marić</p>
+          <div>
+            <div class="progress-row"><span>Napredak</span><strong>84%</strong></div>
+            <div class="track"><div class="bar" style="width:84%"></div></div>
+          </div>
+          <a class="card-footer" href="#">Otvori kolegij →</a>
+        </article>
+        <article class="card">
+          <div class="card-top"><span class="mark">M</span><span class="short">MAT-1</span></div>
+          <h3>Matematika 1</h3>
+          <p class="teacher"><span class="label">Nositelj:</span> prof. dr. sc. Ivana Knezović</p>
+          <div>
+            <div class="progress-row"><span>Napredak</span><strong>61%</strong></div>
+            <div class="track"><div class="bar" style="width:61%"></div></div>
+          </div>
+          <a class="card-footer" href="#">Otvori kolegij →</a>
+        </article>
+        <article class="card">
+          <div class="card-top"><span class="mark">U</span><span class="short">UWT-102</span></div>
+          <h3>Uvod u web tehnologije</h3>
+          <p class="teacher"><span class="label">Nositelj:</span> v. pred. Luka Perić</p>
+          <div>
+            <div class="progress-row"><span>Napredak</span><strong>72%</strong></div>
+            <div class="track"><div class="bar" style="width:72%"></div></div>
+          </div>
+          <a class="card-footer" href="#">Otvori kolegij →</a>
+        </article>
+        <article class="card">
+          <div class="card-top"><span class="mark">E</span><span class="short">ENG-1</span></div>
+          <h3>Engleski jezik 1</h3>
+          <p class="teacher"><span class="label">Nositelj:</span> lektor Maja Zovko</p>
+          <div>
+            <div class="progress-row"><span>Napredak</span><strong>90%</strong></div>
+            <div class="track"><div class="bar" style="width:90%"></div></div>
+          </div>
+          <a class="card-footer" href="#">Otvori kolegij →</a>
+        </article>
+      </div>
+    </section>
+
+    <section class="panel-grid">
+      <div class="panel">
+        <h3>Nadolazeće aktivnosti i rokovi</h3>
+        <ul class="timeline">
+          <li><p class="tl-title">Zadaća 3 — Programiranje 1</p><div class="tl-meta">Rok: sutra, 23:59</div></li>
+          <li><p class="tl-title">Kviz: Funkcije i nizovi — Matematika 1</p><div class="tl-meta">Rok: petak, 12:00</div></li>
+          <li><p class="tl-title">Laboratorijska vježba 2 — Uvod u web tehnologije</p><div class="tl-meta">Rok: ponedjeljak, 08:00</div></li>
+        </ul>
+      </div>
+      <aside class="panel">
+        <h3>Brza navigacija</h3>
+        <div class="quick-links">
+          <a href="#"><span>Moji kolegiji</span><span>→</span></a>
+          <a href="#"><span>Ocjene</span><span>→</span></a>
+          <a href="#"><span>Raspored / Kalendar</span><span>→</span></a>
+          <a href="#"><span>Moj profil</span><span>→</span></a>
+        </div>
+      </aside>
+    </section>
+  </main>
+
+  <script>
+    (function () {
+      var root = document.documentElement;
+      var btn = document.getElementById('themeToggle');
+      function apply(mode) {
+        root.setAttribute('data-theme', mode);
+        btn.textContent = mode === 'dark' ? '☀' : '☾';
+        btn.title = mode === 'dark' ? 'Prebaci na svijetli način' : 'Prebaci na tamni način';
+      }
+      btn.addEventListener('click', function () {
+        apply(root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
+      });
+      apply('light');
+    })();
+  </script>
+</body>
+</html>

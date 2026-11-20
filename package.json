@@ -1,11 +1,18 @@
 {
   "name": "studia-studentski-portal",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "private": true,
-  "description": "Studia — demo studentski portal Sveučilišta u Mostaru",
+  "description": "Studia — demo studentski portal Sveučilišta u Mostaru (spreman za prilagodbu i integraciju)",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Max55-lab/studia-moodle.git"
+  },
   "scripts": {
     "build:css": "tailwindcss -i ./assets/css/tailwind.src.css -o ./assets/css/tailwind.css --minify",
-    "watch:css": "tailwindcss -i ./assets/css/tailwind.src.css -o ./assets/css/tailwind.css --watch"
+    "watch:css": "tailwindcss -i ./assets/css/tailwind.src.css -o ./assets/css/tailwind.css --watch",
+    "check": "node scripts/check.mjs",
+    "check:syntax": "node --check assets/js/config.js && node --check assets/js/data.js && node --check assets/js/core.js && node --check assets/js/render.js && node --check assets/js/views.js && node --check assets/js/moodle-api.js && node --check assets/js/app.js && node --check server/moodle-proxy.js"
   },
   "devDependencies": {
     "tailwindcss": "3.4.17"

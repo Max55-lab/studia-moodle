@@ -1,0 +1,111 @@
+# Integracija Studia portala
+
+Ovaj dokument opisuje kako prilagoditi i integrirati **Studia** demo portal u drugi sustav (statički hosting, LMS okruženje, intranet, vlastiti backend ili hibridni scenarij).
+
+> Napomena: zadani build je demo/statički. Za produkcijske scenarije potrebno je osigurati autentikaciju, autorizaciju, zaštitu podataka i poslužiteljsku logiku u ciljnom sustavu.
+
+## 1. Načini integracije
+
+### A) Korištenje kao statički demo / predložak
+- Koristi `index.html` + `assets/` kao gotovu aplikaciju.
+- Podatke mijenjaš u `assets/js/data.js` (demo) ili uvodiš vlastiti izvor podataka.
+
+### B) Konfiguracija bez većih izmjena jezgre
+- Uključi `assets/js/config.js` (učitava se prije `data.js`) i postavi `window.STUDIA_CONFIG` prije njega.
+- Pogledaj `studia.config.example.js` za dostupne opcije.
+
+### C) Dublja integracija (zamjena podataka / adaptera)
+- Zadrži UI i render logiku, a zamijeni izvor podataka i/ili Moodle adapter.
+- Preporuka: definirati stabilan podatkovni ugovor (vidi `docs/DATA_MODEL.md`) i mapirati podatke iz ciljnih sustava.
+
+### D) Ugradnja Moodle teme
+- `theme/studia/` je Boost child tema za Moodle 4.5 (vidi `theme/studia/README.md`).
+- Tema koristi nativnu Moodle autentikaciju/ovlasti i user preferences; ne uvodi vanjsku prijavu.
+
+## 2. Učitavanje i redoslijed skripti
+
+Zadani redoslijed u `index.html`:
+1. `assets/js/config.js` (integracijska konfiguracija)
+2. `assets/vendor/lucide.min.js`
+3. `assets/js/data.js`
+4. `assets/js/core.js`
+5. `assets/js/render.js`
+6. `assets/js/views.js`
+7. `assets/js/moodle-api.js`
+8. `assets/js/app.js`
+
+**Pravilo:** `config.js` mora biti dostupan prije ostalih aplikacijskih modula kako bi `window.STUDIA_CONFIG` i `window.Studia` bili dostupni.
+
+## 3. Runtime konfiguracija (`window.STUDIA_CONFIG`)
+
+Primjer:
+
+```html
+<script>
+  window.STUDIA_CONFIG = {
+    branding: { productName: "Studia", institutionShort: "SUM" },
+    features: { aiAssistant: false, liveProxy: true },
+    links: { moodlePortal: "https://eucenje.sum.ba/moodle/" },
+    integration: {
+      dataSource: "demo",
+      onAfterInit: function () { /* ... */ }
+    }
+  };
+</script>
+<script src="assets/js/config.js"></script>
+```
+
+### Ključne sekcije
+- `app`: osnovne informacije (naziv, verzija, lokalizacija, demo postavke).
+- `branding`: nazivi i boje/teme za vizualni identitet.
+- `features`: uključivanje/isključivanje funkcionalnosti (ovisno o integraciji/primjeni).
+- `storage`: prefiks ključeva i ponašanje lokalne pohrane.
+- `integration`: izvor podataka, hookovi i adapteri.
+- `ui`: zadani pogled i UI postavke.
+- `links`: vanjske poveznice (Moodle portal, repozitorij itd.).
+- `data`: (napredno) točka za override podataka — vidi podatkovni model.
+
+> Napomena: dio opcija služi kao stabilni ugovor za integratore; konkretna primjena ovisi o verziji i mjestu korištenja u kodu. Provjeri `CHANGELOG.md` kod nadogradnji.
+
+## 4. Hookovi i događaji
+
+### Hookovi (konfiguracija)
+- `integration.onBeforeInit(ctx)` — prije inicijalizacije aplikacije.
+- `integration.onAfterInit(ctx)` — nakon inicijalizacije.
+- `integration.onReady(ctx)` — kada je aplikacija spremna (ako je podržano u ciljnoj verziji).
+
+### DOM događaji
+- `studia:*` custom eventi (npr. `studia:ready`, `studia:init`) mogu se emitirati preko `window.Studia.emit(name, detail)` i koristiti za integracijske reakcije.
+
+## 5. Zamjena izvora podataka
+
+### Demo izvor
+- Zadano: `assets/js/data.js` definira demo konstante (`STUDENT`, `COURSES`, `ASSIGNMENTS`, `MATERIALS`, itd.).
+
+### Vanjski izvor (preporučeni pristup)
+1. Definiraj mapiranje iz izvornog sustava u Studia podatkovni model (`docs/DATA_MODEL.md`).
+2. Osiguraj podatke prije rendera (npr. generiranjem `data.js` u build koraku ili prilagodbom učitavanja).
+3. Za dinamičke integracije koristi adapter/proxy sloj na poslužitelju (npr. `server/` za Moodle primjer).
+
+## 6. Moodle integracija
+
+- **Demo:** bez mrežnih zahtjeva, koristi lokalne podatke.
+- **Live (proxy):** preglednik komunicira s proxy endpointom; proxy čuva token i poziva Moodle Web Service API.
+- Nikada ne stavljati Moodle token u front-end kod ili `localStorage`.
+
+Detalji: [`server/README.md`](../server/README.md), `assets/js/moodle-api.js`.
+
+## 7. Ugradnja u postojeću stranicu/sustav
+
+- **Najjednostavnije:** ugrađivanje cijelog portala (iframe ili zasebna ruta) uz prilagođeni `config` i podatke.
+- **Selektivno:** izdvajanje specifičnih pogleda/komponenti zahtijeva prilagodbu HTML/JS modula (vidi `docs/ARCHITECTURE.md`).
+- **Moodle:** koristiti `theme/studia` za nativno iskustvo unutar Moodlea; statički portal koristiti kao demo ili zasebni front-end.
+
+## 8. Sigurnost, privatnost i produkcija
+
+- Implementirati autentikaciju/autorizaciju i validaciju na poslužitelju.
+- Sanitizirati i kontrolirati sve vanjske podatke.
+- Ne pohranjivati osjetljive podatke u klijentu.
+- Jasno komunicirati korisnicima što se sprema lokalno.
+
+Vidi: [`SECURITY.md`](../SECURITY.md), [`docs/PRIVACY.md`](PRIVACY.md).

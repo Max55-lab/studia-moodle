@@ -1,0 +1,6 @@
+node_modules/
+assets/css/tailwind.css
+assets/vendor/
+docs/*.png
+*.min.js
+theme/studia/preview.html

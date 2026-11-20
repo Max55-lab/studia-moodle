@@ -1,186 +1,157 @@
-# Studia — studentski portal Sveučilišta u Mostaru
+# Studia — studentski portal, demo i integracijska osnova
 
 [![Deploy na GitHub Pages](https://github.com/Max55-lab/studia-moodle/actions/workflows/deploy.yml/badge.svg)](https://github.com/Max55-lab/studia-moodle/actions/workflows/deploy.yml)
+[![CI](https://github.com/Max55-lab/studia-moodle/actions/workflows/ci.yml/badge.svg)](https://github.com/Max55-lab/studia-moodle/actions/workflows/ci.yml)
 
-Responzivan front-end demo studentskog portala izrađen prema priloženom dizajnu.
-Portal objedinjuje kolegije, ocjene i ECTS, materijale, zadaće, raspored, Moodle
-obavijesti i studentsku zajednicu (UniHub) na jednom mjestu.
-
-Sve radi u običnom pregledniku, bez poslužiteljske strane. Podaci su demo podaci
-u `assets/js/data.js`, a radnje poput predaje zadaće, čitanja poruka i postavki
-podsjetnika pamte se u `localStorage`. Moodle adapter ima **demo** i **live**
-način; live način koristi priloženi backend proxy koji čuva API token izvan
-preglednika.
+**Studia** je responzivni studentski portal (demo) inspiriran SUM e-učenjem, s naglaskom na preglednom sučelju, lokalnoj demo interaktivnosti i pripremi za prilagodbu/integraciju u druge sustave.
 
 **Live demo:** <https://max55-lab.github.io/studia-moodle/>
 
 ![Pregled nadzorne ploče](docs/preview.png)
 
-Stranica se automatski objavljuje na GitHub Pages pri svakom pushu na `main`
-preko workflowa `.github/workflows/deploy.yml`.
+> Demo koristi isključivo izmišljene podatke i ne provodi stvarnu autentikaciju. Live demo na GitHub Pages servira statički sadržaj (`index.html` + `assets/`).
 
-## Pokretanje
+## Što je uključeno u repozitorij
 
-Najbrže: dvaput klikni `index.html`.
+- **Web portal (statički demo):** `index.html`, `assets/` — glavni preglednik demo aplikacije.
+- **Moodle tema:** `theme/studia/` — Boost child tema za Moodle 4.5 (nativna Moodle autentikacija/ovlasti, user preferences, SCSS/templejti).
+- **Moodle proxy primjer:** `server/` — Node.js proxy za live sinkronizaciju bez izlaganja tokena u pregledniku.
+- **Integracijska i projektna dokumentacija:** `docs/`, `studia.config.example.js`, `CONTRIBUTING.md`, `SECURITY.md`, `CHANGELOG.md`, `LICENSE`.
 
-Preporučeno (zbog lokalnih fontova i SVG slika):
+## Ključne značajke portala
 
-```powershell
-cd C:\Users\max\Desktop\SCHOOL_PORTAL
-python -m http.server 5500 --bind 127.0.0.1
-```
-
-Zatim otvori <http://127.0.0.1:5500/>.
-
-### Ponovno generiranje CSS-a
-
-Tailwind CSS je već kompajliran u `assets/css/tailwind.css`, pa za korištenje
-portala nije potreban Node. Ako mijenjaš HTML ili JavaScript klase:
-
-```powershell
-npm.cmd install
-npm.cmd run build:css
-```
-
-## Moodle API: demo i live način
-
-Moodle modal u zaglavlju i bočnoj navigaciji sada je sinkronizacijski centar.
-
-- **Demo** (zadano) — ne šalje mrežne zahtjeve. Simulira sinkronizaciju i
-  prikazuje broj kolegija, ocjena, materijala i zadaća. Radi na GitHub Pagesu.
-- **Live proxy** — šalje `POST /api/moodle/sync` na tvoj backend proxy. Proxy
-  čita token iz environment varijable, poziva Moodle WebService i vraća samo
-  normalizirani sažetak. Token se **nikada** ne šalje u preglednik, ne upisuje
-  se u `localStorage` i ne prikazuje u modalu.
-
-### Pokretanje proxyja
-
-Potreban je Node 18+ i Moodle WebService token s dopuštenim funkcijama.
-
-```powershell
-cd C:\Users\max\Desktop\SCHOOL_PORTAL
-$env:MOODLE_TOKEN = "tvoj_moodle_token"
-$env:MOODLE_URL = "https://eucenje.sum.ba/moodle"
-$env:ALLOWED_ORIGIN = "https://max55-lab.github.io"
-node server/moodle-proxy.js
-```
-
-Proxy zatim radi na `http://127.0.0.1:8787`. U modalu odaberi **Live proxy** i
-upisi njegov URL. Za javno dostupnu verziju koristi HTTPS hosting (Render,
-Railway, Fly.io, VPS ili vlastiti poslužitelj) — GitHub Pages ne može izvršavati
-backend kod.
-
-Detalji, environment varijable i sigurnosne napomene nalaze se u
-[`server/README.md`](server/README.md).
-
-> Napomena: dio podataka (ocjene, ECTS, upisani kolegiji) u stvarnom sustavu SUM
-> dolazi iz Studomata / ISVU, a ne iz Moodlea. Moodle obično daje sadržaj
-> kolegija, zadaće, forumske obavijesti i bodove aktivnosti. Proxy je zato
-> primjer i lako se proširuje dodatnim izvorima podataka.
-
-## Struktura projekta
-
-```text
-SCHOOL_PORTAL/
-├── index.html                  # svi pogledi, modali i osnovna struktura
-├── package.json                # skripte za Tailwind build
-├── tailwind.config.js          # Studia paleta, fontovi i sjene
-├── README.md
-├── server/
-│   ├── moodle-proxy.js         # Node backend proxy (token ostaje na poslužitelju)
-│   └── README.md               # upute za live Moodle integraciju
-└── assets/
-    ├── css/
-    │   ├── tailwind.src.css    # Tailwind ulazna datoteka
-    │   ├── tailwind.css        # generirani, minificirani Tailwind
-    │   └── style.css           # fontovi, animacije, kalendar, pristupačnost
-    ├── js/
-    │   ├── data.js             # svi demo podaci: kolegiji, ocjene, materijali, obavijesti
-    │   ├── core.js             # tema, navigacija, pretraga, modali, pohrana, pomoćne funkcije
-    │   ├── render.js           # kolegiji, ocjene, materijali, obavijesti, zadaće, inbox
-    │   ├── views.js            # raspored, Meet sobe, oglasi i mini kalendar
-    │   ├── moodle-api.js       # demo/live Moodle adapter
-    │   └── app.js              # modali, predaje, AI asistent, događaji, pokretanje
-    ├── fonts/                  # Plus Jakarta Sans (lokalno, WOFF2)
-    ├── img/                    # favicon i avatar studenta
-    └── vendor/
-        └── lucide.min.js       # lokalna kopija Lucide ikona
-```
-
-### Gdje što mijenjati
-
-| Želiš promijeniti… | Otvori |
-| --- | --- |
-| Tekstove, kartice, tablicu, strukturu pogleda | `index.html` |
-| Demo studenta, kolegije, ocjene, materijale, obavijesti, raspored | `assets/js/data.js` |
-| Boje, fontove, sjene | `tailwind.config.js` i `assets/css/style.css` |
-| Raspored, kalendar i Meet sobe | `assets/js/views.js` |
-| Demo/live Moodle adapter i proxy URL | `assets/js/moodle-api.js` |
-| Backend proxy i Moodle WebService pozivi | `server/moodle-proxy.js` |
-| Interakcije i tokove radnji | `assets/js/app.js` |
-| Ikone | lokalni `assets/vendor/lucide.min.js` + atribut `data-lucide` |
-
-## Pogledi i značajke
+- **Pregledi:** nadzorna ploča, profil, inbox, kolegiji/UniHub, ocjene i ECTS, materijali, obavijesti, zadaće, raspored, Meet sobe, AI demo asistent.
+- **UX:** svijetli/tamni način, responzivan prikaz (desktop/tablet/mobilno), pretraga, filtri, modali, toast poruke, izvoz (npr. `.ics`, CSV) i demo preuzimanja.
+- **Demo stanje:** dio postavki i radnji sprema se lokalno u pregledniku (`localStorage`) isključivo za potrebe demonstracije.
+- **Moodle adapter:** demo način i live način preko backend proxyja (token ostaje na poslužitelju).
 
 | Ocjene i ECTS | Materijali kolegija |
 | --- | --- |
 | ![Ocjene i ECTS bodovi](docs/grades.png) | ![Materijali kolegija](docs/materials.png) |
 
-- **Nadzorna ploča** — hero sa sljedećim predavanjem, brze zadaće, carousel
-  kolegija s filtrima, tablica/lista nadolazećih obveza, statistika i profesori.
-- **Profil studenta** — podaci o studiju, prisustvo, upisani semestri, mini
-  kalendar s rokovima i oglasna ploča. Gumb generira demo potvrdu o studiranju.
-- **Inbox i obavijesti** — poruke profesora i Moodle sustava, označavanje
-  pročitanim, otvaranje detalja i brojač nepročitanih.
-- **Kolegiji i UniHub** — svi kolegiji, pretraga skripti, preuzimanje demo
-  materijala i objava nove skripte s provjerom formata i veličine datoteke.
-- **Ocjene i ECTS** — prosjek ponderiran ECTS bodovima, napredak prema 180 ECTS,
-  distribucija ocjena, filtri po semestru, tablica/kartice i CSV izvoz.
-- **Materijali kolegija** — 25 primjera po kolegijima i sekcijama, filtri po
-  kolegiju i tipu, pretraga, oznaka "Novo" i demo preuzimanje ili Moodle link.
-- **Centar obavijesti** — zvono u zaglavlju, brojač nepročitanih, panel s
-  obavijestima, označavanje pročitanim i skok na povezani pogled. Postavke
-  podsjetnika (rokovi, ocjene, materijali, forumi) i testni podsjetnik.
-- **Zadaće i kolokviji** — filtri po statusu, detalji zadaće, prilaganje
-  datoteke i predaja. Predane zadaće mijenjaju statistiku i brojače.
-- **Raspored predavanja** — tjedni raspored s aktualnim datumima, oznakom
-  "Danas" i izvozom cijelog rasporeda i rokova u `.ics` kalendar.
-- **Google Meet sobe** — demo sobe po kolegijima; gumb kopira Meet poveznicu.
-- **AI asistent** — demo chat s pripremljenim odgovorima za Laravel, baze
-  podataka, UI/UX i plan učenja.
-- **Moodle API** — demo/live adapter sa statusom, zadnjom sinkronizacijom i
-  sažetkom povučenih podataka. Live način ide preko backend proxyja i ne
-  izlaže token u pregledniku.
-- **Tema i akademski kontekst** — svijetli/tamni način rada i odabir fakulteta,
-  godine i semestra pamte se između posjeta.
+## Brzi početak
 
-Demo datum je fiksiran na **18. 11. 2026.** kako bi rokovi, mini kalendar i
-"sljedeće predavanje" uvijek bili smisleni.
+### Pokretanje lokalno (preporučeno)
 
-## Pristupačnost
+```bash
+# iz korijena repozitorija
+python -m http.server 5500 --bind 127.0.0.1
+```
 
-- Skip link, fokus-stilovi i ARIA stanja na navigaciji i modalima.
-- Upravljanje fokusom pri otvaranju/zatvaranju modala i mobilnog izbornika.
-- Zatvaranje modala tipkom `Escape` i klikom na pozadinu.
-- Poštivanje `prefers-reduced-motion` i `prefers-color-scheme` pri prvom posjetu.
-- Tablica rokova na mobitelu zamijenjena je čitljivim karticama.
+Otvori: <http://127.0.0.1:5500/>
 
-## Ograničenja demoa
+> Moguće je otvoriti i `index.html` izravno, ali lokalni server je preporučen zbog dosljednog učitavanja resursa.
 
-Demo način nema bazu podataka, prijavu ni stvarne Moodle pozive. Predaja zadaće,
-upload skripte, preuzimanje materijala, CSV izvoz i potvrda samo su lokalne demo
-radnje. AI asistent vraća unaprijed pripremljene odgovore, a Meet poveznice su
-primjeri. Live način radi tek uz pokrenuti proxy i valjan Moodle token; pojedine
-Moodle funkcije ovise o dopuštenjima korisnika i postavkama WebServicea.
+### CSS (Tailwind)
 
-## Testirano
+Generirani CSS je već uključen (`assets/css/tailwind.css`). Ako mijenjaš klase/stilove koji ovise o Tailwind buildu:
 
-Playwright provjere u Chromiumu na širinama 1440, 1280, 900 i 390 px:
+```bash
+npm install
+npm run build:css
+# razvoj: npm run watch:css
+```
 
-- nema horizontalnog prelijevanja stranice ni grešaka u konzoli,
-- rade pretraga, filtri, carousel, modali, predaja zadaće, inbox i UniHub,
-- rade ocjene, ECTS izračuni, CSV izvoz, materijali i oznake "Novo",
-- rade centar obavijesti, označavanje pročitanim, postavke i testni podsjetnik,
-- rade demo sinkronizacija, live validacija proxy URL-a i status Moodlea,
-- rade preuzimanja (skripta, materijala, ocjena, potvrde, `.ics`) i mobilni izbornik,
-- rade svijetla i tamna tema te mobilni prikaz tablica i kartica.
+### Osnovne provjere
+
+```bash
+npm run check
+```
+
+Pokreće osnovne provjere (JSON, sintaksa JS datoteka, prisutnost ključnih datoteka).
+
+## Konfiguracija i integracija
+
+Portal je pripremljen za prilagodbu kroz runtime konfiguraciju i dokumentirane integracijske točke.
+
+- **Konfiguracija:** `assets/js/config.js` (učitava se prije ostalih aplikacijskih skripti)
+- **Primjer:** `studia.config.example.js`
+- **Vodič integracije:** [`docs/INTEGRATION.md`](docs/INTEGRATION.md)
+- **Podatkovni model:** [`docs/DATA_MODEL.md`](docs/DATA_MODEL.md)
+- **Arhitektura:** [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md)
+
+Primjer (inline override prije `config.js`):
+
+```html
+<script>
+  window.STUDIA_CONFIG = {
+    branding: { productName: "Studia", institutionShort: "SUM" },
+    features: { aiAssistant: false },
+    links: { moodlePortal: "https://eucenje.sum.ba/moodle/" }
+  };
+</script>
+<script src="assets/js/config.js" defer></script>
+```
+
+Dostupan je i globalni namespace `window.Studia` (konfiguracija, lifecycle hookovi/eventi i osnovni API nakon inicijalizacije).
+
+## Moodle integracija
+
+### Demo način
+- Zadano aktivan, bez mrežnih zahtjeva.
+- Koristi ugrađene demo podatke za prikaz sinkronizacije i sažetaka.
+
+### Live način (preko proxyja)
+- Front-end šalje zahtjev proxy servisu; proxy koristi Moodle Web Service token i vraća normalizirane podatke.
+- **Token se ne smije nalaziti u pregledniku, `localStorage` ili front-end kodu.**
+
+Primjer pokretanja proxyja (Node 18+):
+
+```bash
+cd server
+# postavi varijable okruženja (primjer)
+# MOODLE_TOKEN=... MOODLE_URL=https://eucenje.sum.ba/moodle ALLOWED_ORIGIN=https://max55-lab.github.io
+node moodle-proxy.js
+```
+
+Detalji: [`server/README.md`](server/README.md)
+
+## Moodle tema (`theme/studia`)
+
+U repozitoriju se nalazi i Moodle 4.5 Boost child tema:
+- nativna Moodle autentikacija i autorizacija (bez vlastite prijave),
+- prikaz prilagođen Studia vizualnom identitetu,
+- korisničke preference (npr. način prikaza) kroz Moodle mehanizme.
+
+Upute za instalaciju i postavke: [`theme/studia/README.md`](theme/studia/README.md)
+
+## Struktura projekta (sažetak)
+
+```text
+.
+├── index.html                  # statički portal (live demo ulazna točka)
+├── assets/
+│   ├── css/                    # stilovi (tailwind build + custom)
+│   ├── js/                     # config, data, core, render, views, adapteri, app
+│   ├── img/, fonts/, vendor/   # resursi
+├── docs/                       # integracija, podatkovni model, arhitektura, privatnost
+├── server/                     # Moodle proxy primjer
+├── theme/studia/               # Moodle 4.5 tema
+├── .github/workflows/          # CI i deploy
+├── studia.config.example.js     # primjer integracijske konfiguracije
+└── README.md
+```
+
+## Kvaliteta, sigurnost i privatnost
+
+- **Pristupačnost:** semantika, fokus stanja, tipkovnička podrška, ARIA oznake i poštivanje `prefers-reduced-motion` (gdje je primjenjivo).
+- **Sigurnost:** bez izlaganja tajni u klijentu; integracije trebaju poslužiteljsku autentikaciju/autorizaciju i obradu podataka. Vidi [`SECURITY.md`](SECURITY.md).
+- **Privatnost:** demo koristi izmišljene podatke; lokalna pohrana služi samo za demo stanje/preferencije. Vidi [`docs/PRIVACY.md`](docs/PRIVACY.md).
+- **CI:** osnovne provjere sintakse i valjanosti konfiguracije (`.github/workflows/ci.yml`).
+
+## Deploy
+
+- **GitHub Pages:** workflow `.github/workflows/deploy.yml` objavljuje `index.html` i `assets/` na svaki push na `main` (ili ručno pokretanje).
+- **Repo-only sadržaj:** dokumentacija, tema, proxy i konfiguracijski primjeri nalaze se u repozitoriju i nisu nužno dio statičkog Pages artefakta.
+
+## Doprinos i licenca
+
+- Smjernice za doprinos: [`CONTRIBUTING.md`](CONTRIBUTING.md)
+- Evidencija promjena: [`CHANGELOG.md`](CHANGELOG.md)
+- Licenca: [`LICENSE`](LICENSE)
+
+## Napomene i ograničenja
+
+- Aplikacija je u zadanoj konfiguraciji **demo** (bez baze, bez stvarnog korisničkog računa, bez produkcijskih garancija).
+- Za produkcijsku upotrebu potrebno je implementirati odgovarajuće backend sustave, sigurnosne kontrole, upravljanje podacima i usklađenost s pravilima/propisima ciljnog okruženja.
+- Dio akademskih podataka u stvarnim sustavima može dolaziti iz više izvora (npr. Moodle + IS/SIS), pa integracija zahtijeva mapiranje i usklađivanje podatkovnog modela.

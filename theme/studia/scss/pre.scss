@@ -1,0 +1,85 @@
+// Studia palette and Bootstrap overrides.
+// This file is prepended before the Boost preset so its variables win.
+
+$studia-primary: #6d28d9;
+$studia-primary-bright: #7c3aed;
+
+$primary: $studia-primary;
+$secondary: #6b7280;
+$success: #0f9f6e;
+$info: #0e7490;
+$warning: #d97706;
+$danger: #dc2626;
+
+$body-bg: #f7f6fc;
+$body-color: #28243a;
+$link-color: $primary;
+$link-hover-color: darken($primary, 10%);
+$link-hover-decoration: none;
+
+$font-family-sans-serif: "Inter", "Segoe UI", system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif;
+$font-size-base: 0.95rem;
+$headings-font-weight: 700;
+$headings-color: #1d1830;
+
+$border-radius: 0.85rem;
+$border-radius-sm: 0.55rem;
+$border-radius-lg: 1.15rem;
+
+$card-bg: #ffffff;
+$card-border-width: 1px;
+$card-border-color: rgba(76, 29, 149, 0.1);
+$card-border-radius: 1.15rem;
+$card-cap-bg: transparent;
+$card-group-margin: 0.35rem;
+
+$input-bg: #ffffff;
+$input-border-color: #d9d3e9;
+$input-placeholder-color: #8b869f;
+$input-focus-border-color: lighten($primary, 22%);
+$input-focus-box-shadow: 0 0 0 0.2rem rgba($primary, 0.16);
+
+$btn-border-radius: 0.75rem;
+$btn-border-radius-sm: 0.55rem;
+$btn-border-radius-lg: 0.95rem;
+$btn-padding-y: 0.55rem;
+$btn-padding-x: 1rem;
+$btn-focus-box-shadow: 0 0 0 0.2rem rgba($primary, 0.2);
+
+$navbar-padding-y: 0.65rem;
+$navbar-light-color: rgba(40, 36, 58, 0.7);
+$navbar-light-hover-color: $primary;
+$navbar-light-active-color: $primary;
+$navbar-light-brand-color: #1d1830;
+$navbar-light-brand-hover-color: $primary;
+
+$dropdown-border-color: rgba(76, 29, 149, 0.12);
+$dropdown-border-radius: 0.9rem;
+$dropdown-link-hover-bg: rgba($primary, 0.08);
+$dropdown-link-hover-color: $primary;
+$dropdown-link-active-bg: $primary;
+
+$modal-content-border-radius: 1.1rem;
+$popover-border-radius: 1rem;
+$popover-border-color: rgba(76, 29, 149, 0.12);
+
+$breadcrumb-divider: "/";
+$breadcrumb-divider-rtl: "/";
+$breadcrumb-bg: transparent;
+
+$progress-height: 0.5rem;
+$progress-bg: #ece9f6;
+$progress-border-radius: 999px;
+
+$nav-pills-border-radius: 0.7rem;
+$nav-pills-link-active-bg: $primary;
+
+$pagination-active-bg: $primary;
+$pagination-active-border-color: $primary;
+$pagination-border-radius: 0.6rem;
+
+$list-group-border-color: rgba(76, 29, 149, 0.08);
+$list-group-hover-bg: rgba($primary, 0.05);
+$list-group-border-radius: 1rem;
+
+$enable-responsive-font-sizes: true;

@@ -1338,6 +1338,14 @@ function bindEvents() {
    ========================================================= */
 
 function init() {
+  const cfg = (window.STUDIA_CONFIG && window.STUDIA_CONFIG.integration) || {};
+  const ctx = { config: window.STUDIA_CONFIG || null, state };
+
+  if (typeof cfg.onBeforeInit === "function") {
+    try { cfg.onBeforeInit(ctx); } catch (error) { console.error("Studia onBeforeInit error", error); }
+  }
+  if (window.Studia && typeof window.Studia.emit === "function") window.Studia.emit("before-init", ctx);
+
   loadPreferences();
   syncThemeUI();
   updateAcademicLabels();
@@ -1346,11 +1354,25 @@ function init() {
 
   const hash = window.location.hash.replace("#", "");
   const validTabs = ["dashboard", "profile", "inbox", "courses", "grades", "materials", "assignments", "timetable", "meet"];
-  switchTab(validTabs.includes(hash) ? hash : "dashboard", { keepScroll: true, keepHash: !hash });
+  const defaultTab = (window.STUDIA_CONFIG && window.STUDIA_CONFIG.ui && window.STUDIA_CONFIG.ui.defaultTab) || "dashboard";
+  const initialTab = validTabs.includes(hash) ? hash : (validTabs.includes(defaultTab) ? defaultTab : "dashboard");
+  switchTab(initialTab, { keepScroll: true, keepHash: !hash });
 
   bindEvents();
   syncThemeUI();
   refreshIcons();
+
+  if (typeof cfg.onAfterInit === "function") {
+    try { cfg.onAfterInit(ctx); } catch (error) { console.error("Studia onAfterInit error", error); }
+  }
+  if (typeof cfg.onReady === "function") {
+    try { cfg.onReady(ctx); } catch (error) { console.error("Studia onReady error", error); }
+  }
+  if (window.Studia) {
+    window.Studia.state = state;
+    window.Studia.api = { switchTab, renderAll, showToast, openModal, closeModal };
+  }
+  if (window.Studia && typeof window.Studia.emit === "function") window.Studia.emit("ready", ctx);
 }
 
 document.addEventListener("DOMContentLoaded", init);

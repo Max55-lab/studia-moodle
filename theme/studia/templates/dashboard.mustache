@@ -1,0 +1,109 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template theme_studia/dashboard
+
+    Studia dashboard: greeting hero and course cards.
+
+    Context variables required for this template:
+    * greeting - Time of day greeting.
+    * name - Full name of the current user.
+    * semester - Active semester label.
+    * intro - Short dashboard introduction.
+    * courses - Array of course cards.
+    * coursescount - Number of enrolled courses.
+    * avgprogress - Average completion percentage, or null.
+    * hasprogress - Whether average progress is available.
+    * courselisturl - URL of the course list.
+    * calendarurl - URL of the calendar.
+
+    Example context (json):
+    {
+        "greeting": "Dobar dan",
+        "name": "Ana Anić",
+        "semester": "Zimski semestar 2026/2027",
+        "intro": "Tvoj prostor za kolegije, obveze i napredak.",
+        "courses": [
+            {
+                "name": "Programiranje",
+                "shortname": "PR-101",
+                "url": "https://moodle.example/course/view.php?id=2",
+                "mark": "P",
+                "hasprogress": true,
+                "progress": 64,
+                "teachers": "Marko Marić",
+                "moreteachers": ""
+            }
+        ],
+        "coursescount": 1,
+        "avgprogress": 64,
+        "hasprogress": true,
+        "courselisturl": "https://moodle.example/my/courses.php",
+        "calendarurl": "https://moodle.example/calendar/view.php"
+    }
+}}
+<section class="studia-dashboard" data-region="studia-dashboard">
+    <div class="studia-hero">
+        <div class="studia-hero__content">
+            <span class="studia-eyebrow">{{semester}}</span>
+            <h1 class="studia-hero__title">{{greeting}}, {{name}}</h1>
+            <p class="studia-hero__intro">{{intro}}</p>
+            <div class="studia-hero__actions">
+                <a class="studia-hero__button studia-hero__button--primary" href="{{{courselisturl}}}">{{#str}}browsecourses, theme_studia{{/str}}</a>
+                <a class="studia-hero__button studia-hero__button--ghost" href="{{{calendarurl}}}">{{#str}}calendar, theme_studia{{/str}}</a>
+            </div>
+        </div>
+        <div class="studia-hero__stats">
+            <div class="studia-stat">
+                <span class="studia-stat__value">{{coursescount}}</span>
+                <span class="studia-stat__label">{{#str}}coursescount, theme_studia{{/str}}</span>
+            </div>
+            <div class="studia-stat">
+                <span class="studia-stat__value">
+                    {{#hasprogress}}{{avgprogress}}%{{/hasprogress}}
+                    {{^hasprogress}}&mdash;{{/hasprogress}}
+                </span>
+                <span class="studia-stat__label">{{#str}}avgprogress, theme_studia{{/str}}</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="studia-course-section">
+        <div class="studia-section-head">
+            <div>
+                <h2 class="studia-section-title">{{#str}}mycourses, theme_studia{{/str}}</h2>
+                <p class="studia-section-subtitle">{{#str}}dashboardintro, theme_studia{{/str}}</p>
+            </div>
+            <a class="studia-section-link" href="{{{courselisturl}}}">{{#str}}allcourses, theme_studia{{/str}} &rarr;</a>
+        </div>
+
+        {{#courses.0}}
+            <div class="studia-course-grid">
+                {{#courses}}
+                    {{> theme_studia/course_card}}
+                {{/courses}}
+            </div>
+        {{/courses.0}}
+        {{^courses}}
+            <div class="studia-empty">
+                <h3 class="studia-empty__title">{{#str}}nocourses, theme_studia{{/str}}</h3>
+                <p class="studia-empty__text">{{#str}}nocoursesdesc, theme_studia{{/str}}</p>
+                <a class="btn btn-primary" href="{{{courselisturl}}}">{{#str}}browsecourses, theme_studia{{/str}}</a>
+            </div>
+        {{/courses}}
+    </div>
+</section>

@@ -1,0 +1,81 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template theme_studia/course_card
+
+    A single course card used on the Studia dashboard.
+
+    Context variables required for this template:
+    * name - Course full name.
+    * shortname - Course short name.
+    * url - Course URL.
+    * mark - Single letter course mark.
+    * hasprogress - Whether completion is tracked.
+    * progress - Completion percentage.
+    * teachers - Teacher names.
+    * moreteachers - Text describing additional teachers.
+
+    Example context (json):
+    {
+        "name": "Programiranje",
+        "shortname": "PR-101",
+        "url": "https://moodle.example/course/view.php?id=2",
+        "mark": "P",
+        "hasprogress": true,
+        "progress": 64,
+        "teachers": "Marko Marić",
+        "moreteachers": ""
+    }
+}}
+<article class="studia-course-card">
+    <div class="studia-course-card__top">
+        <span class="studia-course-card__mark" aria-hidden="true">{{mark}}</span>
+        <span class="studia-course-card__short" title="{{shortname}}">{{shortname}}</span>
+    </div>
+
+    <h3 class="studia-course-card__title"><a href="{{{url}}}">{{name}}</a></h3>
+
+    <p class="studia-course-card__teacher">
+        <span class="studia-course-card__label">{{#str}}teacher, theme_studia{{/str}}:</span>
+        {{#teachers}}{{teachers}}{{/teachers}}
+        {{^teachers}}{{#str}}noteacher, theme_studia{{/str}}{{/teachers}}
+        {{#moreteachers}} &middot; {{moreteachers}}{{/moreteachers}}
+    </p>
+
+    <div class="studia-course-card__meta">
+        {{#hasprogress}}
+            <div class="studia-progress-row">
+                <span>{{#str}}progress, theme_studia{{/str}}</span>
+                <strong>{{progress}}%</strong>
+            </div>
+            <div class="studia-progress-track">
+                <div class="studia-progress-bar" style="width: {{progress}}%"></div>
+            </div>
+        {{/hasprogress}}
+        {{^hasprogress}}
+            <span class="studia-course-card__notracked">{{#str}}notracked, theme_studia{{/str}}</span>
+        {{/hasprogress}}
+    </div>
+
+    <a class="studia-course-card__footer" href="{{{url}}}">
+        {{#str}}viewcourse, theme_studia{{/str}}
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M5 12h14"></path>
+            <path d="M13 6l6 6-6 6"></path>
+        </svg>
+    </a>
+</article>

@@ -1,0 +1,112 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+
+    @template theme_studia/navbar
+
+    This template renders the Studia top navbar. It is inherited from
+    theme_boost/navbar and adds the light/dark switch and the compact drawer.
+
+    Example context (json):
+    {
+        "output": {
+            "should_display_navbar_logo": true,
+            "get_compact_logo_url": "http://placekitten.com/50/50",
+            "page_heading_menu": "<li>..</li>",
+            "search_box": "<div><input type='text'></div>",
+            "navbar_plugin_output": "<div class='dropdown'>Messaging</div>",
+            "edit_switch": ""
+        },
+        "config": {
+            "wwwroot": "#",
+            "homeurl": "/my/"
+        },
+        "sitename": "Studia",
+        "primarymoremenu": [],
+        "usermenu": [],
+        "langmenu": [],
+        "studiathemeswitch": "<form></form>",
+        "studiaquickdrawer": "<aside></aside>"
+    }
+}}
+<nav class="navbar fixed-top navbar-light bg-white navbar-expand studia-navbar" aria-label="{{#str}}sitemenubar, admin{{/str}}">
+    <div class="container-fluid">
+        <button class="navbar-toggler aabtn d-block d-md-none px-1 my-1 border-0" data-toggler="drawers" data-action="toggle" data-target="theme_boost-drawers-primary">
+            <span class="navbar-toggler-icon"></span>
+            <span class="sr-only">{{#str}}sidepanel, core{{/str}}</span>
+        </button>
+
+        <a href="{{{ config.homeurl }}}" class="navbar-brand studia-brand d-none d-md-flex align-items-center m-0 me-4 p-0 aabtn">
+            {{# output.should_display_navbar_logo }}
+                <img src="{{output.get_compact_logo_url}}" class="studia-brand-logo" alt="{{sitename}}">
+            {{/ output.should_display_navbar_logo }}
+            {{^ output.should_display_navbar_logo }}
+                <span class="studia-brand-mark" aria-hidden="true">S</span>
+                <span class="studia-brand-name">{{{ sitename }}}</span>
+            {{/ output.should_display_navbar_logo }}
+        </a>
+        {{#primarymoremenu}}
+            <div class="primary-navigation">
+                {{> core/moremenu}}
+            </div>
+        {{/primarymoremenu}}
+
+        {{# output.page_heading_menu}}
+            <ul class="navbar-nav d-none d-md-flex my-1 px-1">
+                <!-- page_heading_menu -->
+                {{{ output.page_heading_menu }}}
+            </ul>
+        {{/output.page_heading_menu}}
+
+        <div id="usernavigation" class="navbar-nav ms-auto h-100">
+            <button
+                type="button"
+                class="studia-icon-btn studia-quick-trigger"
+                data-action="studia-open-quick-drawer"
+                title="{{#str}}quickmenu, theme_studia{{/str}}"
+                aria-label="{{#str}}quickmenu, theme_studia{{/str}}"
+            >
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <rect x="3" y="3" width="7" height="7" rx="1.5"></rect>
+                    <rect x="14" y="3" width="7" height="7" rx="1.5"></rect>
+                    <rect x="3" y="14" width="7" height="7" rx="1.5"></rect>
+                    <rect x="14" y="14" width="7" height="7" rx="1.5"></rect>
+                </svg>
+            </button>
+            {{# output.search_box }}
+                {{{ output.search_box }}}
+                <div class="divider border-start h-75 align-self-center mx-1"></div>
+            {{/output.search_box}}
+            {{#langmenu}}
+                {{> theme_boost/language_menu }}
+                <div class="divider border-start h-75 align-self-center mx-1"></div>
+            {{/langmenu}}
+            {{{ studiathemeswitch }}}
+            {{{ output.navbar_plugin_output }}}
+            <div class="d-flex align-items-stretch usermenu-container" data-region="usermenu">
+                {{#usermenu}}
+                    {{> core/user_menu }}
+                {{/usermenu}}
+            </div>
+            {{{ output.edit_switch }}}
+        </div>
+    </div>
+</nav>
+
+{{{ studiaquickdrawer }}}
+
+{{> theme_boost/primary-drawer-mobile }}

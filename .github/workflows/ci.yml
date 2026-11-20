@@ -1,0 +1,37 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Validate JSON files
+        run: |
+          node -e "const fs=require('fs');['package.json','.prettierrc.json','tailwind.config.js'].forEach(f=>{if(fs.existsSync(f)&&f.endsWith('.json'))JSON.parse(fs.readFileSync(f,'utf8'));});console.log('JSON ok');"
+
+      - name: Check JavaScript syntax
+        run: |
+          set -e
+          for f in assets/js/*.js server/*.js; do
+            if [ -f "$f" ]; then
+              echo "Checking $f"
+              node --check "$f"
+            fi
+          done
+          echo "Syntax ok"
