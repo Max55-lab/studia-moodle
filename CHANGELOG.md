@@ -13,6 +13,7 @@ Format je informativan i temeljen na [Keep a Changelog](https://keepachangelog.c
 - Osvježene dokumentacijske snimke (`docs/preview.png`, `grades.png`, `materials.png`) s planerom, grafikonima i novim prikazima.
 - Lighthouse audit portala: accessibility 1.0 (ispravljen kontrast u tamnom načinu i neusklađena `aria-label` imena).
 - Proxy hardening: odbijanje neodobrenih origin-a (403), ograničavanje broja sync zahtjeva (429) i sigurnosna zaglavlja odgovora.
+- Automatizirani browser smoke-testovi (Playwright, `npm run test:e2e`) i statički server za testove (`scripts/static-server.js`), s 6 testova koji se pokreću i u CI-ju.
 
 ### Fixed
 - Lighthouse: nedovoljan kontrast na karticama kolegija i u popisima u tamnom načinu; `aria-label` gumba koji nije sadržavao vidljivi tekst.

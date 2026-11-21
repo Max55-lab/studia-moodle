@@ -76,7 +76,10 @@ const required = [
   "assets/css/tailwind.css",
   "README.md",
   "LICENSE",
-  "docs/INTEGRATION.md"
+  "docs/INTEGRATION.md",
+  "playwright.config.js",
+  "scripts/static-server.js",
+  "tests/e2e/portal.spec.js"
 ];
 for (const rel of required) {
   if (fs.existsSync(path.join(root, rel))) ok(`Exists: ${rel}`);

@@ -62,6 +62,16 @@ npm run check
 
 Pokreće osnovne provjere (JSON, sintaksa JS datoteka, PHP sintaksa Moodle teme ako je PHP dostupan, prisutnost ključnih datoteka, obavezni HTML ID-ovi, duplicirani ID-ovi i redoslijed učitavanja scriptova). Ista skripta i zaseban PHP lint pokreću se i u CI-ju.
 
+### Browser smoke-testovi (Playwright)
+
+```bash
+npm install
+npm run test:e2e:install   # samo prvi put: preuzima Chromium
+npm run test:e2e
+```
+
+Testovi u `tests/e2e/portal.spec.js` pokrivaju učitavanje nadzorne ploče, navigaciju, planer, favorite, tamni način i demo → live → demo sinkronizaciju preko mock proxyja. Playwright sam pokreće statički server (`scripts/static-server.js`, port `4173`) i mock proxy (port `8788`), pa nije potrebno ručno ih paliti. Isti testovi idu i u CI (uz `npm ci` i `npx playwright install --with-deps chromium`).
+
 ## Konfiguracija i integracija
 
 Portal je pripremljen za prilagodbu kroz runtime konfiguraciju i dokumentirane integracijske točke.
