@@ -1,0 +1,6 @@
+Pravila za ovaj repozitorij nalaze se u AGENTS.md — pročitaj ih prije bilo koje izmjene.
+
+Sažetak: theme_studia je produkcija; portal i proxy su demo. Ne dodavati stvarnu
+autentikaciju, tokene ni osobne podatke. Ne duplicirati teme, modale, tabove ni
+pretragu. Animirati samo transform/opacity i poštovati prefers-reduced-motion.
+Prije commita obavezno: node scripts/check.mjs i Playwright E2E testovi.

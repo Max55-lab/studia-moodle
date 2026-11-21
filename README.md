@@ -34,6 +34,8 @@ AI je korišten za planiranje, generiranje i objašnjavanje koda, razvoj sučelj
 
 Svi AI-generirani dijelovi ručno su pregledani i provjereni (`node scripts/check.mjs`, Playwright, Lighthouse) te prilagođeni postojećoj arhitekturi. U javni repozitorij ne unose se stvarne lozinke, tokeni ni osobni podaci.
 
+Obvezna pravila za rad AI alatova i developera nalaze se u [`AGENTS.md`](AGENTS.md) (kratki pokazivač za Cursor je u `.cursorrules`).
+
 ## Dizajn — Studia 3
 
 - **Novi vizualni sustav:** tamna navigacijska traka, svijetla radna površina, tamni hero s jednim sljedećim rokom i narančastim signalnim akcentom uz violetni primarni (tamni način koristi istu strukturu).
