@@ -1,0 +1,33 @@
+# Studia — studentski portal i Moodle tema
+
+> Studia je demonstracijski studentski portal i produkcijska Moodle 4.5 child tema
+> (`theme_studia`) za Sveučilište u Mostaru. Statički portal koristi izmišljene
+> podatke i generičkog korisnika `user`; ne sadrži prave lozinke, tokene ni osobne
+> podatke.
+
+## Za ljude
+
+- Projekt: https://github.com/Max55-lab/studia-moodle
+- Demo: https://max55-lab.github.io/studia-moodle/
+- README: ./README.md
+- Pokretanje: `node scripts/mock-moodle-proxy.js` + lokalni statički server; provjere
+  `node scripts/check.mjs` i `node node_modules/@playwright/test/cli.js test`.
+
+## Za AI agente
+
+- Pravila rada: ./AGENTS.md (Cursor: ./.cursorrules)
+- Arhitektonska odluka ADR-001 (theme-first): ./docs/DECISIONS.md
+- Ciljni 24-modularni nacrt: ./docs/ARTITEKTURA.md
+- PostgreSQL shema (67 tablica, RLS, RBAC, pgvector, seed): ./docs/schema.sql
+- Use Case opisi i 403 pravila: ./docs/USE-CASE.md
+- Plan niše i rasta: ./docs/PLAN-RASTA.md
+- Korišteni AI alati i zadaci: ./README.md (poglavlje "Korištenje AI alata")
+- Promjene: ./CHANGELOG.md
+
+## Važna ograničenja
+
+- `theme_studia` je jedini produkcijski smjer za SUM (ADR-001).
+- `server/moodle-proxy.js` i portal su demo/laboratorijski alati.
+- Dokumenti u `docs/ARTITEKTURA.md`, `docs/schema.sql`, `docs/USE-CASE.md` i
+  `docs/PLAN-RASTA.md` su zaseban konceptualni nacrt, ne implementirani monorepo.
+- AI-generirani kod mora čovjek provjeriti i moći objasniti na obrani.
