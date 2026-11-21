@@ -13,10 +13,11 @@
 
 ## Dizajn — Focus
 
-- **Mirna paleta:** papirnata pozadina, ravne bijele površine, tanke linije i jedan indigo akcent (tamni način koristi istu strukturu).
-- **Manje buke:** bočna navigacija ima 7 umjesto 11 stavki, nema animiranih gradijenata, velikih hero-blokova ni dupliciranih badgeova.
+- **Modernizirana paleta:** papirnata pozadina s blagim sjajem, mekane površine, suptilne sjene, tanke linije i jedan indigo akcent (tamni način koristi istu strukturu).
+- **Moderni detalji:** gradijentni primarni gumbi, akcentna traka na sažetcima, ikone u brzim vezama i kratko pojavljivanje sekcija — bez dodatnih podataka i uz poštovanje `prefers-reduced-motion`.
+- **Manje buke:** bočna navigacija ima 7 umjesto 11 stavki, nema velikih hero-blokova ni dupliciranih badgeova.
 - **Jedan fokus:** nadzorna ploča prikazuje samo sljedeći rok, prosjek, ECTS i broj aktivnih zadaća. Sve ostalo je u `<details id="dashboard-more">`.
-- **Isti jezik u temi:** `theme/studia/scss/post.scss` koristi iste ravne površine i akcent, bez novih endpointa ili tokena.
+- **Isti jezik u temi:** `theme/studia/scss/post.scss` koristi istu paletu i akcent, bez novih endpointa ili tokena.
 
 ## Smjer integracije — theme-first
 

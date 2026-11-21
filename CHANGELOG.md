@@ -19,7 +19,7 @@ Format je informativan i temeljen na [Keep a Changelog](https://keepachangelog.c
 
 ### Changed
 - **Potpuno novi Focus redizajn:** nadzorna ploča sada prikazuje jedan sljedeći rok, tri sažetka (prosjek, ECTS, aktivne zadaće), kompaktne kartice kolegija i četiri brze veze. Planer, tablica rokova, statistika, profesori i grafikoni premješteni su u sklopljeni `<details id="dashboard-more">`.
-- **Smireniji vizualni jezik:** uklonjeni animirani hero gradienti, mreža, orbovi i teške sjene; papirnata pozadina, ravne površine, tanke linije i jedan indigo akcent. Isto je primijenjeno u `theme/studia/scss/post.scss`.
+- **Modernizirani vizualni jezik:** uklonjeni su animirani hero gradienti, mreža i orbovi, a zadržani papirnata pozadina, tanke linije i jedan indigo akcent. Dodane su suptilne sjene, mekani akcentni gradijenti na gumbima i karticama, akcentne trake, ikone u brzim vezama i kratke mikro-animacije (poštuju `prefers-reduced-motion`). Tema koristi istu paletu.
 - **Manje navigacijskog šuma:** bočni izbornik ima 7 umjesto 11 stavki (uklonjeni duplicirani profil, planer, Meet i AI unos), a kartice kolegija prikazuju samo kod, naziv, napredak i detalje.
 - `README.md`, `docs/INTEGRATION.md`, `docs/PRIVACY.md` i `theme/studia/README.md` reorganizirani oko odluke theme-first (sigurnosni model teme, ograničenja proxyja).
 
