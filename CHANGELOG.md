@@ -7,6 +7,7 @@ Format je informativan i temeljen na [Keep a Changelog](https://keepachangelog.c
 ## [Unreleased]
 
 ### Added
+- **Proširena E2E pokrivenost:** planer test sada pokriva i inline uređivanje (dodaj → uredi → završi → reload → obriši), a novi test provjerava print medij (navigacija skrivena, sadržaj vidljiv, animacije isključene). Ukupno 7 Playwright testova.
 - **Print prikaz:** dodan je `@media print` sloj koji za A4 ispis skriva navigaciju, zaglavlje, modale i kontrole, uklanja animacije i sjene i zadržava samo sadržaj trenutnog prikaza. Provjereno u Playwrightu (`page.pdf`, bez konzolnih grešaka).
 - **Završna projektna dokumentacija:** `docs/USE-CASE.md` (6 aktora, 22 use casea, kritični tokovi i 403 pravila), `docs/PLAN-RASTA.md` (izbor niše, ICP, paketi, PLG petlje, KPI i rizici) i `llms.txt` za AI agente. Time su pokrivene sve isporuke koje su bile ponuđene za 24-modularnu specifikaciju.
 - **Sistemska pravila za AI alate:** `AGENTS.md` definira granicu između produkcijske `theme_studia` teme i demo portala, UI/UX i WCAG standarde, sigurnosna pravila (403 na serveru, hashiranje, tajne), normaliziranu bazu i RLS, obavezne provjere prije commita te popis zaštićenih E2E hookova. `.cursorrules` je kratki pokazivač na ista pravila.
@@ -19,7 +20,7 @@ Format je informativan i temeljen na [Keep a Changelog](https://keepachangelog.c
 - Osvježene dokumentacijske snimke (`docs/preview.png`, `grades.png`, `materials.png`) s planerom, grafikonima i novim prikazima.
 - Lighthouse audit portala: accessibility 1.0 (ispravljen kontrast u tamnom načinu i neusklađena `aria-label` imena).
 - Proxy hardening: odbijanje neodobrenih origin-a (403), ograničavanje broja sync zahtjeva (429) i sigurnosna zaglavlja odgovora.
-- Automatizirani browser smoke-testovi (Playwright, `npm run test:e2e`) i statički server za testove (`scripts/static-server.js`), s 6 testova koji se pokreću i u CI-ju.
+- Automatizirani browser smoke-testovi (Playwright, `npm run test:e2e`) i statički server za testove (`scripts/static-server.js`), sa 7 testova koji se pokreću i u CI-ju.
 - **ADR-001 — theme-first integracija** (`docs/DECISIONS.md`): `theme_studia` je jedini produkcijski smjer za SUM; statički portal i proxy su eksplicitno demo/laboratorijski alati.
 - Upozorenja u Moodle modalu i dokumentaciji da live proxy nije zamjena za Moodleovu autentifikaciju i autorizaciju.
 

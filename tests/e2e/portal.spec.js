@@ -32,6 +32,19 @@ test("fokus nadzorne ploče je sažetak, a detalji se otvaraju zasebno", async (
   expect(errors, "console greške").toEqual([]);
 });
 
+test("print prikaz skriva navigaciju i zadržava sadržaj", async ({ page }) => {
+  const errors = collectErrors(page);
+  await page.goto("/");
+  await page.emulateMedia({ media: "print" });
+
+  await expect(page.locator(".studia-header")).toBeHidden();
+  await expect(page.locator("#left-sidebar")).toBeHidden();
+  await expect(page.locator("#main-content")).toBeVisible();
+  await expect(page.locator(".proto-hero")).toHaveCSS("animation-name", "none");
+
+  expect(errors, "console greške").toEqual([]);
+});
+
 test("navigacija između pogleda skriva prethodni i prikazuje novi tab", async ({ page }) => {
   await page.goto("/");
 
@@ -46,7 +59,7 @@ test("navigacija između pogleda skriva prethodni i prikazuje novi tab", async (
   await expect(page.locator("#view-grades")).toBeHidden();
 });
 
-test("planer dodaje, završava i briše zadatak uz perzistenciju", async ({ page }) => {
+test("planer dodaje, uređuje, završava i briše zadatak uz perzistenciju", async ({ page }) => {
   await page.goto("/");
   await page.locator("#dashboard-more summary").click();
 
@@ -57,17 +70,27 @@ test("planer dodaje, završava i briše zadatak uz perzistenciju", async ({ page
   await expect(item).toBeVisible();
   await expect(page.locator("#planner-progress-label")).toHaveText(/0 \/ 1/);
 
+  await item.locator("[data-todo-edit]").click();
+  const editInput = page.locator("#planner-list .todo-edit-input");
+  await expect(editInput).toBeVisible();
+  await editInput.fill("E2E: uređeni Laravel relacije");
+  await editInput.press("Enter");
+
+  item = page.locator("#planner-list li", { hasText: "E2E: uređeni Laravel relacije" });
+  await expect(item).toBeVisible();
+  await expect(page.locator("#planner-list li", { hasText: "E2E: ponoviti Laravel relacije" })).toHaveCount(0);
+
   await item.locator("[data-todo-toggle]").click();
   await expect(page.locator("#planner-progress-label")).toHaveText(/1 \/ 1/);
 
   await page.reload();
   await page.locator("#dashboard-more summary").click();
-  item = page.locator("#planner-list li", { hasText: "E2E: ponoviti Laravel relacije" });
+  item = page.locator("#planner-list li", { hasText: "E2E: uređeni Laravel relacije" });
   await expect(item).toBeVisible();
   await expect(item.locator("[data-todo-toggle]")).toHaveAttribute("aria-pressed", "true");
 
   await item.locator("[data-todo-delete]").click();
-  await expect(page.locator("#planner-list li", { hasText: "E2E: ponoviti Laravel relacije" })).toHaveCount(0);
+  await expect(page.locator("#planner-list li", { hasText: "E2E: uređeni Laravel relacije" })).toHaveCount(0);
 });
 
 test("favoriti kolegija rade i nakon ponovnog učitavanja", async ({ page }) => {
