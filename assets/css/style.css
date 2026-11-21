@@ -1312,3 +1312,188 @@ html:not(.dark) main [class*="text-emerald-600"] {
     flex-basis: 220px;
   }
 }
+
+/* =========================================================
+   STUDIA 3 — pokret i sitni detalji.
+   Sve je isključivo transform/opacity (osim kratnih prijelaza)
+   i poštuje globalni prefers-reduced-motion blok.
+   ========================================================= */
+
+@keyframes studia-rise {
+  from { opacity: 0; transform: translateY(14px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes studia-glow {
+  from { transform: translate3d(0, 0, 0) scale(1); opacity: 0.7; }
+  to { transform: translate3d(-2rem, 1.5rem, 0) scale(1.14); opacity: 1; }
+}
+
+@keyframes studia-slide {
+  from { transform: translateX(-25%); }
+  to { transform: translateX(25%); }
+}
+
+@keyframes studia-icon-pop {
+  0% { transform: scale(1); }
+  45% { transform: scale(1.25) rotate(-8deg); }
+  100% { transform: scale(1); }
+}
+
+@keyframes studia-toast {
+  from { opacity: 0; transform: translateY(10px) scale(0.98); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@keyframes studia-row {
+  from { opacity: 0; transform: translateX(-8px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+/* Postepeni ulazak nadzorne ploče. */
+#view-dashboard .proto-hero__main,
+#view-dashboard .proto-hero__aside,
+#view-dashboard .proto-stat,
+#view-dashboard .proto-search,
+#view-dashboard .proto-section__head,
+#view-dashboard #courses-carousel .course-card,
+#view-dashboard .proto-quick button,
+#view-dashboard .proto-details__summary {
+  animation: studia-rise 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+#view-dashboard .proto-hero__main { animation-delay: 0.02s; }
+#view-dashboard .proto-hero__aside { animation-delay: 0.1s; }
+#view-dashboard .proto-stat:nth-child(1) { animation-delay: 0.16s; }
+#view-dashboard .proto-stat:nth-child(2) { animation-delay: 0.22s; }
+#view-dashboard .proto-stat:nth-child(3) { animation-delay: 0.28s; }
+#view-dashboard .proto-search { animation-delay: 0.32s; }
+#view-dashboard .proto-section__head { animation-delay: 0.36s; }
+#view-dashboard #courses-carousel .course-card:nth-child(1) { animation-delay: 0.4s; }
+#view-dashboard #courses-carousel .course-card:nth-child(2) { animation-delay: 0.45s; }
+#view-dashboard #courses-carousel .course-card:nth-child(3) { animation-delay: 0.5s; }
+#view-dashboard #courses-carousel .course-card:nth-child(4) { animation-delay: 0.55s; }
+#view-dashboard #courses-carousel .course-card:nth-child(5) { animation-delay: 0.6s; }
+#view-dashboard .proto-quick button:nth-child(1) { animation-delay: 0.5s; }
+#view-dashboard .proto-quick button:nth-child(2) { animation-delay: 0.56s; }
+#view-dashboard .proto-quick button:nth-child(3) { animation-delay: 0.62s; }
+#view-dashboard .proto-quick button:nth-child(4) { animation-delay: 0.68s; }
+#view-dashboard .proto-details__summary { animation-delay: 0.74s; }
+
+/* Hero: lagani sjaj i klizna akcentna linija. */
+.proto-hero::before {
+  animation: studia-glow 12s ease-in-out infinite alternate;
+}
+
+.proto-hero::after {
+  left: -50%;
+  right: -50%;
+  background-image: linear-gradient(90deg, transparent, var(--signal), #a78bfa, transparent, var(--signal), transparent);
+  animation: studia-slide 14s linear infinite;
+}
+
+/* Sažetci: blago podizanje pri hoveru. */
+.proto-stat {
+  transition: transform 0.22s ease, box-shadow 0.22s ease;
+}
+
+.proto-stat:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 24px 46px -24px rgba(76, 29, 149, 0.45);
+}
+
+/* Pretraga: ikona reagira na fokus. */
+.proto-search > svg {
+  transition: transform 0.22s ease, color 0.22s ease;
+}
+
+.proto-search:focus-within > svg {
+  color: var(--primary);
+  transform: rotate(-8deg) scale(1.1);
+}
+
+/* Gumba: kratki "press" i sjaj kartice kolegija. */
+.proto-btn,
+.filter-pill,
+.proto-arrows button {
+  transition: transform 0.16s ease, background-color 0.16s ease, border-color 0.16s ease, color 0.16s ease, box-shadow 0.16s ease;
+}
+
+.proto-btn:active,
+.filter-pill:active,
+.proto-arrows button:active {
+  transform: scale(0.96);
+}
+
+#courses-carousel .course-card {
+  position: relative;
+  overflow: hidden;
+}
+
+#courses-carousel .course-card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(115deg, transparent 40%, rgba(255, 255, 255, 0.32) 50%, transparent 60%);
+  transform: translateX(-120%);
+  transition: transform 0.65s ease;
+  pointer-events: none;
+}
+
+#courses-carousel .course-card:hover::after {
+  transform: translateX(120%);
+}
+
+/* Brze veze: strelica i ikona se pomaknu. */
+.proto-quick button svg:first-child {
+  transition: transform 0.24s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.proto-quick button:hover svg:first-child {
+  transform: scale(1.1);
+}
+
+.proto-quick__arrow {
+  transition: transform 0.22s ease, color 0.22s ease;
+}
+
+.proto-quick button:hover .proto-quick__arrow {
+  color: var(--primary);
+  transform: translate(3px, -3px);
+}
+
+/* Arhiva: ikona ima blagi sjaj pri hoveru. */
+.proto-details__icon {
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
+}
+
+.proto-details__summary:hover .proto-details__icon {
+  box-shadow: 0 8px 20px -8px rgba(109, 40, 217, 0.75);
+}
+
+/* Promjena pogleda i obavijesti. */
+main section:not(.hidden):not(#view-dashboard) {
+  animation: studia-rise 0.3s ease-out both;
+}
+
+#toast-container > div {
+  animation: studia-toast 0.26s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/* Planer: redak ulazi, kvadratić "skoči" pri označavanju. */
+#planner-list > li {
+  animation: studia-row 0.26s ease both;
+}
+
+#planner-list > li button[data-todo-toggle] {
+  transition: transform 0.2s cubic-bezier(0.22, 1, 0.36, 1), background-color 0.2s ease, border-color 0.2s ease;
+}
+
+#planner-list > li button[data-todo-toggle]:hover {
+  transform: scale(1.12);
+}
+
+/* Aktivna navigacijska stavka: ikona se kratko "trzne". */
+.studia-nav-item.is-active > svg:first-child {
+  animation: studia-icon-pop 0.5s ease-out both;
+}

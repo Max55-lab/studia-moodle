@@ -16,6 +16,7 @@
 - **Novi vizualni sustav:** tamna navigacijska traka, svijetla radna površina, tamni hero s jednim sljedećim rokom i narančastim signalnim akcentom uz violetni primarni (tamni način koristi istu strukturu).
 - **Jedan fokus:** nadzorna ploča prikazuje samo sljedeći rok, prosjek, ECTS i broj aktivnih zadaća. Sve ostalo je u `<details id="dashboard-more">`.
 - **Manje buke:** bočna navigacija ima 7 stavki, bez dupliciranih badgeova; filtari, brze veze i kartice koriste nove, ali jednostavne komponente.
+- **Pokret bez buke:** postepeni ulazak sadržaja, suptilne hover reakcije, animirani brojači i pozdrav prema dobu dana — bez novih podataka i uz poštovanje `prefers-reduced-motion`.
 - **Bez novih ovisnosti:** promjena je isključivo u CSS-u i strukturi nadzorne ploče; svi ID-ovi i testni hookovi su očuvani.
 - **Isti jezik u temi:** `theme/studia/scss/post.scss` koristi istu paletu i akcent, bez novih endpointa ili tokena.
 

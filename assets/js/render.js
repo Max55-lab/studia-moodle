@@ -292,7 +292,47 @@ function renderProfessors() {
   refreshIcons();
 }
 
+/* Broj se animira samo pri prvom prikazu; kasnija sinkronizacija je trenutna. */
+function setAnimatedNumber(el, value, decimals = 0) {
+  if (!el) return;
+  const target = Number(value) || 0;
+  const format = (n) => (decimals ? n.toFixed(decimals) : String(Math.round(n)));
+  const reduced = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  if (el.dataset.counted === "1" || reduced) {
+    el.textContent = format(target);
+    return;
+  }
+
+  el.dataset.counted = "1";
+  const token = Symbol("count");
+  el.__countToken = token;
+  const duration = 750;
+  const started = performance.now();
+
+  const step = (now) => {
+    if (el.__countToken !== token) return;
+    const t = Math.min(1, (now - started) / duration);
+    const eased = 1 - Math.pow(1 - t, 3);
+    el.textContent = format(target * eased);
+    if (t < 1) requestAnimationFrame(step);
+    else el.textContent = format(target);
+  };
+  requestAnimationFrame(step);
+}
+
+/* Pozdrav se prilagođava dobu dana, ime studenta ostaje isto. */
+function updateGreeting() {
+  const heading = $("#focus-heading");
+  if (!heading || !heading.firstChild || heading.firstChild.nodeType !== Node.TEXT_NODE) return;
+  const hour = new Date().getHours();
+  const greeting = hour < 11 ? "Dobro jutro" : hour < 18 ? "Dobar dan" : "Dobra večer";
+  heading.firstChild.textContent = `${greeting}, `;
+}
+
 function renderStats() {
+  updateGreeting();
+
   const average = Math.round(
     COURSES.reduce((sum, course) => sum + course.progress, 0) / COURSES.length
   );
@@ -322,12 +362,9 @@ function renderStats() {
   if (profileLabel) profileLabel.textContent = `${submitted}/${total}`;
   if (profileBar) profileBar.style.width = `${submittedPercent}%`;
 
-  const focusAverage = $("#focus-average");
-  if (focusAverage) focusAverage.textContent = calculateGradeAverage(GRADE_HISTORY).toFixed(2);
-  const focusEcts = $("#focus-ects");
-  if (focusEcts) focusEcts.textContent = String(getCompletedEcts());
-  const focusTasks = $("#focus-tasks");
-  if (focusTasks) focusTasks.textContent = String(getActiveUpcomingCount());
+  setAnimatedNumber($("#focus-average"), calculateGradeAverage(GRADE_HISTORY), 2);
+  setAnimatedNumber($("#focus-ects"), getCompletedEcts());
+  setAnimatedNumber($("#focus-tasks"), getActiveUpcomingCount());
 
   const navBadge = $("#assignments-nav-badge");
   if (navBadge) {
