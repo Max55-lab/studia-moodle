@@ -912,6 +912,8 @@ function handleDocumentClick(event) {
   const plannerFocusButton = event.target.closest("[data-planner-focus]");
   if (plannerFocusButton) {
     switchTab("dashboard", { keepScroll: true });
+    const details = $("#dashboard-more");
+    if (details) details.open = true;
     window.setTimeout(() => {
       const section = $("#planner-section");
       if (section) section.scrollIntoView({ behavior: "smooth", block: "start" });

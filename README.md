@@ -3,13 +3,20 @@
 [![Deploy na GitHub Pages](https://github.com/Max55-lab/studia-moodle/actions/workflows/deploy.yml/badge.svg)](https://github.com/Max55-lab/studia-moodle/actions/workflows/deploy.yml)
 [![CI](https://github.com/Max55-lab/studia-moodle/actions/workflows/ci.yml/badge.svg)](https://github.com/Max55-lab/studia-moodle/actions/workflows/ci.yml)
 
-**Studia** je responzivni studentski portal (demo) inspiriran SUM e-učenjem, s naglaskom na preglednom sučelju, lokalnoj demo interaktivnosti i pripremi za prilagodbu/integraciju u druge sustave.
+**Studia** je responzivni studentski portal (demo) inspiriran SUM e-učenjem. Novi **Focus** redizajn uklanja višak informacija s početne stranice: jedan sljedeći rok, tri ključna broja i kolegiji su odmah vidljivi, a planer, tablice, statistika i grafikoni skriveni su u sklopivom bloku „Više detalja“.
 
 **Live demo:** <https://max55-lab.github.io/studia-moodle/>
 
 ![Pregled nadzorne ploče](docs/preview.png)
 
 > Demo koristi isključivo izmišljene podatke i ne provodi stvarnu autentikaciju. Live demo na GitHub Pages servira statički sadržaj (`index.html` + `assets/`).
+
+## Dizajn — Focus
+
+- **Mirna paleta:** papirnata pozadina, ravne bijele površine, tanke linije i jedan indigo akcent (tamni način koristi istu strukturu).
+- **Manje buke:** bočna navigacija ima 7 umjesto 11 stavki, nema animiranih gradijenata, velikih hero-blokova ni dupliciranih badgeova.
+- **Jedan fokus:** nadzorna ploča prikazuje samo sljedeći rok, prosjek, ECTS i broj aktivnih zadaća. Sve ostalo je u `<details id="dashboard-more">`.
+- **Isti jezik u temi:** `theme/studia/scss/post.scss` koristi iste ravne površine i akcent, bez novih endpointa ili tokena.
 
 ## Smjer integracije — theme-first
 

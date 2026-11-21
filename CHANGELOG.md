@@ -18,7 +18,9 @@ Format je informativan i temeljen na [Keep a Changelog](https://keepachangelog.c
 - Upozorenja u Moodle modalu i dokumentaciji da live proxy nije zamjena za Moodleovu autentifikaciju i autorizaciju.
 
 ### Changed
-- **Moderniziran vizualni jezik (Studia 2.0):** višeslojni hero gradient s mrežom i orbom, staklasti površinski sloj, gradient aktivnih nav/pill gumba, mekani lift kartica i ažurirani indigo/cyan akcenti u portalu i Moodle temi.
+- **Potpuno novi Focus redizajn:** nadzorna ploča sada prikazuje jedan sljedeći rok, tri sažetka (prosjek, ECTS, aktivne zadaće), kompaktne kartice kolegija i četiri brze veze. Planer, tablica rokova, statistika, profesori i grafikoni premješteni su u sklopljeni `<details id="dashboard-more">`.
+- **Smireniji vizualni jezik:** uklonjeni animirani hero gradienti, mreža, orbovi i teške sjene; papirnata pozadina, ravne površine, tanke linije i jedan indigo akcent. Isto je primijenjeno u `theme/studia/scss/post.scss`.
+- **Manje navigacijskog šuma:** bočni izbornik ima 7 umjesto 11 stavki (uklonjeni duplicirani profil, planer, Meet i AI unos), a kartice kolegija prikazuju samo kod, naziv, napredak i detalje.
 - `README.md`, `docs/INTEGRATION.md`, `docs/PRIVACY.md` i `theme/studia/README.md` reorganizirani oko odluke theme-first (sigurnosni model teme, ograničenja proxyja).
 
 ### Fixed

@@ -10,36 +10,24 @@
    ========================================================= */
 
 function courseCardMarkup(course, mode = "carousel") {
-  const isFull = mode === "full";
-  const cardClass = isFull
-    ? "group bg-white dark:bg-slate-900 rounded-[28px] border border-slate-100 dark:border-slate-800 overflow-hidden shadow-soft hover:shadow-card cursor-pointer transition flex flex-col h-full"
-    : "course-card group snap-start bg-white dark:bg-slate-900 rounded-[28px] border border-slate-100 dark:border-slate-800 overflow-hidden shadow-soft hover:shadow-card cursor-pointer transition flex flex-col";
+  const isCarousel = mode === "carousel";
+  const cardClass = isCarousel ? "course-card studia-course" : "studia-course studia-course--full";
 
   return `
     <article class="${cardClass}" data-course-open="${course.id}" aria-label="${escapeHtml(course.name)}">
-      <div class="h-32 bg-gradient-to-br ${course.color} p-5 flex flex-col justify-between text-white relative overflow-hidden">
-        <div class="absolute right-0 bottom-0 translate-x-4 translate-y-4 w-28 h-28 bg-white/10 rounded-full blur-xl" aria-hidden="true"></div>
-        <span class="text-[11px] font-bold uppercase tracking-wider bg-white/25 px-2.5 py-1 rounded-lg w-max backdrop-blur-xs relative z-10">${escapeHtml(course.code)}</span>
-        <button type="button" data-course-fav="${escapeHtml(course.id)}" aria-pressed="${Boolean(state.favorites[course.id])}" aria-label="${state.favorites[course.id] ? "Ukloni iz favorita" : "Dodaj u favorite"}" class="absolute top-4 right-4 z-20 w-8 h-8 rounded-xl bg-white/20 hover:bg-white/35 backdrop-blur-xs flex items-center justify-center text-base transition" title="Favorit">${state.favorites[course.id] ? "★" : "☆"}</button>
-        <h3 class="font-display font-bold text-lg leading-snug relative z-10 pr-8">${escapeHtml(course.name)}</h3>
+      <div class="studia-course__top">
+        <span class="studia-course__code">${escapeHtml(course.code)}</span>
+        <button type="button" data-course-fav="${escapeHtml(course.id)}" aria-pressed="${Boolean(state.favorites[course.id])}" aria-label="${state.favorites[course.id] ? "Ukloni iz favorita" : "Dodaj u favorite"}" class="studia-course__fav" title="Favorit">${state.favorites[course.id] ? "★" : "☆"}</button>
       </div>
-      <div class="p-5 space-y-4 flex-1 flex flex-col justify-between">
-        <div>
-          <p class="text-xs text-slate-500 dark:text-slate-400 font-medium">${escapeHtml(course.professor)}</p>
-          ${isFull ? `<p class="text-[11px] leading-relaxed text-slate-500 dark:text-slate-400 mt-2 line-clamp-2">${escapeHtml(course.description)}</p>` : ""}
-          <div class="flex justify-between text-[11px] font-semibold text-slate-600 dark:text-slate-300 mt-4 mb-1.5">
-            <span>Napredak gradiva</span>
-            <span class="text-studia-600 dark:text-studia-400">${course.progress}%</span>
-          </div>
-          <div class="w-full bg-slate-100 dark:bg-slate-800 h-2 rounded-full overflow-hidden">
-            <div class="bg-studia-600 h-full rounded-full" style="width: ${course.progress}%"></div>
-          </div>
-        </div>
-        <div class="pt-3 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between gap-2 text-[11px] font-bold text-studia-600 dark:text-studia-400">
-          <span class="text-slate-500 dark:text-slate-400 font-medium">${escapeHtml(course.lectures)}</span>
-          <button type="button" data-course-open="${escapeHtml(course.id)}" class="inline-flex items-center gap-1 rounded-lg px-1.5 py-1 hover:bg-studia-50 dark:hover:bg-studia-950/70 focus:outline-none focus:ring-2 focus:ring-studia-500/40 transition" aria-label="Detalji kolegija ${escapeHtml(course.name)}">Detalji ${icon("arrow-right", "w-3.5 h-3.5 group-hover:translate-x-1 transition-transform")}</button>
-        </div>
+      <h3 class="studia-course__name">${escapeHtml(course.name)}</h3>
+      ${isCarousel ? "" : `<p class="studia-course__desc">${escapeHtml(course.description)}</p>`}
+      <div class="studia-course__progress" aria-label="Napredak ${course.progress} posto">
+        <div class="studia-course__bar"><span style="width: ${course.progress}%"></span></div>
+        <strong>${course.progress}%</strong>
       </div>
+      <button type="button" data-course-open="${escapeHtml(course.id)}" class="studia-course__link" aria-label="Detalji kolegija ${escapeHtml(course.name)}">
+        Detalji ${icon("arrow-right", "w-3.5 h-3.5")}
+      </button>
     </article>
   `;
 }
@@ -128,27 +116,27 @@ function renderQuickTasks() {
   const tasks = sortByDeadline(
     state.assignments.filter((assignment) => isUpcoming(assignment) && assignment.status !== "submitted"),
     1
-  ).slice(0, 3);
+  ).slice(0, 1);
 
   if (tasks.length === 0) {
-    grid.innerHTML = `<p class="md:col-span-3 text-sm text-slate-500 dark:text-slate-400 py-6 text-center">Nema aktivnih zadaća. Odličan posao!</p>`;
+    grid.innerHTML = `<div class="next-task__card"><div><span class="next-task__meta">Fokus</span><span class="next-task__title">Nema aktivnih rokova.</span><span class="next-task__due">Odličan posao — slobodan si dan.</span></div></div>`;
     return;
   }
 
   grid.innerHTML = tasks.map((assignment) => {
     const course = getCourse(assignment.courseId);
-    const status = ASSIGNMENT_STATUS[assignment.status] || ASSIGNMENT_STATUS.active;
 
     return `
-      <button type="button" data-assignment-open="${assignment.id}" class="text-left bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-soft hover:border-studia-400 transition group">
-        <span class="flex justify-between items-start gap-2 mb-3">
-          <span class="text-xs font-bold text-studia-600 dark:text-studia-400 bg-studia-50 dark:bg-studia-950 px-2.5 py-1 rounded-lg">${escapeHtml(course ? course.name : "")}</span>
-          <span class="w-2.5 h-2.5 rounded-full shrink-0 ${status.dot}" aria-hidden="true"></span>
-        </span>
-        <span class="block font-bold text-sm text-slate-900 dark:text-white mb-1 group-hover:text-studia-600 dark:group-hover:text-studia-400 transition">${escapeHtml(assignment.title)}</span>
-        <span class="block text-[11px] text-slate-400">Rok: ${escapeHtml(assignment.deadline)}</span>
-        <span class="mt-3 inline-flex items-center gap-1 text-[11px] font-bold text-studia-600 dark:text-studia-400">Predaj rad ${icon("arrow-right", "w-3.5 h-3.5")}</span>
-      </button>
+      <div class="next-task__card">
+        <div>
+          <span class="next-task__meta">${escapeHtml(course ? course.name : "")}</span>
+          <span class="next-task__title">${escapeHtml(assignment.title)}</span>
+          <span class="next-task__due">Rok: ${escapeHtml(assignment.deadline)}</span>
+        </div>
+        <button type="button" data-assignment-open="${assignment.id}" class="next-task__cta">
+          Predaj ${icon("arrow-right", "w-3.5 h-3.5")}
+        </button>
+      </div>
     `;
   }).join("");
 
@@ -333,6 +321,13 @@ function renderStats() {
   if (statsBar) statsBar.style.width = `${submittedPercent}%`;
   if (profileLabel) profileLabel.textContent = `${submitted}/${total}`;
   if (profileBar) profileBar.style.width = `${submittedPercent}%`;
+
+  const focusAverage = $("#focus-average");
+  if (focusAverage) focusAverage.textContent = calculateGradeAverage(GRADE_HISTORY).toFixed(2);
+  const focusEcts = $("#focus-ects");
+  if (focusEcts) focusEcts.textContent = String(getCompletedEcts());
+  const focusTasks = $("#focus-tasks");
+  if (focusTasks) focusTasks.textContent = String(getActiveUpcomingCount());
 
   const navBadge = $("#assignments-nav-badge");
   if (navBadge) {

@@ -255,6 +255,10 @@ html.dark ::selection {
 }
 
 .courses-carousel {
+  display: flex;
+  gap: 1rem;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
   scroll-behavior: smooth;
   scroll-padding-left: 0;
 }
@@ -492,140 +496,736 @@ h1, h2, h3, h4, .font-display { letter-spacing: -0.015em; }
 }
 
 /* =========================================================
-   Studia 2.0 — moderan vizualni jezik
-   Naglasak: Moodle tema je produkcijska integracija; portal je
-   demo. Stilovi ne mijenjaju boje teksta (kontrast ostaje 1.0).
+   Studia Focus — novi, smireniji vizualni jezik.
+   Jedna akcentna boja, ravne površine, tanke linije, bez šuma.
    ========================================================= */
 
 :root {
-  --studia-accent-indigo: #4f46e5;
-  --studia-accent-cyan: #22d3ee;
-  --studia-hero-gradient: linear-gradient(115deg, #3b0764 0%, #5b21b6 34%, #7c3aed 66%, #4f46e5 100%);
-  --studia-grid-line: rgba(255, 255, 255, 0.055);
+  --paper: #f6f7fb;
+  --surface: #ffffff;
+  --surface-2: #f1f3f9;
+  --ink: #121826;
+  --muted: #5d6b82;
+  --line: #e3e7f0;
+  --accent: #4338ca;
+  --accent-hover: #3730a3;
+  --accent-button: #4338ca;
+  --accent-button-hover: #3730a3;
+  --accent-soft: #eef2ff;
+  --good: #0f766e;
 }
 
 html.dark {
-  --studia-grid-line: rgba(255, 255, 255, 0.045);
+  --paper: #0d111b;
+  --surface: #151c2a;
+  --surface-2: #1b2434;
+  --ink: #eef2ff;
+  --muted: #a6b1c6;
+  --line: #2a3446;
+  --accent: #a5b4fc;
+  --accent-hover: #c7d2fe;
+  --accent-button: #4f46e5;
+  --accent-button-hover: #4338ca;
+  --accent-soft: rgba(129, 140, 248, 0.14);
+  --good: #5eead4;
 }
 
 body {
-  background-image:
-    radial-gradient(1100px 520px at 10% -12%, rgba(124, 58, 237, 0.13), transparent 62%),
-    radial-gradient(900px 480px at 96% 2%, rgba(34, 211, 238, 0.085), transparent 60%),
-    linear-gradient(180deg, rgba(255, 255, 255, 0.35), transparent 22rem);
-  background-attachment: fixed;
+  background-color: var(--paper);
+  background-image: none;
+  color: var(--ink);
 }
 
 html.dark body {
-  background-image:
-    radial-gradient(1100px 520px at 10% -12%, rgba(124, 58, 237, 0.2), transparent 62%),
-    radial-gradient(900px 480px at 96% 2%, rgba(34, 211, 238, 0.09), transparent 60%);
+  background-color: var(--paper);
+  background-image: none;
+  color: var(--ink);
 }
 
-/* Hero: višeslojni gradient, suptilna mreža i plutajući orb. */
-.studia-hero {
+/* Zaglavlje i bočna navigacija */
+.studia-header {
+  background-color: var(--surface);
+  border-color: var(--line);
+}
+
+.studia-sidebar,
+#left-sidebar {
+  background-color: var(--surface);
+  border-color: var(--line);
+  box-shadow: none;
+}
+
+.studia-nav {
+  padding: 0.75rem;
+}
+
+.studia-nav-item {
   position: relative;
-  isolation: isolate;
-  background: var(--studia-hero-gradient) !important;
-  background-size: 160% 160%;
-  box-shadow: 0 32px 70px -32px rgba(76, 29, 149, 0.75), inset 0 1px 0 rgba(255, 255, 255, 0.18);
-  animation: studia-hero-flow 18s ease-in-out infinite alternate;
+  width: 100%;
+  padding: 0.7rem 0.85rem;
+  border-radius: 12px;
+  color: var(--muted);
+  font-size: 0.875rem;
+  font-weight: 600;
+  transition: background-color 0.16s ease, color 0.16s ease;
 }
 
-.studia-hero::before {
-  content: "";
+.studia-nav-item:hover {
+  background-color: var(--surface-2);
+  color: var(--ink);
+}
+
+.studia-nav-item.is-active,
+.studia-nav-item.is-active:hover {
+  background-color: var(--accent-soft);
+  color: var(--accent);
+  box-shadow: inset 3px 0 0 var(--accent);
+}
+
+.studia-nav-badge {
+  min-width: 1.5rem;
+  padding: 0.1rem 0.4rem;
+  border-radius: 999px;
+  background-color: var(--surface-2);
+  color: var(--muted);
+  font-size: 0.6875rem;
+  font-weight: 800;
+  text-align: center;
+}
+
+.studia-nav-badge--alert {
+  background-color: #fff1f2;
+  color: #be123c;
+}
+
+html.dark .studia-nav-badge--alert {
+  background-color: rgba(244, 63, 94, 0.14);
+  color: #fda4af;
+}
+
+/* Fokus zaglavlje */
+.focus-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1.25rem 0 0.25rem;
+}
+
+.focus-eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.45rem;
+  color: var(--muted);
+  font-size: 0.6875rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.focus-title {
+  font-size: clamp(1.75rem, 4vw, 2.4rem);
+  font-weight: 800;
+  line-height: 1.15;
+  color: var(--ink);
+}
+
+.focus-subtitle {
+  margin-top: 0.35rem;
+  color: var(--muted);
+  font-size: 0.875rem;
+}
+
+.focus-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.studia-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.6rem 0.95rem;
+  border-radius: 12px;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  transition: background-color 0.16s ease, border-color 0.16s ease, transform 0.16s ease;
+}
+
+.studia-btn:hover {
+  transform: translateY(-1px);
+}
+
+.studia-btn--primary {
+  background-color: var(--accent-button);
+  border: 1px solid var(--accent-button);
+  color: #ffffff;
+}
+
+.studia-btn--primary:hover {
+  background-color: var(--accent-button-hover);
+  border-color: var(--accent-button-hover);
+}
+
+.studia-btn--quiet {
+  background-color: var(--surface);
+  border: 1px solid var(--line);
+  color: var(--ink);
+}
+
+.studia-btn--quiet:hover {
+  background-color: var(--surface-2);
+}
+
+/* Pretraga */
+.focus-search {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  padding: 0.7rem 0.9rem;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background-color: var(--surface);
+}
+
+.focus-search:focus-within {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-soft);
+}
+
+.focus-search__icon {
+  color: var(--muted);
+  flex-shrink: 0;
+}
+
+.focus-search input {
+  flex: 1;
+  min-width: 0;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: var(--ink);
+  font-size: 0.875rem;
+}
+
+.focus-search input::placeholder {
+  color: var(--muted);
+}
+
+.focus-search__kbd {
+  padding: 0.15rem 0.4rem;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background-color: var(--surface-2);
+  color: var(--muted);
+  font-size: 0.6875rem;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.focus-search__clear {
+  color: var(--accent);
+  font-size: 0.75rem;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.search-panel {
   position: absolute;
-  inset: 0;
-  z-index: 0;
-  pointer-events: none;
-  background-image:
-    linear-gradient(var(--studia-grid-line) 1px, transparent 1px),
-    linear-gradient(90deg, var(--studia-grid-line) 1px, transparent 1px);
-  background-size: 36px 36px;
-  -webkit-mask-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.85), transparent 85%);
-  mask-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.85), transparent 85%);
+  z-index: 20;
+  top: calc(100% + 0.4rem);
+  left: 0;
+  right: 0;
+  max-height: 19rem;
+  overflow-y: auto;
+  padding: 0.6rem;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background-color: var(--surface);
+  box-shadow: 0 18px 40px -20px rgba(15, 23, 42, 0.35);
 }
 
-.studia-hero::after {
-  content: "";
-  position: absolute;
-  z-index: 0;
-  pointer-events: none;
-  top: -13rem;
-  right: -8rem;
-  width: 26rem;
-  height: 26rem;
-  border-radius: 50%;
-  background: radial-gradient(circle, rgba(34, 211, 238, 0.35), transparent 68%);
-  filter: blur(6px);
+/* Fokus kartica i sažetak */
+.focus-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr);
+  gap: 1rem;
 }
 
-@keyframes studia-hero-flow {
-  from { background-position: 0% 50%; }
-  to { background-position: 100% 50%; }
+.focus-card {
+  padding: 1.25rem;
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  background-color: var(--surface);
 }
 
-/* Površine: staklasti sjaj bez promjene kontrasta teksta. */
-.studia-surface {
-  background-image: linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(248, 250, 252, 0.72));
-  border-color: rgba(148, 163, 184, 0.24);
-  box-shadow: 0 2px 4px -3px rgba(15, 23, 42, 0.1), 0 20px 44px -26px rgba(76, 29, 149, 0.26);
+.focus-card__head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
 }
 
-html.dark .studia-surface {
-  background-image: linear-gradient(180deg, rgba(30, 41, 59, 0.72), rgba(15, 23, 42, 0.38));
-  border-color: rgba(148, 163, 184, 0.16);
-  box-shadow: 0 20px 44px -26px rgba(2, 6, 23, 0.9);
+.focus-card__title {
+  margin-top: 0.2rem;
+  color: var(--ink);
+  font-size: 1.15rem;
+  font-weight: 800;
 }
 
-/* Kartice kolegija: mekani lift i violetni odsjaj pri hoveru. */
+.focus-link {
+  color: var(--accent);
+  font-size: 0.75rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.section-kicker {
+  display: block;
+  color: var(--muted);
+  font-size: 0.625rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.section-title {
+  margin-top: 0.15rem;
+  color: var(--ink);
+  font-size: 1.25rem;
+  font-weight: 800;
+}
+
+.next-task__card {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.85rem;
+  padding: 1rem 1.1rem;
+  border: 1px solid var(--line);
+  border-left: 3px solid var(--accent);
+  border-radius: 14px;
+  background-color: var(--surface-2);
+}
+
+.next-task__meta {
+  display: block;
+  margin-bottom: 0.3rem;
+  color: var(--muted);
+  font-size: 0.6875rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.next-task__title {
+  display: block;
+  color: var(--ink);
+  font-size: 1rem;
+  font-weight: 800;
+}
+
+.next-task__due {
+  display: block;
+  margin-top: 0.3rem;
+  color: var(--muted);
+  font-size: 0.75rem;
+}
+
+.next-task__cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.55rem 0.8rem;
+  border-radius: 10px;
+  background-color: var(--accent-button);
+  color: #ffffff;
+  font-size: 0.75rem;
+  font-weight: 800;
+  flex-shrink: 0;
+}
+
+.next-task__cta:hover {
+  background-color: var(--accent-button-hover);
+}
+
+.focus-stats {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.65rem;
+}
+
+.stat-tile {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  padding: 1rem 0.7rem;
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  background-color: var(--surface);
+  text-align: center;
+}
+
+.stat-tile__label {
+  color: var(--muted);
+  font-size: 0.625rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.stat-tile__value {
+  color: var(--ink);
+  font-size: clamp(1.15rem, 2.4vw, 1.6rem);
+  font-weight: 800;
+  line-height: 1.2;
+}
+
+.stat-tile__hint {
+  color: var(--muted);
+  font-size: 0.625rem;
+}
+
+/* Kolegiji */
+.courses-block {
+  padding-top: 0.35rem;
+}
+
+.section-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 0.8rem;
+}
+
+.courses-controls {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.filter-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+
+.carousel-controls {
+  display: flex;
+  gap: 0.35rem;
+}
+
+.carousel-controls button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.15rem;
+  height: 2.15rem;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background-color: var(--surface);
+  color: var(--ink);
+}
+
+.carousel-controls button:hover:not(:disabled) {
+  background-color: var(--surface-2);
+}
+
+.carousel-controls button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
 #courses-carousel .course-card {
-  background-image: linear-gradient(180deg, rgba(255, 255, 255, 0.94), rgba(255, 255, 255, 0.7));
-  border-color: rgba(148, 163, 184, 0.22);
-  box-shadow: 0 2px 4px -2px rgba(15, 23, 42, 0.08), 0 18px 38px -22px rgba(76, 29, 149, 0.28);
-  transition: transform 0.28s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.28s ease, border-color 0.28s ease;
+  flex: 0 0 250px;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  background-color: var(--surface);
+  box-shadow: none;
+  transition: border-color 0.16s ease, transform 0.16s ease;
 }
 
 #courses-carousel .course-card:hover {
-  transform: translateY(-5px);
-  border-color: rgba(139, 92, 246, 0.42);
-  box-shadow: 0 26px 54px -24px rgba(76, 29, 149, 0.42);
+  transform: none;
+  border-color: var(--accent);
+  box-shadow: none;
 }
 
-html.dark #courses-carousel .course-card {
-  background-image: linear-gradient(180deg, rgba(30, 41, 59, 0.75), rgba(15, 23, 42, 0.35));
-  border-color: rgba(148, 163, 184, 0.16);
+.studia-course {
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+  min-height: 170px;
+  padding: 1rem;
+  cursor: pointer;
 }
 
-html.dark #courses-carousel .course-card:hover {
-  border-color: rgba(167, 139, 250, 0.4);
+.studia-course--full {
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  background-color: var(--surface);
 }
 
-/* Aktivni elementi navigacije i filtara dobivaju gradient. */
-#sidebar-nav .nav-btn.is-active,
-.filter-pill.is-active,
-.hero-gradient {
-  background-image: linear-gradient(110deg, #6d28d9 0%, #7c3aed 52%, #4f46e5 100%);
-  border-color: transparent;
+.studia-course__top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
 }
 
-#sidebar-nav .nav-btn.is-active {
-  box-shadow: 0 14px 30px -14px rgba(109, 40, 217, 0.85);
+.studia-course__code {
+  color: var(--muted);
+  font-size: 0.625rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
 }
 
-.filter-pill.is-active {
-  box-shadow: 0 8px 18px -10px rgba(109, 40, 217, 0.8);
+.studia-course__fav {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.75rem;
+  height: 1.75rem;
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  background-color: var(--surface-2);
+  color: var(--accent);
+  font-size: 0.9rem;
+  line-height: 1;
+  flex-shrink: 0;
 }
 
-/* Primarni gumbi: suptilni sjaj i precizan hover. */
+.studia-course__name {
+  color: var(--ink);
+  font-size: 0.95rem;
+  font-weight: 800;
+  line-height: 1.3;
+}
+
+.studia-course__desc {
+  color: var(--muted);
+  font-size: 0.75rem;
+  line-height: 1.5;
+}
+
+.studia-course__progress {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  margin-top: auto;
+}
+
+.studia-course__bar {
+  flex: 1;
+  height: 5px;
+  border-radius: 999px;
+  background-color: var(--surface-2);
+  overflow: hidden;
+}
+
+.studia-course__bar span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background-color: var(--accent);
+}
+
+.studia-course__progress strong {
+  color: var(--ink);
+  font-size: 0.6875rem;
+}
+
+.studia-course__link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  align-self: flex-start;
+  color: var(--accent);
+  font-size: 0.75rem;
+  font-weight: 800;
+}
+
+.courses-empty {
+  padding: 2rem 0;
+  color: var(--muted);
+  font-size: 0.875rem;
+  text-align: center;
+}
+
+/* Brzi pristup */
+.quick-links {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.6rem;
+}
+
+.quick-links button {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  padding: 0.85rem;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background-color: var(--surface);
+  color: var(--ink);
+  font-size: 0.8125rem;
+  font-weight: 700;
+}
+
+.quick-links button:hover {
+  background-color: var(--surface-2);
+  border-color: var(--accent);
+}
+
+/* Sklopljeni detalji */
+.more-panel {
+  border-top: 1px solid var(--line);
+  padding-top: 1rem;
+}
+
+.more-summary {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.55rem 0.2rem;
+  cursor: pointer;
+  list-style: none;
+}
+
+.more-summary::-webkit-details-marker {
+  display: none;
+}
+
+.more-summary__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background-color: var(--surface);
+  color: var(--muted);
+  transition: transform 0.16s ease;
+}
+
+.more-panel[open] .more-summary__icon {
+  transform: rotate(180deg);
+}
+
+.more-summary strong {
+  display: block;
+  color: var(--ink);
+  font-size: 0.875rem;
+}
+
+.more-summary small {
+  display: block;
+  color: var(--muted);
+  font-size: 0.6875rem;
+}
+
+.more-summary__hint {
+  margin-left: auto;
+  color: var(--accent);
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.more-summary__hint::after {
+  content: "Otvori";
+}
+
+.more-panel[open] .more-summary__hint::after {
+  content: "Zatvori";
+}
+
+.more-body {
+  padding-top: 0.65rem;
+}
+
+/* Ravni akcent umjesto gradijenata — vrijedi za cijelu aplikaciju. */
+.hero-gradient,
 button.hero-gradient,
 a.hero-gradient {
-  box-shadow: 0 10px 24px -12px rgba(109, 40, 217, 0.75), inset 0 1px 0 rgba(255, 255, 255, 0.18);
+  background-image: none;
+  background-color: var(--accent-button);
+  border-color: var(--accent-button);
+  box-shadow: none;
 }
 
 button.hero-gradient:hover,
 a.hero-gradient:hover {
-  box-shadow: 0 16px 32px -12px rgba(109, 40, 217, 0.85), inset 0 1px 0 rgba(255, 255, 255, 0.22);
-  transform: translateY(-1px);
+  background-color: var(--accent-button-hover);
+  transform: none;
+}
+
+.nav-btn.is-active,
+.nav-btn.is-active:hover,
+.filter-pill.is-active,
+.filter-pill.is-active:hover {
+  background-image: none;
+  background-color: var(--accent-soft);
+  border-color: transparent;
+  color: var(--accent);
+  box-shadow: none;
+}
+
+/* Sitne oznake koje su u starom dizajnu imale preslab kontrast. */
+#sidebar-year-label {
+  color: var(--muted) !important;
+}
+
+#notification-badge {
+  background-color: #be123c;
+}
+
+.filter-pill__count {
+  background-color: var(--accent-soft);
+  color: var(--accent) !important;
+}
+
+.filter-pill.is-active .filter-pill__count {
+  background-color: var(--accent-button);
+  color: #ffffff !important;
+}
+
+main footer {
+  border-color: var(--line) !important;
+  color: var(--muted) !important;
+}
+
+@media (max-width: 900px) {
+  .focus-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .quick-links {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .focus-actions {
+    width: 100%;
+  }
+
+  .focus-actions .studia-btn {
+    flex: 1;
+  }
+
+  #courses-carousel .course-card {
+    flex-basis: 220px;
+  }
 }
 

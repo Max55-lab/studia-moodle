@@ -94,6 +94,11 @@ if (fs.existsSync(htmlPath)) {
   const html = fs.readFileSync(htmlPath, "utf8");
 
   const requiredIds = [
+    "dashboard-more",
+    "focus-heading",
+    "focus-average",
+    "focus-ects",
+    "focus-tasks",
     "planner-section",
     "planner-form",
     "planner-input",

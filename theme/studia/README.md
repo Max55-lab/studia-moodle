@@ -7,7 +7,7 @@
 ## Glavne značajke
 
 - **Nasljeđivanje:** child tema `theme_boost`, bez izmjena Moodle core datoteka.
-- **Vizualni identitet (2.0):** ljubičasto–indigo akcenti s cyan odsjajem (`#6d28d9`, `#7c3aed`, `#4f46e5`, `#22d3ee`), hero s mrežom i suptilnim gradientom, zaobljene kartice s mekanim liftom, jasna tipografija i puno praznog prostora.
+- **Vizualni identitet (Focus):** papirnata pozadina, ravne površine, tanke linije i jedan indigo akcent (`#4338ca`), bez animiranih gradijenata i teških sjena; ista paleta kao i portal.
 - **Nadzorna ploča:** hero pozdrav s aktivnim semestrom, kartice upisanih kolegija, nositelji i napredak dovršetka (completion) kada je dostupan.
 - **Navigacija:** Boost drawer struktura + kompaktni Studia brzi izbornik (profil, moji kolegiji, ocjene, kalendar).
 - **Dark mode:** prekidač u navbaru, odabir se sprema u Moodle korisničke postavke (`set_user_preference`) i primjenjuje se na serveru kroz `data-theme`/`data-bs-theme` kako ne bi bilo treperenja.

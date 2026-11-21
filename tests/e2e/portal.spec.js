@@ -11,12 +11,18 @@ function collectErrors(page) {
   return errors;
 }
 
-test("nadzorna ploča se učita s karticama, grafikonima i planerom", async ({ page }) => {
+test("fokus nadzorne ploče je sažetak, a detalji se otvaraju zasebno", async ({ page }) => {
   const errors = collectErrors(page);
 
   await page.goto("/");
 
+  await expect(page.locator("#focus-heading")).toBeVisible();
+  await expect(page.locator("#quick-tasks-grid .next-task__card")).toBeVisible();
+  await expect(page.locator("#focus-average")).not.toHaveText("—");
   await expect(page.locator("#courses-carousel .course-card")).toHaveCount(5);
+  await expect(page.locator("#dashboard-more[open]")).toHaveCount(0);
+
+  await page.locator("#dashboard-more summary").click();
   await expect(page.locator("#planner-section")).toBeVisible();
   await expect(page.locator("#chart-grade-trend svg").first()).toBeVisible();
   await expect(page.locator("#chart-grade-donut svg").first()).toBeVisible();
@@ -42,6 +48,7 @@ test("navigacija između pogleda skriva prethodni i prikazuje novi tab", async (
 
 test("planer dodaje, završava i briše zadatak uz perzistenciju", async ({ page }) => {
   await page.goto("/");
+  await page.locator("#dashboard-more summary").click();
 
   await page.locator("#planner-input").fill("E2E: ponoviti Laravel relacije");
   await page.locator("#planner-form button[type='submit']").click();
@@ -54,6 +61,7 @@ test("planer dodaje, završava i briše zadatak uz perzistenciju", async ({ page
   await expect(page.locator("#planner-progress-label")).toHaveText(/1 \/ 1/);
 
   await page.reload();
+  await page.locator("#dashboard-more summary").click();
   item = page.locator("#planner-list li", { hasText: "E2E: ponoviti Laravel relacije" });
   await expect(item).toBeVisible();
   await expect(item.locator("[data-todo-toggle]")).toHaveAttribute("aria-pressed", "true");
@@ -91,6 +99,7 @@ test("live sinkronizacija zamjenjuje demo podatke, povratak u demo ih vraća", a
   const errors = collectErrors(page);
 
   await page.goto("/");
+  await page.locator("#dashboard-more summary").click();
   await expect(page.locator("#courses-carousel .course-card")).toHaveCount(5);
 
   await page.locator("#header-sync-text").click();
