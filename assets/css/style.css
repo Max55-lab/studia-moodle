@@ -1511,3 +1511,82 @@ main section:not(.hidden):not(#view-dashboard) {
   outline: none;
   box-shadow: 0 0 0 3px var(--primary-soft);
 }
+
+/* =========================================================
+   Print prikaz — čisti ispis trenutnog prikaza na A4.
+   ========================================================= */
+@page {
+  size: A4;
+  margin: 14mm;
+}
+
+@media print {
+  html,
+  body {
+    background: #fff !important;
+    background-color: #fff !important;
+    color: #111 !important;
+    box-shadow: none !important;
+  }
+
+  .studia-header,
+  aside,
+  nav,
+  #sidebar-backdrop,
+  #toast-container,
+  .modal,
+  #profile-dropdown,
+  #search-results-panel,
+  button,
+  input,
+  select,
+  textarea,
+  [data-open-sidebar],
+  [data-planner-focus] {
+    display: none !important;
+  }
+
+  #main-content {
+    padding: 0 !important;
+    max-width: none !important;
+    overflow: visible !important;
+  }
+
+  #main-content *,
+  #main-content *::before,
+  #main-content *::after {
+    animation: none !important;
+    transition: none !important;
+    box-shadow: none !important;
+    text-shadow: none !important;
+    background-color: transparent !important;
+    background-image: none !important;
+    color: #111 !important;
+    border-color: #cbd5e1 !important;
+  }
+
+  .proto-hero,
+  .rounded-\[28px\],
+  .rounded-2xl,
+  .rounded-3xl {
+    border: 1px solid #cbd5e1 !important;
+    border-radius: 8px !important;
+  }
+
+  section,
+  article,
+  li,
+  tr {
+    break-inside: avoid;
+  }
+
+  h1,
+  h2,
+  h3 {
+    break-after: avoid;
+  }
+
+  a[href]::after {
+    content: "";
+  }
+}

@@ -68,7 +68,7 @@ Odluka je detaljno obrazložena u [`docs/DECISIONS.md`](docs/DECISIONS.md) (ADR-
 - **Pregledi:** nadzorna ploča, profil, inbox, kolegiji/UniHub, ocjene i ECTS, materijali, obavijesti, zadaće, raspored, Meet sobe, AI demo asistent.
 - **Planer i favoriti:** osobni zadaci s rokom i punim CRUD-om (dodavanje, uređivanje, završavanje, brisanje) te označavanje kolegija favoritima uz filtar „Favoriti“.
 - **Vizualizacije:** kretanje kumulativnog prosjeka ocjena, distribucija ocjena i napredak po kolegijima (inline SVG/CSS, bez vanjskih biblioteka).
-- **UX:** svijetli/tamni način, responzivan prikaz (desktop/tablet/mobilno), pretraga, filtri, modali, toast poruke, izvoz (npr. `.ics`, CSV) i demo preuzimanja.
+- **UX:** svijetli/tamni način, responzivan prikaz (desktop/tablet/mobilno), pretraga, filtri, modali, toast poruke, izvoz (npr. `.ics`, CSV), demo preuzimanja i čisti A4 ispis trenutnog prikaza (`@media print`).
 - **Demo stanje:** dio postavki i radnji sprema se lokalno u pregledniku (`localStorage`) isključivo za potrebe demonstracije.
 - **Moodle adapter (demo):** demo način i eksperimentalni live način preko backend proxyja (token ostaje na poslužitelju). Live način nije za produkciju — vidi ADR-001.
 

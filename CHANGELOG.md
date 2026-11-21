@@ -7,6 +7,7 @@ Format je informativan i temeljen na [Keep a Changelog](https://keepachangelog.c
 ## [Unreleased]
 
 ### Added
+- **Print prikaz:** dodan je `@media print` sloj koji za A4 ispis skriva navigaciju, zaglavlje, modale i kontrole, uklanja animacije i sjene i zadržava samo sadržaj trenutnog prikaza. Provjereno u Playwrightu (`page.pdf`, bez konzolnih grešaka).
 - **Završna projektna dokumentacija:** `docs/USE-CASE.md` (6 aktora, 22 use casea, kritični tokovi i 403 pravila), `docs/PLAN-RASTA.md` (izbor niše, ICP, paketi, PLG petlje, KPI i rizici) i `llms.txt` za AI agente. Time su pokrivene sve isporuke koje su bile ponuđene za 24-modularnu specifikaciju.
 - **Sistemska pravila za AI alate:** `AGENTS.md` definira granicu između produkcijske `theme_studia` teme i demo portala, UI/UX i WCAG standarde, sigurnosna pravila (403 na serveru, hashiranje, tajne), normaliziranu bazu i RLS, obavezne provjere prije commita te popis zaštićenih E2E hookova. `.cursorrules` je kratki pokazivač na ista pravila.
 - **Arhitektura i SQL shema Student SaaS Platforme:** `docs/ARTITEKTURA.md` opisuje monorepo, 24 modula, RBAC, RLS i faze implementacije; `docs/schema.sql` sadrži 67 normaliziranih tablica, RLS politike po instituciji, RBAC, pgvector indeks, revizijski log i generički seed bez osobnih podataka. Nacrt je neovisan o postojećem demo portalu i ADR-001.
