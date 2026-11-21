@@ -58,6 +58,7 @@ Odluka je detaljno obrazložena u [`docs/DECISIONS.md`](docs/DECISIONS.md) (ADR-
 - **Moodle tema (produkcijski smjer):** `theme/studia/` — Boost child tema za Moodle 4.5 (nativna Moodle autentikacija/ovlasti, user preferences, SCSS/templejti).
 - **Moodle proxy primjer (samo demo):** `server/` — Node.js proxy za eksperimentalnu live sinkronizaciju bez izlaganja tokena u pregledniku. Nije zamjena za Moodleov sigurnosni model.
 - **Integracijska i projektna dokumentacija:** `docs/` (uključujući `DECISIONS.md`), `studia.config.example.js`, `CONTRIBUTING.md`, `SECURITY.md`, `CHANGELOG.md`, `LICENSE`.
+- **Dizajn artefakt za 24-modularnu Student SaaS Platformu:** [`docs/ARTITEKTURA.md`](docs/ARTITEKTURA.md) (monorepo, mape modula, sigurnosni model, faze) i [`docs/schema.sql`](docs/schema.sql) (67 tablica, RLS, RBAC, pgvector i generički seed). To je zaseban nacrt — ne mijenja theme-first produkcijski smjer iz ADR-001.
 
 ## Ključne značajke portala
 

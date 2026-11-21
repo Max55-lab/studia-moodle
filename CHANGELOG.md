@@ -7,6 +7,7 @@ Format je informativan i temeljen na [Keep a Changelog](https://keepachangelog.c
 ## [Unreleased]
 
 ### Added
+- **Arhitektura i SQL shema Student SaaS Platforme:** `docs/ARTITEKTURA.md` opisuje monorepo, 24 modula, RBAC, RLS i faze implementacije; `docs/schema.sql` sadrži 67 normaliziranih tablica, RLS politike po instituciji, RBAC, pgvector indeks, revizijski log i generički seed bez osobnih podataka. Nacrt je neovisan o postojećem demo portalu i ADR-001.
 - **Usklađenost sa zahtjevima projekta:** README sada sadrži cilj, korisnike, tim, tehnologije i popis korištenih AI alata; planer ima puni CRUD (dodavanje, uređivanje, završavanje, brisanje) s inline uređivanjem i perzistencijom. Prikazani identitet je generički `user` bez osobnih podataka.
 - **Pokret i mikro-interakcije:** postepeni ulazak nadzorne ploče, lagani hero sjaj i klizna akcentna linija, hover reakcije kartica, gumba i brzih veza, animirane obavijesti i planer. Brojači (prosjek, ECTS, zadaće) animiraju se samo pri prvom prikazu, a pozdrav se prilagođava dobu dana. Sve poštuje `prefers-reduced-motion` i koristi isključivo transform/opacity.
 - **Live Moodle podaci u portalu:** proxy sada uz `summary` vraća i normalizirani `data`; `assets/js/live-data.js` preslikava ga u `COURSES`, `GRADE_HISTORY`, `MATERIALS`, `ASSIGNMENTS` i obavijesti, pa grafikoni i kartice koriste stvarne Moodle podatke. Povratak u demo način vraća originalni dataset.
