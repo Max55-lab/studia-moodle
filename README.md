@@ -3,7 +3,7 @@
 [![Deploy na GitHub Pages](https://github.com/Max55-lab/studia-moodle/actions/workflows/deploy.yml/badge.svg)](https://github.com/Max55-lab/studia-moodle/actions/workflows/deploy.yml)
 [![CI](https://github.com/Max55-lab/studia-moodle/actions/workflows/ci.yml/badge.svg)](https://github.com/Max55-lab/studia-moodle/actions/workflows/ci.yml)
 
-**Studia** je responzivni studentski portal (demo) inspiriran SUM e-učenjem. Novi **Focus** redizajn uklanja višak informacija s početne stranice: jedan sljedeći rok, tri ključna broja i kolegiji su odmah vidljivi, a planer, tablice, statistika i grafikoni skriveni su u sklopivom bloku „Više detalja“.
+**Studia** je responzivni studentski portal (demo) inspiriran SUM e-učenjem. Novi **Studia 3** redizajn uklanja višak informacija s početne stranice: jedan sljedeći rok, tri ključna broja i kolegiji su odmah vidljivi, a planer, tablice, statistika i grafikoni skriveni su u sklopivom bloku „Arhiva detalja“.
 
 **Live demo:** <https://max55-lab.github.io/studia-moodle/>
 
@@ -11,12 +11,12 @@
 
 > Demo koristi isključivo izmišljene podatke i ne provodi stvarnu autentikaciju. Live demo na GitHub Pages servira statički sadržaj (`index.html` + `assets/`).
 
-## Dizajn — Focus
+## Dizajn — Studia 3
 
-- **Modernizirana paleta:** papirnata pozadina s blagim sjajem, mekane površine, suptilne sjene, tanke linije i jedan indigo akcent (tamni način koristi istu strukturu).
-- **Moderni detalji:** gradijentni primarni gumbi, akcentna traka na sažetcima, ikone u brzim vezama i kratko pojavljivanje sekcija — bez dodatnih podataka i uz poštovanje `prefers-reduced-motion`.
-- **Manje buke:** bočna navigacija ima 7 umjesto 11 stavki, nema velikih hero-blokova ni dupliciranih badgeova.
+- **Novi vizualni sustav:** tamna navigacijska traka, svijetla radna površina, tamni hero s jednim sljedećim rokom i narančastim signalnim akcentom uz violetni primarni (tamni način koristi istu strukturu).
 - **Jedan fokus:** nadzorna ploča prikazuje samo sljedeći rok, prosjek, ECTS i broj aktivnih zadaća. Sve ostalo je u `<details id="dashboard-more">`.
+- **Manje buke:** bočna navigacija ima 7 stavki, bez dupliciranih badgeova; filtari, brze veze i kartice koriste nove, ali jednostavne komponente.
+- **Bez novih ovisnosti:** promjena je isključivo u CSS-u i strukturi nadzorne ploče; svi ID-ovi i testni hookovi su očuvani.
 - **Isti jezik u temi:** `theme/studia/scss/post.scss` koristi istu paletu i akcent, bez novih endpointa ili tokena.
 
 ## Smjer integracije — theme-first

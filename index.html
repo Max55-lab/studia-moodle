@@ -257,76 +257,67 @@
     <!-- ======================= NADZORNA PLOČA ======================= -->
     <section id="view-dashboard" class="space-y-8">
 
-        <!-- ==================== FOCUS (novi redizajn) ==================== -->
-        <div class="focus-head">
-            <div>
-                <p class="focus-eyebrow">
+        <!-- ==================== STUDIA 3 — NOVI POČETAK ==================== -->
+        <div class="proto-hero">
+            <div class="proto-hero__main">
+                <p class="proto-hero__eyebrow">
                     <span id="hero-semester-pill">ZIMSKI SEMESTAR 2026/27</span>
-                    <span aria-hidden="true">·</span>
+                    <span class="proto-hero__sep" aria-hidden="true">/</span>
                     <span id="hero-year-pill">2. GODINA</span>
                 </p>
-                <h1 id="focus-heading" class="focus-title">Dobar dan, <span class="focus-title__name">Ivane.</span></h1>
-                <p class="focus-subtitle">Tri stvari su danas bitne. Ostalo je u detaljima.</p>
+                <h1 id="focus-heading" class="proto-hero__title">Dobar dan, <span>Ivane.</span></h1>
+                <p class="proto-hero__sub">Jedan rok. Tri broja. Sve ostalo kad zatreba.</p>
+                <div class="proto-hero__actions">
+                    <button type="button" data-planner-focus class="proto-btn proto-btn--ghost">
+                        <i data-lucide="list-todo" class="w-4 h-4"></i><span>Moj planer</span>
+                    </button>
+                    <button type="button" data-open-ai class="proto-btn proto-btn--light">
+                        <i data-lucide="sparkles" class="w-4 h-4"></i><span>AI sažetak</span>
+                    </button>
+                </div>
             </div>
-            <div class="focus-actions">
-                <button type="button" data-planner-focus class="studia-btn studia-btn--quiet">
-                    <i data-lucide="list-todo" class="w-4 h-4"></i><span>Moj planer</span>
-                </button>
-                <button type="button" data-open-ai class="studia-btn studia-btn--primary">
-                    <i data-lucide="sparkles" class="w-4 h-4"></i><span>AI sažetak</span>
-                </button>
+            <div class="proto-hero__aside">
+                <span class="proto-hero__aside-label">Sljedeći rok</span>
+                <div id="quick-tasks-grid" class="proto-next"></div>
             </div>
         </div>
 
-        <div class="focus-search">
-            <i data-lucide="search" class="w-4 h-4 focus-search__icon" aria-hidden="true"></i>
+        <div class="proto-stats" aria-label="Sažetak studija">
+            <div class="proto-stat">
+                <span class="proto-stat__label">Prosjek</span>
+                <strong id="focus-average" class="proto-stat__value">—</strong>
+                <span class="proto-stat__hint">Položeni ispiti</span>
+            </div>
+            <div class="proto-stat">
+                <span class="proto-stat__label">ECTS</span>
+                <strong id="focus-ects" class="proto-stat__value">—</strong>
+                <span class="proto-stat__hint">Od 180</span>
+            </div>
+            <div class="proto-stat">
+                <span class="proto-stat__label">Zadaće</span>
+                <strong id="focus-tasks" class="proto-stat__value">—</strong>
+                <span class="proto-stat__hint">Aktivne</span>
+            </div>
+        </div>
+
+        <div class="proto-search">
+            <i data-lucide="search" class="w-4 h-4" aria-hidden="true"></i>
             <label for="global-search-input" class="sr-only">Pretraži kolegije, zadaće, skripte i profesore</label>
             <input id="global-search-input" type="search" autocomplete="off" placeholder="Pretraži kolegije, zadaće ili materijale...">
-            <kbd class="focus-search__kbd">Ctrl K</kbd>
-            <button type="button" id="clear-search-btn" class="focus-search__clear hidden">Očisti</button>
+            <kbd>Ctrl K</kbd>
+            <button type="button" id="clear-search-btn" class="proto-search__clear hidden">Očisti</button>
             <div id="search-results-panel" class="search-panel hidden"></div>
         </div>
 
-        <div class="focus-grid">
-            <section class="focus-card focus-card--next" aria-labelledby="next-title">
-                <div class="focus-card__head">
-                    <div>
-                        <span class="section-kicker">Fokus</span>
-                        <h2 id="next-title" class="focus-card__title">Sljedeći rok</h2>
-                    </div>
-                    <button type="button" data-tab="assignments" class="focus-link">Sve zadaće <span aria-hidden="true">→</span></button>
-                </div>
-                <div id="quick-tasks-grid" class="next-task"></div>
-            </section>
-
-            <div class="focus-stats" aria-label="Sažetak studija">
-                <div class="stat-tile">
-                    <span class="stat-tile__label">Prosjek</span>
-                    <strong id="focus-average" class="stat-tile__value">—</strong>
-                    <span class="stat-tile__hint">Položeni ispiti</span>
-                </div>
-                <div class="stat-tile">
-                    <span class="stat-tile__label">ECTS</span>
-                    <strong id="focus-ects" class="stat-tile__value">—</strong>
-                    <span class="stat-tile__hint">Od 180</span>
-                </div>
-                <div class="stat-tile">
-                    <span class="stat-tile__label">Zadaće</span>
-                    <strong id="focus-tasks" class="stat-tile__value">—</strong>
-                    <span class="stat-tile__hint">Aktivne</span>
-                </div>
-            </div>
-        </div>
-
-        <div id="my-courses-section" class="courses-block">
-            <div class="section-head">
+        <div id="my-courses-section" class="proto-section">
+            <div class="proto-section__head">
                 <div>
-                    <span class="section-kicker">Tvoj semester</span>
-                    <h2 class="section-title">Kolegiji</h2>
+                    <span class="proto-kicker">Semestar u tijeku</span>
+                    <h2 class="proto-section__title">Kolegiji</h2>
                 </div>
-                <div class="courses-controls">
-                    <div id="course-filter-pills" class="filter-row" role="group" aria-label="Filtriraj kolegije"></div>
-                    <div class="carousel-controls">
+                <div class="proto-tools">
+                    <div id="course-filter-pills" class="proto-pills" role="group" aria-label="Filtriraj kolegije"></div>
+                    <div class="proto-arrows">
                         <button type="button" id="courses-prev" aria-label="Prethodni kolegiji">
                             <i data-lucide="chevron-left" class="w-4 h-4"></i>
                         </button>
@@ -337,24 +328,24 @@
                 </div>
             </div>
             <div id="courses-carousel" class="courses-carousel no-scrollbar" aria-label="Kolegiji"></div>
-            <p id="courses-empty" class="courses-empty hidden">Nema kolegija za odabrani filtar.</p>
+            <p id="courses-empty" class="proto-empty hidden">Nema kolegija za odabrani filtar.</p>
         </div>
 
-        <div class="quick-links" aria-label="Brzi pristup">
-            <button type="button" data-tab="grades"><i data-lucide="award" class="w-4 h-4"></i><span>Ocjene</span></button>
-            <button type="button" data-tab="materials"><i data-lucide="file-text" class="w-4 h-4"></i><span>Materijali</span></button>
-            <button type="button" data-tab="timetable"><i data-lucide="calendar-days" class="w-4 h-4"></i><span>Raspored</span></button>
-            <button type="button" data-tab="inbox"><i data-lucide="inbox" class="w-4 h-4"></i><span>Inbox</span></button>
+        <div class="proto-quick" aria-label="Brzi pristup">
+            <button type="button" data-tab="grades"><i data-lucide="award" class="w-4 h-4"></i><span>Ocjene</span><i data-lucide="arrow-up-right" class="proto-quick__arrow w-3.5 h-3.5"></i></button>
+            <button type="button" data-tab="materials"><i data-lucide="file-text" class="w-4 h-4"></i><span>Materijali</span><i data-lucide="arrow-up-right" class="proto-quick__arrow w-3.5 h-3.5"></i></button>
+            <button type="button" data-tab="timetable"><i data-lucide="calendar-days" class="w-4 h-4"></i><span>Raspored</span><i data-lucide="arrow-up-right" class="proto-quick__arrow w-3.5 h-3.5"></i></button>
+            <button type="button" data-tab="inbox"><i data-lucide="inbox" class="w-4 h-4"></i><span>Inbox</span><i data-lucide="arrow-up-right" class="proto-quick__arrow w-3.5 h-3.5"></i></button>
         </div>
 
-        <!-- Detalji su namjerno sklopljeni: fokus ostaje na sljedećem koraku. -->
-        <details id="dashboard-more" class="more-panel">
-            <summary class="more-summary">
-                <span class="more-summary__icon" aria-hidden="true"><i data-lucide="chevron-down" class="w-4 h-4"></i></span>
-                <span><strong>Više detalja</strong><small>planer, rokovi, statistika i grafikoni</small></span>
-                <span class="more-summary__hint">Otvori</span>
+        <!-- Arhiva je namjerno sklopljena: početna stranica ostaje pregledna. -->
+        <details id="dashboard-more" class="proto-details">
+            <summary class="proto-details__summary">
+                <span class="proto-details__icon" aria-hidden="true"><i data-lucide="chevron-down" class="w-4 h-4"></i></span>
+                <span><strong>Arhiva detalja</strong><small>planer, rokovi, statistika i grafikoni</small></span>
+                <span class="proto-details__hint" aria-hidden="true"></span>
             </summary>
-            <div class="more-body space-y-6">
+            <div class="proto-details__body space-y-6">
 
         <div class="studia-surface bg-white dark:bg-slate-900 rounded-[28px] p-6 sm:p-7 shadow-soft border border-slate-100 dark:border-slate-800">
             <div class="flex flex-wrap items-center justify-between gap-3 mb-5">

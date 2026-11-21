@@ -1685,52 +1685,55 @@ html[data-theme="dark"] .studia-brand-mark {
 }
 
 /* =========================================================
-   Studia Focus — smireni vizualni jezik i u Moodle temi.
+   Studia 3 — novi vizualni jezik i u Moodle temi.
+   Tamni hero, violetni primarni i narančasti signalni akcent.
    Bez novih endpointa, tokena i klijenata: samo CSS.
    ========================================================= */
 
 :root {
-    --studia-primary: #4338ca;
-    --studia-primary-strong: #3730a3;
-    --studia-primary-bright: #4f46e5;
-    --studia-primary-soft: #eef2ff;
-    --studia-link: #3730a3;
-    --studia-link-hover: #312e81;
-    --studia-bg: #f6f7fb;
+    --studia-primary: #6d28d9;
+    --studia-primary-strong: #5b21b6;
+    --studia-primary-bright: #7c3aed;
+    --studia-primary-soft: #f2ecff;
+    --studia-accent: #f97316;
+    --studia-link: #5b21b6;
+    --studia-link-hover: #4c1d95;
+    --studia-bg: #f4f5fa;
     --studia-surface: #ffffff;
-    --studia-surface-soft: #f1f3f9;
-    --studia-text: #121826;
-    --studia-muted: #5d6b82;
-    --studia-border: #e3e7f0;
-    --studia-border-strong: #cbd3e2;
-    --studia-progress-bg: #e6e9f5;
-    --studia-shadow: 0 12px 32px -20px rgba(15, 23, 42, 0.28);
+    --studia-surface-soft: #f7f8fc;
+    --studia-text: #111827;
+    --studia-muted: #5b6779;
+    --studia-border: #e5e8f1;
+    --studia-border-strong: #d5dae8;
+    --studia-progress-bg: #ece8f8;
+    --studia-shadow: 0 18px 40px -26px rgba(15, 23, 42, 0.3);
     --studia-shadow-sm: none;
-    --studia-hero: #4338ca;
+    --studia-hero: #2c1a63;
 }
 
 html[data-theme="dark"] {
-    --studia-primary: #a5b4fc;
-    --studia-primary-strong: #4f46e5;
-    --studia-primary-bright: #818cf8;
-    --studia-primary-soft: rgba(129, 140, 248, 0.14);
-    --studia-link: #a5b4fc;
-    --studia-link-hover: #c7d2fe;
-    --studia-bg: #0d111b;
-    --studia-surface: #151c2a;
-    --studia-surface-soft: #1b2434;
-    --studia-text: #eef2ff;
-    --studia-muted: #a6b1c6;
-    --studia-border: #2a3446;
-    --studia-border-strong: #3a465b;
-    --studia-progress-bg: #273146;
-    --studia-shadow: 0 16px 36px -22px rgba(0, 0, 0, 0.7);
+    --studia-primary: #a78bfa;
+    --studia-primary-strong: #8b5cf6;
+    --studia-primary-bright: #c4b5fd;
+    --studia-primary-soft: rgba(139, 92, 246, 0.16);
+    --studia-accent: #fb923c;
+    --studia-link: #a78bfa;
+    --studia-link-hover: #c4b5fd;
+    --studia-bg: #0b1020;
+    --studia-surface: #141b2d;
+    --studia-surface-soft: #1a2338;
+    --studia-text: #f1f5f9;
+    --studia-muted: #a8b4c8;
+    --studia-border: #27324a;
+    --studia-border-strong: #37435d;
+    --studia-progress-bg: #232d43;
+    --studia-shadow: 0 20px 44px -26px rgba(0, 0, 0, 0.85);
     --studia-shadow-sm: none;
-    --studia-hero: #4338ca;
+    --studia-hero: #1a1140;
 }
 
 .studia-hero {
-    background-image: none;
+    background-image: linear-gradient(125deg, #1a1140, #2c1a63 46%, #4c1d95);
     background-color: var(--studia-hero);
     box-shadow: none;
 }
