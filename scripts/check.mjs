@@ -26,6 +26,7 @@ const jsFiles = [
   "assets/js/core.js",
   "assets/js/render.js",
   "assets/js/views.js",
+  "assets/js/charts.js",
   "assets/js/moodle-api.js",
   "assets/js/app.js",
   "server/moodle-proxy.js"

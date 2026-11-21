@@ -901,6 +901,56 @@ function handleDocumentClick(event) {
     return;
   }
 
+  const plannerFocusButton = event.target.closest("[data-planner-focus]");
+  if (plannerFocusButton) {
+    switchTab("dashboard", { keepScroll: true });
+    window.setTimeout(() => {
+      const section = $("#planner-section");
+      if (section) section.scrollIntoView({ behavior: "smooth", block: "start" });
+      const input = $("#planner-input");
+      if (input) input.focus({ preventScroll: true });
+    }, 60);
+    return;
+  }
+
+  const todoToggle = event.target.closest("[data-todo-toggle]");
+  if (todoToggle) {
+    const id = todoToggle.dataset.todoToggle;
+    const todo = state.todos.find((item) => String(item.id) === String(id));
+    if (!todo) return;
+    todo.done = !todo.done;
+    persistPlanner();
+    renderPlanner();
+    showToast(todo.done ? "Zadatak je označen kao završen." : "Zadatak je ponovno aktivan.", "info");
+    return;
+  }
+
+  const todoDelete = event.target.closest("[data-todo-delete]");
+  if (todoDelete) {
+    const id = todoDelete.dataset.todoDelete;
+    const before = state.todos.length;
+    state.todos = state.todos.filter((item) => String(item.id) !== String(id));
+    if (state.todos.length === before) return;
+    persistPlanner();
+    renderPlanner();
+    showToast("Zadatak je uklonjen iz planera.", "info");
+    return;
+  }
+
+  const clearDoneButton = event.target.closest("[data-planner-clear-done]");
+  if (clearDoneButton) {
+    const before = state.todos.length;
+    state.todos = state.todos.filter((todo) => !todo.done);
+    if (state.todos.length === before) {
+      showToast("Nema završenih zadataka za ukloniti.", "info");
+      return;
+    }
+    persistPlanner();
+    renderPlanner();
+    showToast("Završeni zadaci su uklonjeni.");
+    return;
+  }
+
   const closeSidebarButton = event.target.closest("[data-close-sidebar]");
   if (closeSidebarButton) {
     closeSidebar();
@@ -977,6 +1027,19 @@ function handleDocumentClick(event) {
   const exportButton = event.target.closest("[data-export-ics]");
   if (exportButton) {
     exportCalendar();
+    return;
+  }
+
+  const favoriteButton = event.target.closest("[data-course-fav]");
+  if (favoriteButton) {
+    const courseId = favoriteButton.dataset.courseFav;
+    state.favorites[courseId] = !state.favorites[courseId];
+    persistFavorites();
+    renderCoursePills();
+    renderCourses();
+    renderFullCourses();
+    refreshIcons();
+    showToast(state.favorites[courseId] ? "Kolegij je dodan u favorite." : "Kolegij je uklonjen iz favorita.", "info");
     return;
   }
 
@@ -1261,6 +1324,38 @@ function bindEvents() {
       state.materialType = event.target.value;
       renderMaterials();
       refreshIcons();
+    });
+  }
+
+  const plannerForm = $("#planner-form");
+  if (plannerForm) {
+    plannerForm.addEventListener("submit", (event) => {
+      event.preventDefault();
+      const input = $("#planner-input");
+      const deadline = $("#planner-deadline");
+      const text = input ? input.value.trim() : "";
+
+      if (!text) {
+        showToast("Unesi naziv zadatka.", "error");
+        if (input) input.focus();
+        return;
+      }
+
+      state.todos.unshift({
+        id: `todo-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
+        text,
+        done: false,
+        deadline: deadline ? deadline.value : ""
+      });
+      persistPlanner();
+      renderPlanner();
+
+      if (input) {
+        input.value = "";
+        input.focus();
+      }
+      if (deadline) deadline.value = "";
+      showToast("Zadatak je dodan u planer.");
     });
   }
 

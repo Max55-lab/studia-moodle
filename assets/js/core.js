@@ -13,7 +13,9 @@ const STORAGE_KEYS = {
   submissions: "studia:submitted-assignments",
   inboxRead: "studia:read-messages",
   notificationsRead: "studia:read-notifications",
-  reminders: "studia:reminder-settings"
+  reminders: "studia:reminder-settings",
+  planner: "studia:planner",
+  favorites: "studia:favorites"
 };
 
 const state = {
@@ -31,6 +33,8 @@ const state = {
   inbox: INBOX.map((message) => ({ ...message })),
   notifications: NOTIFICATIONS.map((notification) => ({ ...notification })),
   reminderSettings: { ...DEFAULT_REMINDER_SETTINGS },
+  todos: [],
+  favorites: {},
   moodleConfig: {
     mode: "demo",
     proxyUrl: "",
@@ -802,6 +806,41 @@ function loadPreferences() {
 
   state.moodleConnected = safeGet(STORAGE_KEYS.moodle) === "true";
 
+  const savedFavorites = safeGet(STORAGE_KEYS.favorites);
+  if (savedFavorites) {
+    try {
+      const parsed = JSON.parse(savedFavorites);
+      if (parsed && typeof parsed === "object" && !Array.isArray(parsed)) {
+        state.favorites = parsed;
+      }
+    } catch (error) {
+      // Neispravan zapis ignorira se.
+    }
+  }
+
+  const savedTodos = safeGet(STORAGE_KEYS.planner);
+  if (savedTodos) {
+    try {
+      const parsed = JSON.parse(savedTodos);
+      if (Array.isArray(parsed)) {
+        state.todos = parsed
+          .filter((item) => item && typeof item === "object")
+          .slice(0, 200)
+          .map((item, index) => ({
+            id: typeof item.id === "string" || typeof item.id === "number"
+              ? item.id
+              : `todo-${Date.now()}-${index}`,
+            text: String(item.text || "").slice(0, 300).trim(),
+            done: Boolean(item.done),
+            deadline: typeof item.deadline === "string" ? item.deadline : ""
+          }))
+          .filter((item) => item.text);
+      }
+    } catch (error) {
+      // Neispravan zapis ignorira se i planer ostaje prazan.
+    }
+  }
+
   const savedMoodleConfig = safeGet(STORAGE_KEYS.moodleConfig);
   if (savedMoodleConfig) {
     try {
@@ -903,6 +942,14 @@ function persistNotificationRead() {
 
 function persistReminderSettings() {
   safeSet(STORAGE_KEYS.reminders, JSON.stringify(state.reminderSettings));
+}
+
+function persistPlanner() {
+  safeSet(STORAGE_KEYS.planner, JSON.stringify(state.todos));
+}
+
+function persistFavorites() {
+  safeSet(STORAGE_KEYS.favorites, JSON.stringify(state.favorites));
 }
 
 function persistMoodleConfig() {

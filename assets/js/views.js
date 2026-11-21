@@ -233,6 +233,7 @@ function renderAll() {
   renderFullCourses();
   renderQuickTasks();
   renderUpcomingTable();
+  renderPlanner();
   renderProfessors();
   renderStats();
   renderAssignmentFilters();
@@ -248,5 +249,6 @@ function renderAll() {
   renderNotices();
   renderMiniCalendar();
   populateUploadCourses();
+  if (typeof renderCharts === "function") renderCharts();
   refreshIcons();
 }

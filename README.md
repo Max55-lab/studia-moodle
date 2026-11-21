@@ -21,6 +21,8 @@
 ## Ključne značajke portala
 
 - **Pregledi:** nadzorna ploča, profil, inbox, kolegiji/UniHub, ocjene i ECTS, materijali, obavijesti, zadaće, raspored, Meet sobe, AI demo asistent.
+- **Planer i favoriti:** osobni zadaci s rokom (dodavanje, završavanje, brisanje) i označavanje kolegija favoritima uz filtar „Favoriti“.
+- **Vizualizacije:** kretanje kumulativnog prosjeka ocjena, distribucija ocjena i napredak po kolegijima (inline SVG/CSS, bez vanjskih biblioteka).
 - **UX:** svijetli/tamni način, responzivan prikaz (desktop/tablet/mobilno), pretraga, filtri, modali, toast poruke, izvoz (npr. `.ics`, CSV) i demo preuzimanja.
 - **Demo stanje:** dio postavki i radnji sprema se lokalno u pregledniku (`localStorage`) isključivo za potrebe demonstracije.
 - **Moodle adapter:** demo način i live način preko backend proxyja (token ostaje na poslužitelju).

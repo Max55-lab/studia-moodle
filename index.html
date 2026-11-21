@@ -32,6 +32,7 @@
     <script src="assets/js/core.js" defer></script>
     <script src="assets/js/render.js" defer></script>
     <script src="assets/js/views.js" defer></script>
+    <script src="assets/js/charts.js" defer></script>
     <script src="assets/js/moodle-api.js" defer></script>
     <script src="assets/js/app.js" defer></script>
 </head>
@@ -76,6 +77,10 @@
             <button type="button" data-tab="dashboard" class="nav-btn is-active w-full flex items-center gap-3.5 px-4 py-3 rounded-2xl text-sm font-semibold transition" aria-current="page">
                 <i data-lucide="layout-grid" class="w-5 h-5"></i>
                 <span>Nadzorna ploča</span>
+            </button>
+            <button type="button" data-planner-focus class="w-full flex items-center gap-3.5 px-4 py-3 rounded-2xl text-sm font-medium text-studia-700 dark:text-studia-300 hover:bg-studia-50 dark:hover:bg-studia-950/70 transition">
+                <i data-lucide="list-todo" class="w-5 h-5"></i>
+                <span>Moj planer</span>
             </button>
             <button type="button" data-tab="profile" class="nav-btn w-full flex items-center gap-3.5 px-4 py-3 rounded-2xl text-sm font-medium transition">
                 <i data-lucide="user-circle" class="w-5 h-5"></i>
@@ -400,6 +405,35 @@
             <div id="upcoming-cards" class="lg:hidden grid grid-cols-1 sm:grid-cols-2 gap-3"></div>
         </div>
 
+        <!-- ======================= MOJ PLANER ======================= -->
+        <div id="planner-section" class="bg-white dark:bg-slate-900 rounded-[28px] p-6 sm:p-7 shadow-soft border border-slate-100 dark:border-slate-800">
+            <div class="flex flex-wrap items-center justify-between gap-3 mb-5">
+                <div>
+                    <h2 class="font-display font-extrabold text-xl text-slate-900 dark:text-white">Moj planer</h2>
+                    <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Osobni zadaci i podsjetnici — ostaju samo u ovom pregledniku</p>
+                </div>
+                <span id="planner-progress-label" class="px-3 py-1.5 rounded-full bg-studia-50 dark:bg-studia-950 text-studia-700 dark:text-studia-300 border border-studia-200/70 dark:border-studia-800 text-xs font-bold">0 / 0</span>
+            </div>
+
+            <form id="planner-form" class="flex flex-col sm:flex-row gap-2.5 mb-4">
+                <label for="planner-input" class="sr-only">Novi zadatak</label>
+                <input id="planner-input" type="text" maxlength="300" autocomplete="off" placeholder="Dodaj zadatak (npr. Ponoviti Laravel relacije)..." class="flex-1 px-4 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs text-slate-800 dark:text-slate-100 placeholder-slate-400 focus:outline-none focus:border-studia-500">
+                <label for="planner-deadline" class="sr-only">Rok (opcionalno)</label>
+                <input id="planner-deadline" type="date" class="px-4 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs text-slate-800 dark:text-slate-100 focus:outline-none focus:border-studia-500">
+                <button type="submit" class="px-5 py-2.5 rounded-xl hero-gradient text-white font-bold text-xs shadow-md transition inline-flex items-center justify-center gap-2">
+                    <i data-lucide="plus" class="w-4 h-4"></i>
+                    <span>Dodaj</span>
+                </button>
+            </form>
+
+            <ul id="planner-list" class="space-y-2" aria-live="polite"></ul>
+
+            <div class="mt-4 pt-4 border-t border-slate-100 dark:border-slate-800 flex flex-wrap items-center justify-between gap-3">
+                <span class="text-[11px] text-slate-400">Zadaci se spremaju lokalno i ne šalju se nigdje.</span>
+                <button type="button" data-planner-clear-done class="text-[11px] font-bold text-studia-600 dark:text-studia-400 hover:underline">Ukloni završene</button>
+            </div>
+        </div>
+
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
             <div class="lg:col-span-5 bg-white dark:bg-slate-900 rounded-[28px] p-6 sm:p-7 shadow-soft border border-slate-100 dark:border-slate-800 flex flex-col justify-between">
                 <div class="flex items-center justify-between mb-4">
@@ -459,6 +493,32 @@
                         <span>Sveučilište u Mostaru · EduID prijava aktivna</span>
                     </div>
                     <button type="button" data-tab="profile" class="font-bold text-studia-600 dark:text-studia-400 hover:underline">Osobni karton studenta →</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ======================= VIZUALIZACIJE ======================= -->
+        <div class="bg-white dark:bg-slate-900 rounded-[28px] p-6 sm:p-7 shadow-soft border border-slate-100 dark:border-slate-800">
+            <div class="flex flex-wrap items-center justify-between gap-3 mb-6">
+                <div>
+                    <h2 class="font-display font-extrabold text-xl text-slate-900 dark:text-white">Vizualizacija napretka</h2>
+                    <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Grafikoni su generirani iz podataka prikazanih u portalu</p>
+                </div>
+                <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Zadrži pokazivač za detalje</span>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <div>
+                    <h3 class="text-xs font-bold text-slate-600 dark:text-slate-300 mb-3">Kretanje prosjeka ocjena</h3>
+                    <div id="chart-grade-trend" class="w-full"></div>
+                </div>
+                <div>
+                    <h3 class="text-xs font-bold text-slate-600 dark:text-slate-300 mb-3">Distribucija ocjena</h3>
+                    <div id="chart-grade-donut" class="w-full"></div>
+                </div>
+                <div>
+                    <h3 class="text-xs font-bold text-slate-600 dark:text-slate-300 mb-3">Napredak po kolegijima</h3>
+                    <div id="chart-course-progress" class="w-full"></div>
                 </div>
             </div>
         </div>

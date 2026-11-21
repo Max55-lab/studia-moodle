@@ -20,7 +20,8 @@ function courseCardMarkup(course, mode = "carousel") {
       <div class="h-32 bg-gradient-to-br ${course.color} p-5 flex flex-col justify-between text-white relative overflow-hidden">
         <div class="absolute right-0 bottom-0 translate-x-4 translate-y-4 w-28 h-28 bg-white/10 rounded-full blur-xl" aria-hidden="true"></div>
         <span class="text-[11px] font-bold uppercase tracking-wider bg-white/25 px-2.5 py-1 rounded-lg w-max backdrop-blur-xs relative z-10">${escapeHtml(course.code)}</span>
-        <h3 class="font-display font-bold text-lg leading-snug relative z-10">${escapeHtml(course.name)}</h3>
+        <button type="button" data-course-fav="${escapeHtml(course.id)}" aria-pressed="${Boolean(state.favorites[course.id])}" aria-label="${state.favorites[course.id] ? "Ukloni iz favorita" : "Dodaj u favorite"}" class="absolute top-4 right-4 z-20 w-8 h-8 rounded-xl bg-white/20 hover:bg-white/35 backdrop-blur-xs flex items-center justify-center text-base transition" title="Favorit">${state.favorites[course.id] ? "★" : "☆"}</button>
+        <h3 class="font-display font-bold text-lg leading-snug relative z-10 pr-8">${escapeHtml(course.name)}</h3>
       </div>
       <div class="p-5 space-y-4 flex-1 flex flex-col justify-between">
         <div>
@@ -47,10 +48,15 @@ function renderCoursePills() {
   const container = $("#course-filter-pills");
   if (!container) return;
 
-  container.innerHTML = COURSE_CATEGORIES.map((category) => {
+  const favoriteCount = COURSES.filter((course) => state.favorites[course.id]).length;
+  const options = [...COURSE_CATEGORIES, { id: "favorites", label: "Favoriti" }];
+
+  container.innerHTML = options.map((category) => {
     const count = category.id === "all"
       ? COURSES.length
-      : COURSES.filter((course) => course.category === category.id).length;
+      : category.id === "favorites"
+        ? favoriteCount
+        : COURSES.filter((course) => course.category === category.id).length;
     const isActive = state.courseFilter === category.id;
 
     return `
@@ -69,7 +75,9 @@ function renderCourses() {
 
   const filtered = state.courseFilter === "all"
     ? COURSES
-    : COURSES.filter((course) => course.category === state.courseFilter);
+    : state.courseFilter === "favorites"
+      ? COURSES.filter((course) => state.favorites[course.id])
+      : COURSES.filter((course) => course.category === state.courseFilter);
 
   carousel.innerHTML = filtered.map((course) => courseCardMarkup(course)).join("");
   carousel.scrollLeft = 0;
@@ -218,6 +226,50 @@ function renderUpcomingTable() {
       `;
     }).join("");
   }
+
+  refreshIcons();
+}
+
+/* =========================================================
+    MOJ PLANER (osobni zadaci)
+   ========================================================= */
+
+function renderPlanner() {
+  const list = $("#planner-list");
+  if (!list) return;
+
+  const todos = Array.isArray(state.todos) ? state.todos : [];
+  const doneCount = todos.filter((todo) => todo.done).length;
+  const label = $("#planner-progress-label");
+  if (label) label.textContent = `${doneCount} / ${todos.length}`;
+
+  if (todos.length === 0) {
+    list.innerHTML = `<li class="py-6 text-center text-sm text-slate-400">Nema zadataka. Dodaj prvi zadatak iznad.</li>`;
+    return;
+  }
+
+  list.innerHTML = todos.map((todo) => {
+    const done = Boolean(todo.done);
+    const id = escapeHtml(todo.id);
+    return `
+      <li class="flex items-start gap-3 p-3.5 rounded-2xl border ${
+        done
+          ? "border-emerald-200/70 dark:border-emerald-900/60 bg-emerald-50/40 dark:bg-emerald-950/20"
+          : "border-slate-100 dark:border-slate-800 bg-slate-50/60 dark:bg-slate-800/40"
+      }">
+        <button type="button" data-todo-toggle="${id}" aria-pressed="${done}" aria-label="${done ? "Označi kao aktivno" : "Označi kao završeno"}" class="w-6 h-6 mt-0.5 shrink-0 rounded-lg border-2 flex items-center justify-center text-xs font-bold transition ${
+          done
+            ? "bg-emerald-500 border-emerald-500 text-white"
+            : "border-slate-300 dark:border-slate-600 text-transparent hover:border-studia-500"
+        }">✓</button>
+        <div class="flex-1 min-w-0">
+          <span class="block text-sm font-semibold ${done ? "text-slate-400 line-through" : "text-slate-800 dark:text-slate-100"}">${escapeHtml(todo.text)}</span>
+          ${todo.deadline ? `<span class="block text-[10px] text-slate-400 mt-1">Rok: ${escapeHtml(formatDateISO(todo.deadline))}</span>` : ""}
+        </div>
+        <button type="button" data-todo-delete="${id}" aria-label="Obriši zadatak" class="p-1.5 rounded-lg text-slate-400 hover:text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition shrink-0">${icon("trash-2", "w-4 h-4")}</button>
+      </li>
+    `;
+  }).join("");
 
   refreshIcons();
 }
