@@ -24,10 +24,12 @@ Pregled arhitekture Studia repozitorija i preporuke za održavanje/integraciju.
 2. `assets/vendor/lucide.min.js` — ikone.
 3. `assets/js/data.js` — demo podaci i konstante.
 4. `assets/js/core.js` — zajedničko stanje, pomoćne funkcije, tema, navigacija, modali, pohrana, pretraga.
-5. `assets/js/render.js` — render funkcije za većinu pogleda/lista/sažetaka.
-6. `assets/js/views.js` — raspored, Meet sobe, oglasi, kalendar i kompozitni render.
-7. `assets/js/moodle-api.js` — demo/live Moodle adapter.
-8. `assets/js/app.js` — događaji, akcije korisnika, tokovi i inicijalizacija (`init`).
+5. `assets/js/live-data.js` — normalizacija live Moodle payloada i snapshot/povrat demo podataka.
+6. `assets/js/render.js` — render funkcije za većinu pogleda/lista/sažetaka.
+7. `assets/js/views.js` — raspored, Meet sobe, oglasi, kalendar i kompozitni render (`renderAll`).
+8. `assets/js/charts.js` — inline SVG vizualizacije iz podataka portala.
+9. `assets/js/moodle-api.js` — demo/live Moodle adapter.
+10. `assets/js/app.js` — događaji, akcije korisnika, tokovi i inicijalizacija (`init`).
 
 ### Tijek podataka (pojednostavljeno)
 - **Izvor:** demo konstante u `data.js` (ili prilagođeni izvor u integraciji).
@@ -40,7 +42,8 @@ Pregled arhitekture Studia repozitorija i preporuke za održavanje/integraciju.
 
 - **`window.STUDIA_CONFIG`**: centralna točka za branding, značajke, linkove, hookove i integracijske postavke.
 - **`window.Studia`**: javni namespace za pristup konfiguraciji i pomoćnim integracijskim metodama.
-- **Adapteri:** Moodle adapter je izdvojen (`moodle-api.js`); dodatni adapteri mogu se uvoditi kroz integracijski sloj.
+- **Adapteri:** Moodle adapter je izdvojen (`moodle-api.js`), a preslikavanje u UI modele u `live-data.js`; dodatni adapteri mogu se uvoditi kroz integracijski sloj.
+- **Live podaci:** `proxy → moodle-api.js → live-data.js → renderAll()`; demo podaci se privremeno snapshotiraju i vraćaju pri prelasku u demo način. Stvarni studentski podaci ne idu u `localStorage`.
 - **Podatkovni ugovor:** vidi `docs/DATA_MODEL.md`.
 
 ## 4. Build i isporuka

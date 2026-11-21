@@ -69,6 +69,7 @@ const MoodleAPI = (() => {
         mode: "live",
         syncedAt: payload.syncedAt || new Date().toISOString(),
         source: payload.source || "SUM Moodle",
+        dataset: payload.data ? LiveData.buildDataset(payload.data) : null,
         summary: {
           courses: Number(payload.summary && payload.summary.courses) || 0,
           grades: Number(payload.summary && payload.summary.grades) || 0,
@@ -85,6 +86,7 @@ const MoodleAPI = (() => {
       mode: "demo",
       syncedAt: DEMO_SYNC_ISO,
       source: "Demo podaci",
+      dataset: null,
       summary: { ...DEMO_SUMMARY }
     };
   }
@@ -96,11 +98,19 @@ const MoodleAPI = (() => {
   }
 
   function saveResult(result) {
+    if (result.mode === "live" && result.dataset) {
+      LiveData.apply(result.dataset);
+    } else {
+      LiveData.restore();
+    }
+
     state.moodleConfig.lastSync = result.syncedAt;
     state.moodleConfig.lastSyncMode = result.mode;
     state.moodleConfig.lastSummary = { ...result.summary };
     persistMoodleConfig();
     applyMoodleState();
+
+    if (typeof renderAll === "function") renderAll();
   }
 
   function getSummaryText(summary) {

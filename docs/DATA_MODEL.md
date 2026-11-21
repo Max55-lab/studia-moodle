@@ -101,7 +101,41 @@ Runtime stanje se drži u globalnom `state` objektu (`assets/js/core.js`) i uklj
 
 Dio stanja se pohranjuje u `localStorage` (ključevi s prefiksom, zadano `studia:*`), npr. tema, akademski kontekst, pročitane poruke/obavijesti, predane zadaće, postavke podsjetnika, Moodle konfiguracija.
 
-## 8. Preporuke za integraciju
+## 8. Live Moodle dataset (`payload.data`)
+
+Kad proxy vrati `data`, `assets/js/live-data.js` očekuje sljedeći ugovor. Sva tekstualna polja tretiraju se kao nepouzdana i eskapiraju se pri prikazu.
+
+```json
+{
+  "ok": true,
+  "summary": { "courses": 3, "grades": 3, "materials": 3, "assignments": 2, "notifications": 1 },
+  "data": {
+    "courses": [{ "id": 101, "shortname": "SUM-WEB", "fullname": "Web aplikacije", "summary": "...", "startdate": 0, "completionprogress": 75, "completedactivities": 6, "totalactivities": 8 }],
+    "grades": [{ "id": 1, "courseid": 101, "coursename": "Web aplikacije", "itemname": "Kolokvij 1", "gradeformatted": "5 (100%)", "rawgrade": 95, "rawgrademax": 100 }],
+    "materials": [{ "id": 1, "courseid": 101, "section": "Tjedan 1", "name": "Uvod u Laravel", "modname": "resource", "added": 0 }],
+    "assignments": [{ "id": 1, "courseid": 101, "coursename": "Web aplikacije", "name": "Laravel CRUD", "duedate": 0, "grade": 10, "intro": "..." }],
+    "notifications": []
+  }
+}
+```
+
+Mapiranje u UI modele:
+
+| Iz proxyja | U portalu |
+| --- | --- |
+| `courses[].id` | `COURSES[].id = "moodle-<id>"` |
+| `courses[].completionprogress` | `COURSES[].progress` (grafikon napretka) |
+| `grades[].rawgrade / rawgrademax` | `GRADE_HISTORY[].grade` (skala 1–5, zaokruženo) |
+| `grades[].itemname`, `coursename` | `GRADE_HISTORY[].name`, `professor` |
+| `assignments[].duedate` (Unix s) | `ASSIGNMENTS[].dueISO`, `deadline` |
+| `materials[].modname` | `MATERIALS[].type` (`pdf`, `slides`, `link`) |
+
+Napomene:
+- `summary` i dalje postoji radi kompatibilnosti sa starijim klijentima.
+- Live podaci se ne pohranjuju u `localStorage`; dostupni su samo u memoriji dok je stranica otvorena.
+- `TIMETABLE`, `SCRIPTS` i `INBOX` ostaju demo sadržaj ako ih ciljni sustav ne isporuči.
+
+## 9. Preporuke za integraciju
 
 - **Stabilni identifikatori:** koristite stabilne `id` vrijednosti (string ili number dosljedno po tipu entiteta).
 - **Datumi:** preferirati ISO format (`YYYY-MM-DD` ili puni ISO datetime) uz zasebna polja za prikaz ako je potrebno.

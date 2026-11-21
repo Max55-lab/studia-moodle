@@ -16,6 +16,8 @@ const MOODLE_URL = String(process.env.MOODLE_URL || "https://eucenje.sum.ba/mood
 const MOODLE_TOKEN = process.env.MOODLE_TOKEN || "";
 const ALLOWED_ORIGIN = String(process.env.ALLOWED_ORIGIN || "*");
 const ALLOWED_ORIGINS = ALLOWED_ORIGIN.split(",").map((origin) => origin.trim()).filter(Boolean);
+const MAX_COURSES = Math.max(1, Number(process.env.STUDIA_MAX_COURSES || 20));
+const MAX_ITEMS = Math.max(1, Number(process.env.STUDIA_MAX_ITEMS || 60));
 const WS_ENDPOINT = `${MOODLE_URL}/webservice/rest/server.php`;
 
 function corsHeaders(origin) {
@@ -113,73 +115,205 @@ async function callMoodle(functionName, params = {}) {
   return payload;
 }
 
-async function countGrades(courseIds, userId) {
-  let total = 0;
+function safeList(value) {
+  return Array.isArray(value) ? value : [];
+}
+
+function stripHtml(value) {
+  return String(value == null ? "" : value)
+    .replace(/<[^>]*>/g, " ")
+    .replace(/&nbsp;/gi, " ")
+    .replace(/&amp;/gi, "&")
+    .replace(/\s+/g, " ")
+    .trim()
+    .slice(0, 400);
+}
+
+function toTimestamp(value) {
+  const number = Number(value);
+  return Number.isFinite(number) && number > 0 ? number : 0;
+}
+
+function formatShortDate(timestamp) {
+  if (!timestamp) return "bez roka";
+  const date = new Date(timestamp * 1000);
+  const day = String(date.getDate()).padStart(2, "0");
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  return `${day}. ${month}. ${date.getFullYear()}.`;
+}
+
+async function fetchCompletions(courseIds, userId) {
+  const result = {};
 
   for (const courseId of courseIds) {
     try {
-      const report = await callMoodle("gradereport_user_get_grade_items", {
+      const status = await callMoodle("core_completion_get_course_completion_status", {
         courseid: courseId,
         userid: userId
       });
-      const userGrades = Array.isArray(report.usergrades) ? report.usergrades : [];
-      const items = userGrades.length > 0 && Array.isArray(userGrades[0].gradeitems)
-        ? userGrades[0].gradeitems
-        : [];
-      total += items.filter((item) => {
-        return item && typeof item.gradeformatted === "string" && item.gradeformatted.trim() !== "-";
-      }).length;
+      const details = (status && status.completionstatus && status.completionstatus.progress)
+        || (status && status.completionstatus)
+        || {};
+      result[courseId] = {
+        completionprogress: Number(details.completionprogress) || 0,
+        completedactivities: Number(details.completedactivities) || 0,
+        totalactivities: Number(details.totalactivities) || 0
+      };
+    } catch (error) {
+      // Completion nije omogućen za ovaj kolegij ili funkcija nije dopuštena.
+    }
+  }
+
+  return result;
+}
+
+async function fetchCourses(userId) {
+  const result = await callMoodle("core_enrol_get_users_courses", { userid: userId });
+  const courses = safeList(result).slice(0, MAX_COURSES);
+  const completions = await fetchCompletions(courses.map((course) => Number(course.id)), userId);
+
+  return courses.map((course) => {
+    const id = Number(course.id);
+    const completion = completions[id] || {};
+
+    return {
+      id,
+      shortname: String(course.shortname || `MOODLE-${id}`).slice(0, 80),
+      fullname: String(course.fullname || course.shortname || `Kolegij ${id}`).slice(0, 160),
+      summary: stripHtml(course.summary),
+      startdate: toTimestamp(course.startdate),
+      completionprogress: Math.max(0, Math.min(100, Number(completion.completionprogress) || 0)),
+      completedactivities: Number(completion.completedactivities) || 0,
+      totalactivities: Number(completion.totalactivities) || 0
+    };
+  });
+}
+
+async function fetchGrades(courses, userId) {
+  const grades = [];
+
+  for (const course of courses) {
+    try {
+      const report = await callMoodle("gradereport_user_get_grade_items", {
+        courseid: course.id,
+        userid: userId
+      });
+      const userGrades = safeList(report.usergrades);
+      const items = userGrades.length > 0 ? safeList(userGrades[0].gradeitems) : [];
+
+      items.slice(0, MAX_ITEMS).forEach((item) => {
+        if (!item || typeof item.gradeformatted !== "string" || item.gradeformatted.trim() === "-") return;
+        grades.push({
+          id: Number(item.id) || grades.length + 1,
+          courseid: course.id,
+          coursename: course.fullname,
+          itemname: String(item.itemname || item.itemmodule || "Ocjena").slice(0, 160),
+          gradeformatted: item.gradeformatted,
+          rawgrade: Number(item.rawgrade) || 0,
+          rawgrademax: Number(item.rawgrademax) || 100
+        });
+      });
     } catch (error) {
       // Neke Moodle instalacije ne dopuštaju ovaj izvještaj studentima.
     }
   }
 
-  return total;
+  return grades.slice(0, MAX_ITEMS);
 }
 
-async function countMaterials(courseIds) {
-  let total = 0;
+async function fetchMaterials(courses) {
+  const materials = [];
 
-  for (const courseId of courseIds) {
+  for (const course of courses) {
     try {
-      const sections = await callMoodle("core_course_get_contents", { courseid: courseId });
-      if (!Array.isArray(sections)) continue;
-      sections.forEach((section) => {
-        const modules = Array.isArray(section.modules) ? section.modules : [];
-        total += modules.filter((module) => {
-          return ["resource", "folder", "url", "page", "book", "file"].includes(module.modname);
-        }).length;
+      const sections = await callMoodle("core_course_get_contents", { courseid: course.id });
+
+      safeList(sections).forEach((section) => {
+        safeList(section.modules).slice(0, MAX_ITEMS).forEach((module) => {
+          if (!["resource", "folder", "url", "page", "book", "file"].includes(module.modname)) return;
+          materials.push({
+            id: Number(module.id) || materials.length + 1,
+            courseid: course.id,
+            section: String(section.name || "Materijali").slice(0, 120),
+            name: String(module.name || "Materijal").slice(0, 160),
+            modname: module.modname,
+            added: toTimestamp(module.added)
+          });
+        });
       });
     } catch (error) {
       // Sadržaj kolegija može biti skriven ili zaključan.
     }
   }
 
-  return total;
+  return materials.slice(0, MAX_ITEMS * 2);
 }
 
-async function countAssignments(courseIds) {
-  if (courseIds.length === 0) return 0;
+async function fetchAssignments(courses) {
+  if (courses.length === 0) return [];
 
   try {
-    const result = await callMoodle("mod_assign_get_assignments", { courseids: courseIds });
-    const courses = Array.isArray(result.courses) ? result.courses : [];
-    return courses.reduce((total, course) => {
-      return total + (Array.isArray(course.assignments) ? course.assignments.length : 0);
-    }, 0);
+    const result = await callMoodle("mod_assign_get_assignments", {
+      courseids: courses.map((course) => course.id)
+    });
+    const assignments = [];
+
+    safeList(result.courses).forEach((course) => {
+      const courseId = Number(course.id);
+      const courseName = courses.find((item) => item.id === courseId);
+
+      safeList(course.assignments).slice(0, MAX_ITEMS).forEach((assignment) => {
+        assignments.push({
+          id: Number(assignment.id) || assignments.length + 1,
+          courseid: courseId,
+          coursename: courseName ? courseName.fullname : "",
+          name: String(assignment.name || "Zadaća").slice(0, 160),
+          duedate: toTimestamp(assignment.duedate || assignment.due),
+          grade: Number(assignment.grade) || 0,
+          intro: stripHtml(assignment.intro)
+        });
+      });
+    });
+
+    return assignments.slice(0, MAX_ITEMS * 2);
   } catch (error) {
-    return 0;
+    return [];
   }
 }
 
-async function countUnreadMessages(userId) {
-  try {
-    const result = await callMoodle("core_message_get_unread_conversation_counts", { userid: userId });
-    const types = Array.isArray(result.types) ? result.types : Object.values(result.types || {});
-    return types.reduce((total, type) => total + Number(type && type.unread ? type.unread : 0), Number(result.favourites || 0));
-  } catch (error) {
-    return 0;
-  }
+function buildNotifications(assignments, grades) {
+  const notifications = [];
+
+  [...assignments]
+    .filter((assignment) => assignment.duedate > 0)
+    .sort((first, second) => first.duedate - second.duedate)
+    .slice(0, 3)
+    .forEach((assignment, index) => {
+      notifications.push({
+        id: `asg-${index + 1}`,
+        type: "deadline",
+        title: `Rok: ${assignment.name}`,
+        text: `${assignment.coursename} · ${formatShortDate(assignment.duedate)}`,
+        dateISO: new Date(assignment.duedate * 1000).toISOString().slice(0, 10),
+        targetTab: "assignments",
+        targetId: assignment.id,
+        unread: false
+      });
+    });
+
+  grades.slice(-2).forEach((grade, index) => {
+    notifications.push({
+      id: `grade-${index + 1}`,
+      type: "grade",
+      title: `Ocjena: ${grade.gradeformatted}`,
+      text: `${grade.itemname} · ${grade.coursename}`,
+      dateISO: new Date().toISOString().slice(0, 10),
+      targetTab: "grades",
+      unread: false
+    });
+  });
+
+  return notifications;
 }
 
 async function syncMoodle() {
@@ -187,32 +321,36 @@ async function syncMoodle() {
   const userId = Number(siteInfo.userid);
   if (!userId) throw new Error("Nije moguće odrediti Moodle korisnika iz tokena.");
 
-  const courses = await callMoodle("core_enrol_get_users_courses", { userid: userId });
-  const courseList = Array.isArray(courses) ? courses : [];
-  const courseIds = courseList.map((course) => Number(course.id)).filter(Boolean);
+  const courses = await fetchCourses(userId);
+  if (courses.length === 0) {
+    throw new Error("Moodle nije vratio nijedan kolegij za ovog korisnika.");
+  }
 
-  const [grades, materials, assignments, notifications] = await Promise.all([
-    countGrades(courseIds, userId),
-    countMaterials(courseIds),
-    countAssignments(courseIds),
-    countUnreadMessages(userId)
+  const [grades, materials, assignments] = await Promise.all([
+    fetchGrades(courses, userId),
+    fetchMaterials(courses),
+    fetchAssignments(courses)
   ]);
+  const notifications = buildNotifications(assignments, grades);
 
   return {
     ok: true,
-    source: "SUM Moodle · eucenje.sum.ba",
+    source: `Moodle · ${new URL(MOODLE_URL).hostname}`,
     syncedAt: new Date().toISOString(),
     user: {
       id: userId,
       fullname: siteInfo.fullname || ""
     },
     summary: {
-      courses: courseList.length,
-      grades,
-      materials,
-      assignments,
-      notifications
-    }
+      courses: courses.length,
+      grades: grades.length,
+      materials: materials.length,
+      assignments: assignments.length,
+      notifications: notifications.length
+    },
+    // Normalizirani payload koji front-end preslikava u COURSES / GRADE_HISTORY /
+    // MATERIALS / ASSIGNMENTS. Stari klijenti i dalje koriste samo `summary`.
+    data: { courses, grades, materials, assignments, notifications }
   };
 }
 

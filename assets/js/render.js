@@ -542,10 +542,22 @@ function renderGradeFilters() {
   const container = $("#grade-filter-pills");
   if (!container) return;
 
+  const semesters = new Map();
+  GRADE_HISTORY.forEach((grade) => {
+    const id = String(grade.semesterId || "");
+    if (!id) return;
+    const entry = semesters.get(id) || {
+      id,
+      label: grade.semester || `${id}. semestar`,
+      count: 0
+    };
+    entry.count += 1;
+    semesters.set(id, entry);
+  });
+
   const options = [
     { id: "all", label: "Svi semestri", count: GRADE_HISTORY.length },
-    { id: "1", label: "1. semestar", count: GRADE_HISTORY.filter((grade) => grade.semesterId === "1").length },
-    { id: "2", label: "2. semestar", count: GRADE_HISTORY.filter((grade) => grade.semesterId === "2").length }
+    ...semesters.values()
   ];
 
   container.innerHTML = options.map((option) => {

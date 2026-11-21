@@ -24,12 +24,14 @@ const jsFiles = [
   "assets/js/config.js",
   "assets/js/data.js",
   "assets/js/core.js",
+  "assets/js/live-data.js",
   "assets/js/render.js",
   "assets/js/views.js",
   "assets/js/charts.js",
   "assets/js/moodle-api.js",
   "assets/js/app.js",
-  "server/moodle-proxy.js"
+  "server/moodle-proxy.js",
+  "scripts/mock-moodle-proxy.js"
 ];
 for (const rel of jsFiles) {
   const p = path.join(root, rel);
@@ -82,9 +84,17 @@ if (fs.existsSync(htmlPath)) {
   if (duplicates.length === 0) ok("HTML: nema dupliciranih ID-ova");
   else bad(`HTML duplicirani ID-ovi: ${duplicates.join(", ")}`);
 
-  const chartsAt = html.indexOf("assets/js/charts.js");
+  const dataAt = html.indexOf("assets/js/data.js");
+  const coreAt = html.indexOf("assets/js/core.js");
+  const liveAt = html.indexOf("assets/js/live-data.js");
+  const renderAt = html.indexOf("assets/js/render.js");
   const viewsAt = html.indexOf("assets/js/views.js");
+  const chartsAt = html.indexOf("assets/js/charts.js");
   const appAt = html.indexOf("assets/js/app.js");
+
+  if (dataAt > 0 && coreAt > dataAt && liveAt > coreAt && renderAt > liveAt) ok("HTML redoslijed: data.js → core.js → live-data.js → render.js");
+  else bad("HTML redoslijed core/live-data nije ispravan");
+
   if (chartsAt > viewsAt && chartsAt < appAt) ok("HTML redoslijed: views.js → charts.js → app.js");
   else bad("HTML redoslijed scriptova nije ispravan");
 }

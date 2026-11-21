@@ -60,7 +60,7 @@ npm run build:css
 npm run check
 ```
 
-Pokreće osnovne provjere (JSON, sintaksa JS datoteka, prisutnost ključnih datoteka).
+Pokreće osnovne provjere (JSON, sintaksa JS datoteka, prisutnost ključnih datoteka, obavezni HTML ID-ovi, duplicirani ID-ovi i redoslijed učitavanja scriptova). Ista skripta sada se pokreće i u CI-ju.
 
 ## Konfiguracija i integracija
 
@@ -94,8 +94,10 @@ Dostupan je i globalni namespace `window.Studia` (konfiguracija, lifecycle hooko
 - Koristi ugrađene demo podatke za prikaz sinkronizacije i sažetaka.
 
 ### Live način (preko proxyja)
-- Front-end šalje zahtjev proxy servisu; proxy koristi Moodle Web Service token i vraća normalizirane podatke.
-- **Token se ne smije nalaziti u pregledniku, `localStorage` ili front-end kodu.**
+- Front-end šalje zahtjev proxy servisu; proxy koristi Moodle Web Service token i vraća `summary` + normalizirani `data` (kolegiji, ocjene, materijali, zadaće, obavijesti).
+- `assets/js/live-data.js` preslikava taj payload u modele portala i osvježava cijeli UI — kartice, ocjene i grafikoni tada koriste stvarne Moodle podatke.
+- **Token se ne smije nalaziti u pregledniku, `localStorage` ili front-end kodu.** Live studentski podaci također ostaju samo u memoriji.
+- Bez pravog tokena možeš isprobati tok s mock proxyjem: `node scripts/mock-moodle-proxy.js` → upiši `http://127.0.0.1:8788` u modalu.
 
 Primjer pokretanja proxyja (Node 18+):
 
@@ -124,7 +126,7 @@ Upute za instalaciju i postavke: [`theme/studia/README.md`](theme/studia/README.
 ├── index.html                  # statički portal (live demo ulazna točka)
 ├── assets/
 │   ├── css/                    # stilovi (tailwind build + custom)
-│   ├── js/                     # config, data, core, render, views, adapteri, app
+│   ├── js/                     # config, data, core, live-data, render, views, charts, adapteri, app
 │   ├── img/, fonts/, vendor/   # resursi
 ├── docs/                       # integracija, podatkovni model, arhitektura, privatnost
 ├── server/                     # Moodle proxy primjer

@@ -35,3 +35,6 @@ jobs:
             fi
           done
           echo "Syntax ok"
+
+      - name: Run project checks
+        run: node scripts/check.mjs

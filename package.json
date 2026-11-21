@@ -12,7 +12,8 @@
     "build:css": "tailwindcss -i ./assets/css/tailwind.src.css -o ./assets/css/tailwind.css --minify",
     "watch:css": "tailwindcss -i ./assets/css/tailwind.src.css -o ./assets/css/tailwind.css --watch",
     "check": "node scripts/check.mjs",
-    "check:syntax": "node --check assets/js/config.js && node --check assets/js/data.js && node --check assets/js/core.js && node --check assets/js/render.js && node --check assets/js/views.js && node --check assets/js/moodle-api.js && node --check assets/js/app.js && node --check server/moodle-proxy.js"
+    "mock:proxy": "node scripts/mock-moodle-proxy.js",
+    "check:syntax": "node --check assets/js/config.js && node --check assets/js/data.js && node --check assets/js/core.js && node --check assets/js/render.js && node --check assets/js/views.js && node --check assets/js/charts.js && node --check assets/js/live-data.js && node --check assets/js/moodle-api.js && node --check assets/js/app.js && node --check server/moodle-proxy.js"
   },
   "devDependencies": {
     "tailwindcss": "3.4.17"

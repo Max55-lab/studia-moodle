@@ -29,12 +29,14 @@ Zadani redoslijed u `index.html`:
 2. `assets/vendor/lucide.min.js`
 3. `assets/js/data.js`
 4. `assets/js/core.js`
-5. `assets/js/render.js`
-6. `assets/js/views.js`
-7. `assets/js/moodle-api.js`
-8. `assets/js/app.js`
+5. `assets/js/live-data.js` (normalizacija live podataka; snapshot demo podataka)
+6. `assets/js/render.js`
+7. `assets/js/views.js`
+8. `assets/js/charts.js`
+9. `assets/js/moodle-api.js`
+10. `assets/js/app.js`
 
-**Pravilo:** `config.js` mora biti dostupan prije ostalih aplikacijskih modula kako bi `window.STUDIA_CONFIG` i `window.Studia` bili dostupni.
+**Pravilo:** `config.js` mora biti dostupan prije ostalih aplikacijskih modula kako bi `window.STUDIA_CONFIG` i `window.Studia` bili dostupni. `live-data.js` mora biti učitan neposredno nakon `core.js` jer ovisi o `state` i demo konstantama iz `data.js`.
 
 ## 3. Runtime konfiguracija (`window.STUDIA_CONFIG`)
 
@@ -91,9 +93,14 @@ Primjer:
 
 - **Demo:** bez mrežnih zahtjeva, koristi lokalne podatke.
 - **Live (proxy):** preglednik komunicira s proxy endpointom; proxy čuva token i poziva Moodle Web Service API.
-- Nikada ne stavljati Moodle token u front-end kod ili `localStorage`.
+- Proxy uz `summary` vraća i `data` (normalizirane kolegije, ocjene, materijale, zadaće i obavijesti). `assets/js/live-data.js` preslikava taj payload u oblik koji koriste `COURSES`, `GRADE_HISTORY`, `MATERIALS`, `ASSIGNMENTS` i `state`, nakon čega `renderAll()` osvježava cijeli UI — uključujući grafikone.
+- Stari proxy koji vraća samo `summary` i dalje radi; tada se prikazuju demo podaci, a brojke u statusu dolaze iz proxyja.
+- Prijelazom u demo način vraća se demo dataset; povratkom u live ponovno se primjenjuje posljednji dataset iz memorije (ne iz `localStorage`).
+- Nikada ne stavljati Moodle token u front-end kod ili `localStorage`. Stvarni studentski podaci iz live načina također se ne pohranjuju u `localStorage`.
 
-Detalji: [`server/README.md`](../server/README.md), `assets/js/moodle-api.js`.
+Za lokalno testiranje bez tokena: `node scripts/mock-moodle-proxy.js` (zadani port `8788`), zatim u modalu upisati `http://127.0.0.1:8788`.
+
+Detalji: [`server/README.md`](../server/README.md), [`docs/DATA_MODEL.md`](DATA_MODEL.md), `assets/js/moodle-api.js`, `assets/js/live-data.js`.
 
 ## 7. Ugradnja u postojeću stranicu/sustav
 

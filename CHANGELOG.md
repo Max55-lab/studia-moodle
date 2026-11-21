@@ -7,6 +7,9 @@ Format je informativan i temeljen na [Keep a Changelog](https://keepachangelog.c
 ## [Unreleased]
 
 ### Added
+- **Live Moodle podaci u portalu:** proxy sada uz `summary` vraća i normalizirani `data`; `assets/js/live-data.js` preslikava ga u `COURSES`, `GRADE_HISTORY`, `MATERIALS`, `ASSIGNMENTS` i obavijesti, pa grafikoni i kartice koriste stvarne Moodle podatke. Povratak u demo način vraća originalni dataset.
+- Mock Moodle proxy (`scripts/mock-moodle-proxy.js`, `npm run mock:proxy`) za testiranje live toka bez tokena.
+- CI sada pokreće `node scripts/check.mjs` (do sada samo sintaksa).
 - „Moj planer“ u glavnom portalu: dodavanje, završavanje i brisanje osobnih zadataka s opcionalnim rokom, lokalna perzistencija i brzi pristup iz navigacije.
 - Favoriti kolegija (zvjezdica na kartici + filtar „Favoriti“), preneseni iz demo-sitea u glavnu aplikaciju.
 - Vizualizacije na nadzornoj ploči (`assets/js/charts.js`): kretanje prosjeka ocjena, distribucija ocjena i napredak po kolegijima.
@@ -20,6 +23,8 @@ Format je informativan i temeljen na [Keep a Changelog](https://keepachangelog.c
 - Unaprijeđenja izgleda i dosljednosti sučelja statičkog portala (stilovi, komponente, tamni/svijetli način, responzivnost).
 
 ### Changed
+- Filteri ocjena grade se dinamički iz dostupnih semestara, pa rade i s live podacima.
+- Ažurirani `README.md`, `docs/INTEGRATION.md`, `docs/DATA_MODEL.md` i `server/README.md` za novi live ugovor.
 - Ažuriran `README.md` s uputama za integraciju, konfiguraciju i održavanje.
 - Ažuriran `.gitignore` i projektne skripte za lakši razvoj i provjere.
 

@@ -775,6 +775,11 @@ async function joinMeet(courseId) {
   const course = getCourse(courseId);
   if (!course) return;
 
+  if (!course.meetUrl) {
+    showToast("Za ovi kolegij nema dostupan Meet link u Moodle podacima.", "info");
+    return;
+  }
+
   try {
     await navigator.clipboard.writeText(course.meetUrl);
     showToast(`Demo link za „${course.name}“ kopiran je u međuspremnik.`, "info");

@@ -679,9 +679,17 @@ function renderMoodleStatus() {
 
 function setMoodleMode(mode) {
   state.moodleConfig.mode = mode === "live" ? "live" : "demo";
+
+  if (state.moodleConfig.mode === "live") {
+    if (!LiveData.applyLast()) LiveData.restore();
+  } else {
+    LiveData.restore();
+  }
+
   persistMoodleConfig();
   renderMoodleStatus();
   applyMoodleState();
+  if (typeof renderAll === "function") renderAll();
   showToast(state.moodleConfig.mode === "live" ? "Uključen je live način rada." : "Uključen je demo način rada.", "info");
 }
 
