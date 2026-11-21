@@ -7,6 +7,7 @@ Format je informativan i temeljen na [Keep a Changelog](https://keepachangelog.c
 ## [Unreleased]
 
 ### Added
+- **SEO i anonimizacija:** dodani `robots.txt` i `sitemap.xml` za javnu demo verziju (uklanjaju 404 za `robots.txt`); avatar je preimenovan iz `student-ivan.svg` u generički `student-avatar.svg` i ažuriran je u HTML-u i `data.js`. Novi su datoteke obavezne u `scripts/check.mjs`.
 - **Referentni poslužitelj (ADR-002):** `server/reference/` — prava SQLite baza s relacijama, `FOREIGN KEY` i normaliziranim RBAC modelom; prijava sa scrypt hashom, SHA-256 digesti tokena sesija, CSRF na mutacijama, CORS/CSP/HSTS, rate limiting i audit log. Svaka zaštićena ruta prvo provjerava identitet (401), zatim dozvolu (403); institucija se izvodi iz sesije, nikad iz klijenta. 16 API testova u `tests/api/reference-api.test.js`, integriranih u `scripts/check.mjs`. Samo ugrađeni Node moduli i generički demo podaci; nije spojen na demo portal ni na `theme_studia`.
 - **Unit testovi poslovne logike:** 5 testova u `tests/unit/logic.test.js` provjeravaju ponderirani prosjek, ECTS zbrojeve, distribuciju ocjena i formatiranje datuma pomoću ugrađenog `node:test`/`node:vm`, bez novih ovisnosti. Integrirani su u `node scripts/check.mjs` i dostupni kroz `npm run test:unit`.
 - **Priprema za obranu projekta:** `docs/OBRANA.md` s 6-minutnim scenarijem izlaganja, redoslijedom demonstracije, arhitektonskim odlukama, odgovorima na najčešća pitanja (autentikacija, RLS, normalizacija, CRUD, AI alati) i predloškom podjele posla. Bez osobnih imena.

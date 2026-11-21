@@ -27,7 +27,7 @@ const STUDENT = {
   address: "Trg hrvatskih velikana 1, Mostar",
   birthDate: "15. 03. 2005.",
   enrolledSince: "2025./2026.",
-  photo: "assets/img/student-ivan.svg"
+  photo: "assets/img/student-avatar.svg"
 };
 
 const ACADEMIC_PROGRAMS = {

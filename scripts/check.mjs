@@ -82,6 +82,10 @@ const required = [
   "LICENSE",
   "docs/INTEGRATION.md",
   "docs/DECISIONS.md",
+  "llms.txt",
+  "robots.txt",
+  "sitemap.xml",
+  "assets/img/student-avatar.svg",
   "playwright.config.js",
   "scripts/static-server.js",
   "tests/e2e/portal.spec.js"
