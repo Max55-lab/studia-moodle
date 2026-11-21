@@ -7,6 +7,7 @@ Format je informativan i temeljen na [Keep a Changelog](https://keepachangelog.c
 ## [Unreleased]
 
 ### Added
+- **Priprema za obranu projekta:** `docs/OBRANA.md` s 6-minutnim scenarijem izlaganja, redoslijedom demonstracije, arhitektonskim odlukama, odgovorima na najčešća pitanja (autentikacija, RLS, normalizacija, CRUD, AI alati) i predloškom podjele posla. Bez osobnih imena.
 - **Proširena E2E pokrivenost:** planer test sada pokriva i inline uređivanje (dodaj → uredi → završi → reload → obriši), a novi test provjerava print medij (navigacija skrivena, sadržaj vidljiv, animacije isključene). Ukupno 7 Playwright testova.
 - **Print prikaz:** dodan je `@media print` sloj koji za A4 ispis skriva navigaciju, zaglavlje, modale i kontrole, uklanja animacije i sjene i zadržava samo sadržaj trenutnog prikaza. Provjereno u Playwrightu (`page.pdf`, bez konzolnih grešaka).
 - **Završna projektna dokumentacija:** `docs/USE-CASE.md` (6 aktora, 22 use casea, kritični tokovi i 403 pravila), `docs/PLAN-RASTA.md` (izbor niše, ICP, paketi, PLG petlje, KPI i rizici) i `llms.txt` za AI agente. Time su pokrivene sve isporuke koje su bile ponuđene za 24-modularnu specifikaciju.

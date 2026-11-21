@@ -62,6 +62,7 @@ Odluka je detaljno obrazložena u [`docs/DECISIONS.md`](docs/DECISIONS.md) (ADR-
 - **Integracijska i projektna dokumentacija:** `docs/` (uključujući `DECISIONS.md`), `studia.config.example.js`, `CONTRIBUTING.md`, `SECURITY.md`, `CHANGELOG.md`, `LICENSE`.
 - **Dizajn artefakt za 24-modularnu Student SaaS Platformu:** [`docs/ARTITEKTURA.md`](docs/ARTITEKTURA.md) (monorepo, mape modula, sigurnosni model, faze), [`docs/schema.sql`](docs/schema.sql) (67 tablica, RLS, RBAC, pgvector i generički seed), [`docs/USE-CASE.md`](docs/USE-CASE.md) (aktori, 22 use casea, 403 pravila) i [`docs/PLAN-RASTA.md`](docs/PLAN-RASTA.md) (niša, paketi, PLG petlje, KPI). To je zaseban nacrt — ne mijenja theme-first produkcijski smjer iz ADR-001.
 - **`llms.txt`** — kratki strojno čitljivi pregled projekta i poveznica na dokumentaciju za AI agente.
+- **Priprema za obranu:** [`docs/OBRANA.md`](docs/OBRANA.md) — 6-minutni scenarij izlaganja, redoslijed demonstracije, najčešća pitanja i odgovori te podjela posla.
 
 ## Ključne značajke portala
 
