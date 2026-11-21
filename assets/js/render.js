@@ -36,8 +36,8 @@ function courseCardMarkup(course, mode = "carousel") {
           </div>
         </div>
         <div class="pt-3 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between gap-2 text-[11px] font-bold text-studia-600 dark:text-studia-400">
-          <span class="text-slate-400 dark:text-slate-500 font-medium">${escapeHtml(course.lectures)}</span>
-          <button type="button" data-course-open="${escapeHtml(course.id)}" class="inline-flex items-center gap-1 rounded-lg px-1.5 py-1 hover:bg-studia-50 dark:hover:bg-studia-950/70 focus:outline-none focus:ring-2 focus:ring-studia-500/40 transition" aria-label="Otvori detalje kolegija ${escapeHtml(course.name)}">Detalji ${icon("arrow-right", "w-3.5 h-3.5 group-hover:translate-x-1 transition-transform")}</button>
+          <span class="text-slate-500 dark:text-slate-400 font-medium">${escapeHtml(course.lectures)}</span>
+          <button type="button" data-course-open="${escapeHtml(course.id)}" class="inline-flex items-center gap-1 rounded-lg px-1.5 py-1 hover:bg-studia-50 dark:hover:bg-studia-950/70 focus:outline-none focus:ring-2 focus:ring-studia-500/40 transition" aria-label="Detalji kolegija ${escapeHtml(course.name)}">Detalji ${icon("arrow-right", "w-3.5 h-3.5 group-hover:translate-x-1 transition-transform")}</button>
         </div>
       </div>
     </article>
@@ -291,7 +291,7 @@ function renderProfessors() {
           <span class="w-10 h-10 rounded-xl hero-gradient text-white flex items-center justify-center font-bold text-xs shrink-0" aria-hidden="true">${initials}</span>
           <span class="min-w-0">
             <span class="block font-bold text-xs text-slate-900 dark:text-white truncate">${escapeHtml(course.professor)}</span>
-            <span class="block text-[11px] text-slate-500 truncate">${escapeHtml(course.name)}</span>
+            <span class="block text-[11px] text-slate-500 dark:text-slate-400 truncate">${escapeHtml(course.name)}</span>
           </span>
         </span>
         <button type="button" data-professor-message="${course.id}" class="p-2 rounded-xl bg-white dark:bg-slate-700 text-studia-600 dark:text-studia-400 hover:bg-studia-50 dark:hover:bg-slate-600 shadow-xs transition shrink-0" aria-label="Pošalji poruku profesoru ${escapeHtml(course.professor)}">

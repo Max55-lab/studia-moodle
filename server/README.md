@@ -20,6 +20,8 @@ environment varijabli poslužitelja i nikada se ne šalje u preglednik.
 | `ALLOWED_ORIGIN` | `*` | Origin koji smije zvati API. Za produkciju postavi npr. `https://max55-lab.github.io`. Više domena odvoji zarezom. |
 | `STUDIA_MAX_COURSES` | `20` | Najviše kolegija koji se vraćaju u jednom syncu. |
 | `STUDIA_MAX_ITEMS` | `60` | Gornja granica po tipu stavki (ocjene, materijali, zadaće) po kolegiju. |
+| `STUDIA_RATE_MAX` | `10` | Najviše `/api/moodle/sync` zahtjeva po klijentu unutar prozora. |
+| `STUDIA_RATE_WINDOW_MS` | `60000` | Duljina prozora za ograničavanje broja zahtjeva (ms). |
 
 ## Pokretanje
 
@@ -112,11 +114,17 @@ nije dopušten, ocjene izostanu, ali kolegiji i zadaće se i dalje prikažu.
 
 - Token se **nikada** ne vraća klijentu, ne logira se i ne pohranjuje u
   `localStorage`.
+- Zahtjevi s neodobrenog `Origin` zaglavlja odbijaju se s HTTP 403 **prije**
+  poziva Moodleu (ne samo skrivanjem CORS odgovora).
+- `/api/moodle/sync` ima jednostavno ograničavanje broja zahtjeva po klijentu
+  (`STUDIA_RATE_MAX` / `STUDIA_RATE_WINDOW_MS`); prekoračenje vraća HTTP 429.
+- Odgovori imaju `X-Content-Type-Options: nosniff` i `Referrer-Policy: no-referrer`.
 - U produkciji obavezno koristi HTTPS i suzi `ALLOWED_ORIGIN` na stvarnu domenu.
 - Ne commituj `.env` ni token u repozitorij. Na hostingu ga postavi kroz
   environment varijable.
-- Proxy je primjer, ne potpuni autentifikacijski sloj. Ako ga izlažeš javno,
-  dodaj provjeru prijave, rate limiting i reviziju dopuštenih Moodle funkcija.
+- Proxy je i dalje primjer, ne potpuni autentifikacijski sloj. Ako ga izlažeš
+  javno, dodaj provjeru prijave i reviziju dopuštenih Moodle funkcija;
+  ograničavanje zahtjeva i provjera origin-a već su uključeni.
 - GitHub Pages je statični hosting i ne može izvršavati ovaj proxy. Za live način
   koristi Render, Railway, Fly.io, VPS ili drugi Node hosting.
 

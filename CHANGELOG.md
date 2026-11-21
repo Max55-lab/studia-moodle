@@ -11,6 +11,11 @@ Format je informativan i temeljen na [Keep a Changelog](https://keepachangelog.c
 - Mock Moodle proxy (`scripts/mock-moodle-proxy.js`, `npm run mock:proxy`) za testiranje live toka bez tokena.
 - CI sada pokreće `node scripts/check.mjs` i PHP lint Moodle teme (do sada samo JS sintaksa).
 - Osvježene dokumentacijske snimke (`docs/preview.png`, `grades.png`, `materials.png`) s planerom, grafikonima i novim prikazima.
+- Lighthouse audit portala: accessibility 1.0 (ispravljen kontrast u tamnom načinu i neusklađena `aria-label` imena).
+- Proxy hardening: odbijanje neodobrenih origin-a (403), ograničavanje broja sync zahtjeva (429) i sigurnosna zaglavlja odgovora.
+
+### Fixed
+- Lighthouse: nedovoljan kontrast na karticama kolegija i u popisima u tamnom načinu; `aria-label` gumba koji nije sadržavao vidljivi tekst.
 - „Moj planer“ u glavnom portalu: dodavanje, završavanje i brisanje osobnih zadataka s opcionalnim rokom, lokalna perzistencija i brzi pristup iz navigacije.
 - Favoriti kolegija (zvjezdica na kartici + filtar „Favoriti“), preneseni iz demo-sitea u glavnu aplikaciju.
 - Vizualizacije na nadzornoj ploči (`assets/js/charts.js`): kretanje prosjeka ocjena, distribucija ocjena i napredak po kolegijima.

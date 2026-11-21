@@ -18,7 +18,32 @@ const ALLOWED_ORIGIN = String(process.env.ALLOWED_ORIGIN || "*");
 const ALLOWED_ORIGINS = ALLOWED_ORIGIN.split(",").map((origin) => origin.trim()).filter(Boolean);
 const MAX_COURSES = Math.max(1, Number(process.env.STUDIA_MAX_COURSES || 20));
 const MAX_ITEMS = Math.max(1, Number(process.env.STUDIA_MAX_ITEMS || 60));
+const RATE_WINDOW_MS = Math.max(1000, Number(process.env.STUDIA_RATE_WINDOW_MS || 60000));
+const RATE_MAX = Math.max(1, Number(process.env.STUDIA_RATE_MAX || 10));
 const WS_ENDPOINT = `${MOODLE_URL}/webservice/rest/server.php`;
+
+const syncRequests = new Map();
+
+function isAllowedOrigin(origin) {
+  if (ALLOWED_ORIGIN === "*") return true;
+  return Boolean(origin && ALLOWED_ORIGINS.includes(origin));
+}
+
+function isRateLimited(key) {
+  const now = Date.now();
+  for (const [storedKey, entry] of syncRequests) {
+    if (now - entry.startedAt > RATE_WINDOW_MS) syncRequests.delete(storedKey);
+  }
+
+  const entry = syncRequests.get(key);
+  if (!entry) {
+    syncRequests.set(key, { startedAt: now, count: 1 });
+    return false;
+  }
+
+  entry.count += 1;
+  return entry.count > RATE_MAX;
+}
 
 function corsHeaders(origin) {
   const headers = {
@@ -40,6 +65,8 @@ function sendJson(response, status, payload, origin) {
   response.writeHead(status, {
     "Content-Type": "application/json; charset=utf-8",
     "Cache-Control": "no-store",
+    "X-Content-Type-Options": "nosniff",
+    "Referrer-Policy": "no-referrer",
     ...corsHeaders(origin)
   });
   response.end(JSON.stringify(payload));
@@ -358,6 +385,11 @@ const server = http.createServer(async (request, response) => {
   const origin = request.headers.origin || "";
   const url = new URL(request.url || "/", `http://${request.headers.host || "localhost"}`);
 
+  if (!isAllowedOrigin(origin)) {
+    sendJson(response, 403, { ok: false, error: "Origin nije dopušten." }, origin);
+    return;
+  }
+
   if (request.method === "OPTIONS") {
     response.writeHead(204, corsHeaders(origin));
     response.end();
@@ -376,6 +408,15 @@ const server = http.createServer(async (request, response) => {
   }
 
   if (request.method === "POST" && url.pathname === "/api/moodle/sync") {
+    const clientKey = request.socket.remoteAddress || origin || "unknown";
+    if (isRateLimited(clientKey)) {
+      sendJson(response, 429, {
+        ok: false,
+        error: `Previše zahtjeva. Pokušaj ponovno za ${Math.ceil(RATE_WINDOW_MS / 1000)} s.`
+      }, origin);
+      return;
+    }
+
     try {
       await readJsonBody(request);
       const payload = await syncMoodle();
