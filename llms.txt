@@ -16,7 +16,8 @@
 ## Za AI agente
 
 - Pravila rada: ./AGENTS.md (Cursor: ./.cursorrules)
-- Arhitektonska odluka ADR-001 (theme-first): ./docs/DECISIONS.md
+- Arhitektonske odluke ADR-001 (theme-first) i ADR-002 (referentni API): ./docs/DECISIONS.md
+- Referentni poslužitelj s pravom bazom i server-side 403: ./server/reference/README.md
 - Ciljni 24-modularni nacrt: ./docs/ARTITEKTURA.md
 - PostgreSQL shema (67 tablica, RLS, RBAC, pgvector, seed): ./docs/schema.sql
 - Use Case opisi i 403 pravila: ./docs/USE-CASE.md
@@ -28,6 +29,8 @@
 
 - `theme_studia` je jedini produkcijski smjer za SUM (ADR-001).
 - `server/moodle-proxy.js` i portal su demo/laboratorijski alati.
+- `server/reference/` je referentni artefakt za obranu predmeta (ADR-002), ne
+  produkcijski backend za SUM i nije spojen na portal.
 - Dokumenti u `docs/ARTITEKTURA.md`, `docs/schema.sql`, `docs/USE-CASE.md` i
   `docs/PLAN-RASTA.md` su zaseban konceptualni nacrt, ne implementirani monorepo.
 - AI-generirani kod mora čovjek provjeriti i moći objasniti na obrani.

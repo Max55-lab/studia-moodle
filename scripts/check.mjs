@@ -31,6 +31,10 @@ const jsFiles = [
   "assets/js/moodle-api.js",
   "assets/js/app.js",
   "server/moodle-proxy.js",
+  "server/reference/auth.js",
+  "server/reference/db.js",
+  "server/reference/server.js",
+  "tests/api/reference-api.test.js",
   "scripts/mock-moodle-proxy.js"
 ];
 for (const rel of jsFiles) {
@@ -142,6 +146,18 @@ if (fs.existsSync(unitTest)) {
     ok("Unit: poslovna logika (5 testova)");
   } catch (error) {
     bad("Unit: poslovna logika");
+  }
+}
+
+/* API testovi: prava baza, server-side 403, CSRF i tenant izolacija. */
+const apiTest = path.join(root, "tests", "api", "reference-api.test.js");
+if (fs.existsSync(apiTest)) {
+  try {
+    execSync(`node --test "${apiTest}"`, { stdio: "pipe" });
+    ok("API: referentni poslužitelj (16 testova)");
+  } catch (error) {
+    bad("API: referentni poslužitelj");
+    if (error.stderr) console.error(error.stderr.toString());
   }
 }
 

@@ -22,8 +22,8 @@
 
 - **Frontend:** HTML, CSS (Tailwind + vlastiti CSS), vanilla JavaScript bez frameworka.
 - **Integracija:** Node.js demo proxy za Moodle i Moodle 4.5 Boost child tema (`theme_studia`, PHP/SCSS).
-- **Pohrana:** `localStorage` za demo stanje planera, favorita i postavki; stvarni akademski podaci ostaju u Moodleu prema ADR-001.
-- **Alati za kvalitetu:** Playwright (E2E), Lighthouse (pristupačnost), Node provjere, GitHub Actions i GitHub Pages.
+- **Pohrana:** `localStorage` za demo stanje planera, favorita i postavki; stvarni akademski podaci ostaju u Moodleu prema ADR-001. Zaseban referentni API koristi ugrađenu SQLite bazu (`node:sqlite`) s pravim relacijama i `FOREIGN KEY` ovom.
+- **Alati za kvalitetu:** Playwright (E2E), `node:test` (unit i API), Lighthouse (pristupačnost), Node provjere, GitHub Actions i GitHub Pages.
 
 ## Korištenje AI alata
 
@@ -54,11 +54,26 @@ Prema preporuci mentora, **produkcijska integracija sa SUM-om je `theme_studia`*
 
 Odluka je detaljno obrazložena u [`docs/DECISIONS.md`](docs/DECISIONS.md) (ADR-001).
 
+### Referentni poslužitelj za server-side 403 i pravu bazu (ADR-002)
+
+Za zahtjev predmeta dodan je **zaseban referentni API** u [`server/reference/`](server/reference/README.md):
+prava SQLite baza s normaliziranim korisnicima, ulogama i dozvolama, prijava sa
+scrypt hashom, sesije, CSRF tokeni i autorizacija na poslužitelju koja vraća
+**HTTP 403** za nedozvoljen pristup. Podaci su isključivo generički demo identiteti.
+Koristi samo ugrađene Node module — nema novih ovisnosti niti `npm install`.
+Nije spojen na demo portal i ne mijenja theme-first produkcijski smjer.
+
+```bash
+node server/reference/server.js     # http://127.0.0.1:8790
+node --test tests/api/reference-api.test.js
+```
+
 ## Što je uključeno u repozitorij
 
 - **Web portal (statički demo):** `index.html`, `assets/` — glavni preglednik demo aplikacije.
 - **Moodle tema (produkcijski smjer):** `theme/studia/` — Boost child tema za Moodle 4.5 (nativna Moodle autentikacija/ovlasti, user preferences, SCSS/templejti).
-- **Moodle proxy primjer (samo demo):** `server/` — Node.js proxy za eksperimentalnu live sinkronizaciju bez izlaganja tokena u pregledniku. Nije zamjena za Moodleov sigurnosni model.
+- **Moodle proxy primjer (samo demo):** `server/moodle-proxy.js` — Node.js proxy za eksperimentalnu live sinkronizaciju bez izlaganja tokena u pregledniku. Nije zamjena za Moodleov sigurnosni model.
+- **Referentni API (ADR-002):** `server/reference/` — izvediv primjer prave baze, hashiranih lozinki, sesija, CSRF-a, uloga i 403 autorizacije. Samo generički podaci, nije produkcijski smjer.
 - **Integracijska i projektna dokumentacija:** `docs/` (uključujući `DECISIONS.md`), `studia.config.example.js`, `CONTRIBUTING.md`, `SECURITY.md`, `CHANGELOG.md`, `LICENSE`.
 - **Dizajn artefakt za 24-modularnu Student SaaS Platformu:** [`docs/ARTITEKTURA.md`](docs/ARTITEKTURA.md) (monorepo, mape modula, sigurnosni model, faze), [`docs/schema.sql`](docs/schema.sql) (67 tablica, RLS, RBAC, pgvector i generički seed), [`docs/USE-CASE.md`](docs/USE-CASE.md) (aktori, 22 use casea, 403 pravila) i [`docs/PLAN-RASTA.md`](docs/PLAN-RASTA.md) (niša, paketi, PLG petlje, KPI). To je zaseban nacrt — ne mijenja theme-first produkcijski smjer iz ADR-001.
 - **`llms.txt`** — kratki strojno čitljivi pregled projekta i poveznica na dokumentaciju za AI agente.
@@ -106,7 +121,7 @@ npm run build:css
 npm run check
 ```
 
-Pokreće osnovne provjere (JSON, sintaksa JS datoteka, PHP sintaksa Moodle teme ako je PHP dostupan, prisutnost ključnih datoteka, obavezni HTML ID-ovi, duplicirani ID-ovi, redoslijed učitavanja scriptova) i **5 unit testova poslovne logike**. Ista skripta i zaseban PHP lint pokreću se i u CI-ju.
+Pokreće osnovne provjere (JSON, sintaksa JS datoteka, PHP sintaksa Moodle teme ako je PHP dostupan, prisutnost ključnih datoteka, obavezni HTML ID-ovi, duplicirani ID-ovi, redoslijed učitavanja scriptova), **5 unit testova poslovne logike** i **16 API testova referentnog poslužitelja**. Ista skripta i zaseban PHP lint pokreću se i u CI-ju.
 
 Unit testove možeš pokrenuti i zasebno, bez instaliranih ovisnosti:
 
@@ -115,6 +130,14 @@ npm run test:unit     # ili: node --test tests/unit/logic.test.js
 ```
 
 Testovi u `tests/unit/logic.test.js` provjeravaju ponderirani prosjek ocjena, zbroj ECTS-a, distribuciju ocjena i formatiranje datuma koristeći ugrađeni `node:test` i `node:vm`.
+
+API testove možeš pokrenuti i zasebno:
+
+```bash
+npm run test:api     # ili: node --test tests/api/reference-api.test.js
+```
+
+Oni pokreću referentni poslužitelj na slučajnom portu s privremenom SQLite bazom i provjeravaju 401/403, CSRF, tenant izolaciju, CRUD materijala, odjavu i audit log.
 
 ### Browser smoke-testovi (Playwright)
 

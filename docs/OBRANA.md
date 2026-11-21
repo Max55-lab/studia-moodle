@@ -13,7 +13,7 @@ portal; svaki član tima treba samostalno moći objasniti svoj doprinos.
 | 0:40–1:20 | Korisnici i opseg: studenti; nastavnici koriste nativnu Moodle temu. Demo koristi izmišljene podatke i generičkog `user`. | `index.html` — nadzorna ploča |
 | 1:20–2:20 | Arhitektura: statički portal + demo proxy + produkcijska tema `theme_studia`. ADR-001 objašnjava zašto autentikacija ostaje u Moodleu. | `docs/DECISIONS.md` |
 | 2:20–3:40 | Funkcionalnosti: fokus nadzorne ploče, pretraga, filteri, planer s CRUD-om, favoriti, grafikoni, export, tamni način, live sinkronizacija. | demonstracija uživo |
-| 3:40–4:30 | Podaci i baza: demo u `localStorage` i `data.js`; ciljni model u `docs/schema.sql` — 67 tablica, RLS, RBAC, pgvector. | `docs/schema.sql` |
+| 3:40–4:30 | Podaci i baza: demo u `localStorage` i `data.js`; referentni API ima pravu SQLite bazu i 403; ciljni model u `docs/schema.sql` — 67 tablica, RLS, RBAC, pgvector. | `server/reference/README.md`, `docs/schema.sql` |
 | 4:30–5:30 | Kvaliteta: `node scripts/check.mjs`, 7 Playwright testova, Lighthouse 1.0/1.0/1.0, 0 konzolnih grešaka, mobilno bez prelijevanja. | terminal / CI |
 | 5:30–6:00 | Ograničenja i sljedeći korak: nema prave baze ni prijave u demu; za produkciju je potrebna nova ADR odluka. | `docs/ARTITEKTURA.md` |
 
@@ -56,17 +56,20 @@ Ako nešto ne radi uživo, imaj spremnu snimku `docs/preview.png`.
 
 ## 4. Najvjerojatnija pitanja i kratki odgovori
 
-**Zašto nema prave baze podataka?**
+**Zašto nema prave baze podataka u javnom demu?**
 Zato što je javni demo na GitHub Pagesu — statički hosting nema server. Demo stanje
-(planer, favoriti, tema) sprema se u `localStorage`. Ciljni model s PostgreSQL-om,
-RLS-om i migracijama opisan je u `docs/schema.sql` i nije dio produkcijskog smjera
-iz ADR-001.
+(planer, favoriti, tema) sprema se u `localStorage`. Za obranu predmeta dodan je
+zaseban referentni API u `server/reference/` s **pravom SQLite bazom** (relacije,
+`FOREIGN KEY`, normalizirani RBAC), pokretan s `node server/reference/server.js`.
+Ciljni model s PostgreSQL-om, RLS-om i migracijama opisan je u `docs/schema.sql`.
+Referentni API nije dio produkcijskog smjera iz ADR-001.
 
 **Kako je riješena autentikacija i autorizacija?**
 U produkciji ih u potpunosti pruža Moodle: `require_login()`, uloge, capabilityji i
-`require_sesskey()`. U demu nema prijave jer nema pravih podataka. U ciljnom modelu
-svaka zaštićena ruta prvo provjerava identitet, zatim dozvolu, a neovlašten pristup
-vraća HTTP 403 — skrivanje gumba nije autorizacija.
+`require_sesskey()`. U demu nema prijave jer nema pravih podataka. U referentnom API-ju
+(ADR-002) svaka zaštićena ruta prvo provjerava identitet (401), zatim dozvolu (**403
+Forbidden** s jasnom porukom); lozinke su scrypt hash, sesije SHA-256 digesti, a
+mutacije traže CSRF token. Skrivanje gumba nikad nije autorizacija.
 
 **Je li baza normalizirana? Koliko ima tablica i stranih ključeva?**
 Ciljna shema ima 67 tablica u shemi `app`. Korisnik je u jednoj tablici `users`, a
@@ -97,8 +100,10 @@ live tok. Provjere: `node scripts/check.mjs` i `node node_modules/@playwright/te
 Objava je GitHub Pages iz `main`, a repozitorij je Javni link u README-u.
 
 **Što bi bio sljedeći korak?**
-Nova ADR odluka, pa zaseban monorepo s PostgreSQL-om, pravom prijavom, Redis redovima
-i nadzorom — prema `docs/ARTITEKTURA.md`, u pet faza.
+Referentni API već pokazuje sigurnosni tok; sljedeći korak je preseliti ga na
+PostgreSQL iz `docs/schema.sql` (RLS umjesto ručnog filtriranja po `institution_id`),
+dodati pravi Moodle/EduID identitet i nadzor — prema `docs/ARTITEKTURA.md`, u pet faza.
+Za produkcijski smjer SUM-a i dalje vrijedi ADR-001 (`theme_studia`).
 
 ---
 
