@@ -44,6 +44,32 @@ for (const rel of jsFiles) {
   }
 }
 
+/* PHP datoteke Moodle teme — samo ako je PHP dostupan na sustavu. */
+function collectFiles(directory, suffix, output = []) {
+  if (!fs.existsSync(directory)) return output;
+  for (const entry of fs.readdirSync(directory, { withFileTypes: true })) {
+    const fullPath = path.join(directory, entry.name);
+    if (entry.isDirectory()) collectFiles(fullPath, suffix, output);
+    else if (entry.name.endsWith(suffix)) output.push(fullPath);
+  }
+  return output;
+}
+
+try {
+  execSync("php -v", { stdio: "pipe" });
+  const themePhpFiles = collectFiles(path.join(root, "theme", "studia"), ".php");
+  for (const file of themePhpFiles) {
+    try {
+      execSync(`php -l "${file}"`, { stdio: "pipe" });
+      ok(`PHP: ${path.relative(root, file)}`);
+    } catch (error) {
+      bad(`PHP: ${path.relative(root, file)}`);
+    }
+  }
+} catch (error) {
+  // PHP nije instaliran — provjera teme se preskače.
+}
+
 const required = [
   "index.html",
   "assets/css/style.css",

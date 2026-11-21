@@ -36,5 +36,11 @@ jobs:
           done
           echo "Syntax ok"
 
+      - name: Check Moodle theme PHP syntax
+        run: |
+          set -e
+          find theme/studia -name '*.php' -type f -print0 | xargs -0 -n1 php -l
+          echo "Theme PHP ok"
+
       - name: Run project checks
         run: node scripts/check.mjs

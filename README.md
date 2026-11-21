@@ -60,7 +60,7 @@ npm run build:css
 npm run check
 ```
 
-Pokreće osnovne provjere (JSON, sintaksa JS datoteka, prisutnost ključnih datoteka, obavezni HTML ID-ovi, duplicirani ID-ovi i redoslijed učitavanja scriptova). Ista skripta sada se pokreće i u CI-ju.
+Pokreće osnovne provjere (JSON, sintaksa JS datoteka, PHP sintaksa Moodle teme ako je PHP dostupan, prisutnost ključnih datoteka, obavezni HTML ID-ovi, duplicirani ID-ovi i redoslijed učitavanja scriptova). Ista skripta i zaseban PHP lint pokreću se i u CI-ju.
 
 ## Konfiguracija i integracija
 
