@@ -2,7 +2,7 @@
 
 Ovaj dokument opisuje kako prilagoditi i integrirati **Studia** demo portal u drugi sustav (statički hosting, LMS okruženje, intranet, vlastiti backend ili hibridni scenarij).
 
-> Napomena: zadani build je demo/statički. Za produkcijske scenarije potrebno je osigurati autentikaciju, autorizaciju, zaštitu podataka i poslužiteljsku logiku u ciljnom sustavu.
+> **Važno (ADR-001):** za produkcijsku integraciju sa SUM-om koristi **Moodle temu** (`theme/studia/`), ne statički portal ni vanjski proxy. Statički build i načini A–C namijenjeni su demo/prezentaciji i testiranju sučelja s izmišljenim podacima. Detalji: [`DECISIONS.md`](DECISIONS.md).
 
 ## 1. Načini integracije
 
@@ -18,9 +18,10 @@ Ovaj dokument opisuje kako prilagoditi i integrirati **Studia** demo portal u dr
 - Zadrži UI i render logiku, a zamijeni izvor podataka i/ili Moodle adapter.
 - Preporuka: definirati stabilan podatkovni ugovor (vidi `docs/DATA_MODEL.md`) i mapirati podatke iz ciljnih sustava.
 
-### D) Ugradnja Moodle teme
+### D) Ugradnja Moodle teme — preporučeni produkcijski smjer
 - `theme/studia/` je Boost child tema za Moodle 4.5 (vidi `theme/studia/README.md`).
-- Tema koristi nativnu Moodle autentikaciju/ovlasti i user preferences; ne uvodi vanjsku prijavu.
+- Tema koristi nativnu Moodle autentikaciju/ovlasti i user preferences; ne uvodi vanjsku prijavu, token, REST endpoint ni dupliciranu bazu.
+- Sav novi razvoj integracije ide ovamo; načini A–C ostaju demo alati.
 
 ## 2. Učitavanje i redoslijed skripti
 

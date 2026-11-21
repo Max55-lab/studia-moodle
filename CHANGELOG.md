@@ -14,6 +14,12 @@ Format je informativan i temeljen na [Keep a Changelog](https://keepachangelog.c
 - Lighthouse audit portala: accessibility 1.0 (ispravljen kontrast u tamnom načinu i neusklađena `aria-label` imena).
 - Proxy hardening: odbijanje neodobrenih origin-a (403), ograničavanje broja sync zahtjeva (429) i sigurnosna zaglavlja odgovora.
 - Automatizirani browser smoke-testovi (Playwright, `npm run test:e2e`) i statički server za testove (`scripts/static-server.js`), s 6 testova koji se pokreću i u CI-ju.
+- **ADR-001 — theme-first integracija** (`docs/DECISIONS.md`): `theme_studia` je jedini produkcijski smjer za SUM; statički portal i proxy su eksplicitno demo/laboratorijski alati.
+- Upozorenja u Moodle modalu i dokumentaciji da live proxy nije zamjena za Moodleovu autentifikaciju i autorizaciju.
+
+### Changed
+- **Moderniziran vizualni jezik (Studia 2.0):** višeslojni hero gradient s mrežom i orbom, staklasti površinski sloj, gradient aktivnih nav/pill gumba, mekani lift kartica i ažurirani indigo/cyan akcenti u portalu i Moodle temi.
+- `README.md`, `docs/INTEGRATION.md`, `docs/PRIVACY.md` i `theme/studia/README.md` reorganizirani oko odluke theme-first (sigurnosni model teme, ograničenja proxyja).
 
 ### Fixed
 - Lighthouse: nedovoljan kontrast na karticama kolegija i u popisima u tamnom načinu; `aria-label` gumba koji nije sadržavao vidljivi tekst.

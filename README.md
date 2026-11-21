@@ -11,12 +11,21 @@
 
 > Demo koristi isključivo izmišljene podatke i ne provodi stvarnu autentikaciju. Live demo na GitHub Pages servira statički sadržaj (`index.html` + `assets/`).
 
+## Smjer integracije — theme-first
+
+Prema preporuci mentora, **produkcijska integracija sa SUM-om je `theme_studia`**, a ne vanjski REST proxy. Razlog: autentifikacija, autorizacija i stvarni izvori podataka već postoje u Moodleu 4.5. Dodavanje vlastitog API sloja donosilo bi nove tokene, endpointa i sigurnosne rizike bez stvarne potrebe.
+
+- ✅ **Produkcija:** [`theme/studia/`](theme/studia/README.md) — nativna Moodle tema (Moodle prijava, uloge, ovlasti, baza, user preferences, `require_sesskey()`).
+- 🧪 **Demo/laboratorij:** statički portal i `server/moodle-proxy.js` — isključivo s izmišljenim podacima; **ne koristiti s pravim studentskim podacima ni tokenom**.
+
+Odluka je detaljno obrazložena u [`docs/DECISIONS.md`](docs/DECISIONS.md) (ADR-001).
+
 ## Što je uključeno u repozitorij
 
 - **Web portal (statički demo):** `index.html`, `assets/` — glavni preglednik demo aplikacije.
-- **Moodle tema:** `theme/studia/` — Boost child tema za Moodle 4.5 (nativna Moodle autentikacija/ovlasti, user preferences, SCSS/templejti).
-- **Moodle proxy primjer:** `server/` — Node.js proxy za live sinkronizaciju bez izlaganja tokena u pregledniku.
-- **Integracijska i projektna dokumentacija:** `docs/`, `studia.config.example.js`, `CONTRIBUTING.md`, `SECURITY.md`, `CHANGELOG.md`, `LICENSE`.
+- **Moodle tema (produkcijski smjer):** `theme/studia/` — Boost child tema za Moodle 4.5 (nativna Moodle autentikacija/ovlasti, user preferences, SCSS/templejti).
+- **Moodle proxy primjer (samo demo):** `server/` — Node.js proxy za eksperimentalnu live sinkronizaciju bez izlaganja tokena u pregledniku. Nije zamjena za Moodleov sigurnosni model.
+- **Integracijska i projektna dokumentacija:** `docs/` (uključujući `DECISIONS.md`), `studia.config.example.js`, `CONTRIBUTING.md`, `SECURITY.md`, `CHANGELOG.md`, `LICENSE`.
 
 ## Ključne značajke portala
 
@@ -25,7 +34,7 @@
 - **Vizualizacije:** kretanje kumulativnog prosjeka ocjena, distribucija ocjena i napredak po kolegijima (inline SVG/CSS, bez vanjskih biblioteka).
 - **UX:** svijetli/tamni način, responzivan prikaz (desktop/tablet/mobilno), pretraga, filtri, modali, toast poruke, izvoz (npr. `.ics`, CSV) i demo preuzimanja.
 - **Demo stanje:** dio postavki i radnji sprema se lokalno u pregledniku (`localStorage`) isključivo za potrebe demonstracije.
-- **Moodle adapter:** demo način i live način preko backend proxyja (token ostaje na poslužitelju).
+- **Moodle adapter (demo):** demo način i eksperimentalni live način preko backend proxyja (token ostaje na poslužitelju). Live način nije za produkciju — vidi ADR-001.
 
 | Ocjene i ECTS | Materijali kolegija |
 | --- | --- |
@@ -103,7 +112,10 @@ Dostupan je i globalni namespace `window.Studia` (konfiguracija, lifecycle hooko
 - Zadano aktivan, bez mrežnih zahtjeva.
 - Koristi ugrađene demo podatke za prikaz sinkronizacije i sažetaka.
 
-### Live način (preko proxyja)
+### Live način (preko proxyja) — eksperimentalno, samo za demo
+
+> **Nije za produkciju.** Proxy nema korisničku prijavu ni autorizaciju po ulogama. Za stvarni SUM koristi `theme_studia` (ADR-001).
+
 - Front-end šalje zahtjev proxy servisu; proxy koristi Moodle Web Service token i vraća `summary` + normalizirani `data` (kolegiji, ocjene, materijali, zadaće, obavijesti).
 - `assets/js/live-data.js` preslikava taj payload u modele portala i osvježava cijeli UI — kartice, ocjene i grafikoni tada koriste stvarne Moodle podatke.
 - **Token se ne smije nalaziti u pregledniku, `localStorage` ili front-end kodu.** Live studentski podaci također ostaju samo u memoriji.

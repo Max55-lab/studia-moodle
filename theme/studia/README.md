@@ -2,15 +2,30 @@
 
 `theme_studia` je nativna Moodle tema za **SUM e-Učenje**, naslijeđena od `theme_boost` (Moodle 4.5). Donosi moderan Studia vizualni identitet, prilagođenu nadzornu ploču za studente, kompaktni brzi izbornik i podršku za svijetli/tamni način rada.
 
+> **Ovo je produkcijski smjer integracije.** Prema [ADR-001](../../docs/DECISIONS.md), umjesto dodavanja vlastitog REST sloja, autentifikaciju, autorizaciju i podatke prepuštamo Moodleu 4.5. Statički portal i `server/moodle-proxy.js` služe samo za demo i testiranje sučelja.
+
 ## Glavne značajke
 
 - **Nasljeđivanje:** child tema `theme_boost`, bez izmjena Moodle core datoteka.
-- **Vizualni identitet:** ljubičasto–indigo akcenti (`#6d28d9`, `#7c3aed`), zaobljene kartice, jasna tipografija i puno praznog prostora.
+- **Vizualni identitet (2.0):** ljubičasto–indigo akcenti s cyan odsjajem (`#6d28d9`, `#7c3aed`, `#4f46e5`, `#22d3ee`), hero s mrežom i suptilnim gradientom, zaobljene kartice s mekanim liftom, jasna tipografija i puno praznog prostora.
 - **Nadzorna ploča:** hero pozdrav s aktivnim semestrom, kartice upisanih kolegija, nositelji i napredak dovršetka (completion) kada je dostupan.
 - **Navigacija:** Boost drawer struktura + kompaktni Studia brzi izbornik (profil, moji kolegiji, ocjene, kalendar).
 - **Dark mode:** prekidač u navbaru, odabir se sprema u Moodle korisničke postavke (`set_user_preference`) i primjenjuje se na serveru kroz `data-theme`/`data-bs-theme` kako ne bi bilo treperenja.
 - **Sigurnost:** koristi isključivo Moodle sesije, `require_login()`, `require_sesskey()`, Moodle uloge i capability provjere; nema vlastite prijave, vanjskih REST API slojeva ni tokena u pregledniku/`localStorage`.
 - **Responzivnost:** prilagođeno za tipične širine (npr. 1440, 1280, 900, 390 px) bez horizontalnog prelijevanja ključnih elemenata teme.
+
+## Sigurnosni model
+
+| Što tema radi | Zašto je to važno |
+| --- | --- |
+| Koristi Moodleovu prijavu i sesiju | nema nove login stranice ni sesijskog mehanizma |
+| Provjerava ovlasti kroz Moodle uloge | student vidi samo svoje kolegije i ocjene |
+| `require_login()` + `require_sesskey()` na `toggle.php` | nema CSRF-a ni neovlaštene promjene postavki |
+| Čita podatke iz Moodleove baze | nema dupliciranih izvora ni sinkronizacijskih tokena |
+| Ne sprema osjetljive podatke u `localStorage` | nema izlaganja podataka u pregledniku |
+| Ne dodaje nove javne endpointa | nema nove površine napada izvan Moodlea |
+
+Ako treba dodati novu integraciju (npr. Studomat/ISVU), prvo napravi novu ADR u `docs/DECISIONS.md` i razmotri EduID/OAuth, reviziju i pravni okvir obrade podataka.
 
 ## Zahtjevi
 

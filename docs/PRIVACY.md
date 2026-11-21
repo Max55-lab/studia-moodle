@@ -24,6 +24,7 @@ Aplikacija može koristiti `localStorage` za pohranu preferencija i demo stanja 
 
 ## Preporuke za produkcijsku upotrebu
 
+- **Za SUM koristi `theme_studia`** (ADR-001): Moodleova prijava, ovlasti i baza; bez novih endpointa i tokena. Statički portal i proxy su demo alati.
 - Koristiti samo podatke za koje postoji pravna osnova i jasna svrha obrade.
 - Primijeniti načela minimizacije podataka i ograničenja pristupa.
 - Osigurati transparentnost (obavijesti o privatnosti, kolačići/pohrana, prava korisnika) u skladu s primjenjivim propisima.

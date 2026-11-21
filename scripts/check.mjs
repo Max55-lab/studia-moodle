@@ -77,6 +77,7 @@ const required = [
   "README.md",
   "LICENSE",
   "docs/INTEGRATION.md",
+  "docs/DECISIONS.md",
   "playwright.config.js",
   "scripts/static-server.js",
   "tests/e2e/portal.spec.js"

@@ -297,7 +297,7 @@
     <section id="view-dashboard" class="space-y-8">
 
         <div class="relative">
-            <div class="flex items-center bg-white dark:bg-slate-900 rounded-2xl shadow-soft border border-slate-100 dark:border-slate-800 px-4 sm:px-5 py-3.5 focus-within:border-studia-400 focus-within:ring-4 focus-within:ring-studia-500/10 transition">
+            <div class="studia-surface flex items-center bg-white dark:bg-slate-900 rounded-2xl shadow-soft border border-slate-100 dark:border-slate-800 px-4 sm:px-5 py-3.5 focus-within:border-studia-400 focus-within:ring-4 focus-within:ring-studia-500/10 transition">
                 <i data-lucide="search" class="w-5 h-5 text-slate-400 mr-3 shrink-0"></i>
                 <label for="global-search-input" class="sr-only">Pretraži kolegije, zadaće, skripte i profesore</label>
                 <input id="global-search-input" type="search" autocomplete="off" placeholder="Pretraži kolegije, skripte, zadaće, rokove ili profesore..." class="w-full bg-transparent text-sm sm:text-base text-slate-800 dark:text-slate-100 placeholder-slate-400 focus:outline-none">
@@ -307,7 +307,7 @@
             <div id="search-results-panel" class="hidden absolute left-0 right-0 mt-2 bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border border-slate-100 dark:border-slate-800 p-4 z-20 max-h-80 overflow-y-auto space-y-1.5"></div>
         </div>
 
-        <div class="hero-gradient rounded-[28px] p-7 sm:p-10 text-white relative overflow-hidden shadow-glow">
+        <div class="studia-hero hero-gradient rounded-[28px] p-7 sm:p-10 text-white relative overflow-hidden shadow-glow">
             <div class="hidden sm:block absolute -bottom-24 right-16 w-64 h-64 rounded-full border border-white/15 pointer-events-none" aria-hidden="true"></div>
             <div class="hidden sm:block absolute -top-16 -right-12 w-48 h-48 rounded-full bg-white/5 pointer-events-none" aria-hidden="true"></div>
 
@@ -373,7 +373,7 @@
             <p id="courses-empty" class="hidden text-sm text-slate-500 dark:text-slate-400 py-10 text-center">Nema kolegija za odabrani filtar.</p>
         </div>
 
-        <div class="bg-white dark:bg-slate-900 rounded-[28px] p-6 sm:p-7 shadow-soft border border-slate-100 dark:border-slate-800">
+        <div class="studia-surface bg-white dark:bg-slate-900 rounded-[28px] p-6 sm:p-7 shadow-soft border border-slate-100 dark:border-slate-800">
             <div class="flex flex-wrap items-center justify-between gap-3 mb-5">
                 <div>
                     <h2 class="font-display font-extrabold text-xl text-slate-900 dark:text-white">Nadolazeće obveze i rokovi</h2>
@@ -408,7 +408,7 @@
         </div>
 
         <!-- ======================= MOJ PLANER ======================= -->
-        <div id="planner-section" class="bg-white dark:bg-slate-900 rounded-[28px] p-6 sm:p-7 shadow-soft border border-slate-100 dark:border-slate-800">
+        <div id="planner-section" class="studia-surface bg-white dark:bg-slate-900 rounded-[28px] p-6 sm:p-7 shadow-soft border border-slate-100 dark:border-slate-800">
             <div class="flex flex-wrap items-center justify-between gap-3 mb-5">
                 <div>
                     <h2 class="font-display font-extrabold text-xl text-slate-900 dark:text-white">Moj planer</h2>
@@ -500,7 +500,7 @@
         </div>
 
         <!-- ======================= VIZUALIZACIJE ======================= -->
-        <div class="bg-white dark:bg-slate-900 rounded-[28px] p-6 sm:p-7 shadow-soft border border-slate-100 dark:border-slate-800">
+        <div class="studia-surface bg-white dark:bg-slate-900 rounded-[28px] p-6 sm:p-7 shadow-soft border border-slate-100 dark:border-slate-800">
             <div class="flex flex-wrap items-center justify-between gap-3 mb-6">
                 <div>
                     <h2 class="font-display font-extrabold text-xl text-slate-900 dark:text-white">Vizualizacija napretka</h2>
@@ -935,11 +935,15 @@
 
         <div class="grid grid-cols-2 gap-1.5 p-1.5 rounded-2xl bg-slate-100 dark:bg-slate-800" role="group" aria-label="Način rada Moodle adaptera">
             <button type="button" data-moodle-mode="demo" class="py-2.5 rounded-xl text-xs font-bold transition">Demo</button>
-            <button type="button" data-moodle-mode="live" class="py-2.5 rounded-xl text-xs font-bold transition">Live proxy</button>
+            <button type="button" data-moodle-mode="live" class="py-2.5 rounded-xl text-xs font-bold transition">Live proxy (demo)</button>
         </div>
 
         <div id="moodle-demo-panel" class="space-y-3">
             <p class="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">Demo način koristi ugrađene podatke i ne šalje nijedan mrežni zahtjev. Idealno za GitHub Pages prezentaciju i testiranje sučelja.</p>
+            <div class="p-3.5 rounded-2xl bg-studia-50 dark:bg-studia-950/50 border border-studia-200/70 dark:border-studia-900 flex items-start gap-2.5">
+                <i data-lucide="shield-check" class="w-4 h-4 text-studia-600 dark:text-studia-400 shrink-0 mt-0.5"></i>
+                <p class="text-[11px] text-studia-800 dark:text-studia-200 leading-relaxed">Za stvarnu integraciju sa SUM-om koristi <strong>theme_studia</strong> — nativnu Moodle 4.5 temu. Ona koristi Moodleovu prijavu, ovlasti i bazu, bez novih API endpointa i tokena.</p>
+            </div>
             <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-center">
                 <div class="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/60"><strong class="block text-sm text-slate-800 dark:text-slate-100">5</strong><span class="text-[10px] text-slate-400">kolegija</span></div>
                 <div class="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/60"><strong class="block text-sm text-slate-800 dark:text-slate-100">10</strong><span class="text-[10px] text-slate-400">ocjena</span></div>
@@ -956,7 +960,7 @@
             </div>
             <div class="p-3.5 rounded-2xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-900 flex items-start gap-2.5">
                 <i data-lucide="info" class="w-4 h-4 text-amber-600 dark:text-amber-400 shrink-0 mt-0.5"></i>
-                <p class="text-[11px] text-amber-800 dark:text-amber-300 leading-relaxed">Moodle token i EduID podaci postavljaju se isključivo na poslužitelju (<code class="font-mono">MOODLE_TOKEN</code>). Nikada se ne upisuju u preglednik ni u localStorage.</p>
+                <p class="text-[11px] text-amber-800 dark:text-amber-300 leading-relaxed">Moodle token i EduID podaci postavljaju se isključivo na poslužitelju (<code class="font-mono">MOODLE_TOKEN</code>). Nikada se ne upisuju u preglednik ni u localStorage. <strong>Samo za laboratorijski demo</strong> — za produkciju koristi <code class="font-mono">theme_studia</code>; ovaj proxy ne provodi autentifikaciju ni autorizaciju korisnika.</p>
             </div>
         </div>
 
