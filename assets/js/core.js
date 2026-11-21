@@ -811,7 +811,12 @@ function loadPreferences() {
     try {
       const parsed = JSON.parse(savedFavorites);
       if (parsed && typeof parsed === "object" && !Array.isArray(parsed)) {
-        state.favorites = parsed;
+        Object.keys(parsed).forEach((key) => {
+          const value = parsed[key];
+          if (value === true || value === 1 || value === "true" || value === "1") {
+            state.favorites[key] = true;
+          }
+        });
       }
     } catch (error) {
       // Neispravan zapis ignorira se.

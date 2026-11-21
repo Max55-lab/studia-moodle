@@ -441,8 +441,7 @@ header.sticky {
 #sidebar-nav .nav-btn:hover { border-color: rgba(124, 58, 237, 0.12); }
 #sidebar-nav .nav-btn.is-active { box-shadow: 0 10px 24px -14px rgba(124, 58, 237, 0.6); }
 
-.course-card:hover,
-button[data-course-open]:hover { transform: translateY(-2px); }
+.course-card:hover { transform: translateY(-2px); }
 
 .hero-gradient {
   background-image: linear-gradient(135deg, #5b21b6 0%, #7c3aed 45%, #8b5cf6 100%);

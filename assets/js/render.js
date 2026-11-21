@@ -16,7 +16,7 @@ function courseCardMarkup(course, mode = "carousel") {
     : "course-card group snap-start bg-white dark:bg-slate-900 rounded-[28px] border border-slate-100 dark:border-slate-800 overflow-hidden shadow-soft hover:shadow-card cursor-pointer transition flex flex-col";
 
   return `
-    <article class="${cardClass}" data-course-open="${course.id}" role="button" tabindex="0" aria-label="Otvori kolegij ${escapeHtml(course.name)}">
+    <article class="${cardClass}" data-course-open="${course.id}" aria-label="${escapeHtml(course.name)}">
       <div class="h-32 bg-gradient-to-br ${course.color} p-5 flex flex-col justify-between text-white relative overflow-hidden">
         <div class="absolute right-0 bottom-0 translate-x-4 translate-y-4 w-28 h-28 bg-white/10 rounded-full blur-xl" aria-hidden="true"></div>
         <span class="text-[11px] font-bold uppercase tracking-wider bg-white/25 px-2.5 py-1 rounded-lg w-max backdrop-blur-xs relative z-10">${escapeHtml(course.code)}</span>
@@ -37,7 +37,7 @@ function courseCardMarkup(course, mode = "carousel") {
         </div>
         <div class="pt-3 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between gap-2 text-[11px] font-bold text-studia-600 dark:text-studia-400">
           <span class="text-slate-400 dark:text-slate-500 font-medium">${escapeHtml(course.lectures)}</span>
-          <span class="inline-flex items-center gap-1">Detalji ${icon("arrow-right", "w-3.5 h-3.5 group-hover:translate-x-1 transition-transform")}</span>
+          <button type="button" data-course-open="${escapeHtml(course.id)}" class="inline-flex items-center gap-1 rounded-lg px-1.5 py-1 hover:bg-studia-50 dark:hover:bg-studia-950/70 focus:outline-none focus:ring-2 focus:ring-studia-500/40 transition" aria-label="Otvori detalje kolegija ${escapeHtml(course.name)}">Detalji ${icon("arrow-right", "w-3.5 h-3.5 group-hover:translate-x-1 transition-transform")}</button>
         </div>
       </div>
     </article>

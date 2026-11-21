@@ -11,6 +11,9 @@ Format je informativan i temeljen na [Keep a Changelog](https://keepachangelog.c
 - Favoriti kolegija (zvjezdica na kartici + filtar „Favoriti“), preneseni iz demo-sitea u glavnu aplikaciju.
 - Vizualizacije na nadzornoj ploči (`assets/js/charts.js`): kretanje prosjeka ocjena, distribucija ocjena i napredak po kolegijima.
 - Ispravka scrolla: `body { overflow-x: clip }` umjesto `hidden` (fallback zadržan).
+- Pristupačnost: uklonjen ugniježđeni interaktivni element na kartici kolegija — otvaranje detalja sada ide preko zasebnog gumba „Detalji“ (kartica više nema `role="button"`).
+- Hardening: sanitizacija favorita učitanih iz `localStorage` i očuvanje pozicije karusela pri označavanju favorita.
+- Smoke-provjere u `scripts/check.mjs`: obavezni HTML ID-ovi, odsutnost dupliciranih ID-ova i redoslijed učitavanja scriptova.
 - Integracijska i produkcijska priprema: konfiguracijski sloj (`assets/js/config.js`), primjer konfiguracije, dokumentacija za integraciju, podatkovni model, arhitekturu, privatnost i sigurnost.
 - Dokumenti projekta: `CONTRIBUTING.md`, `CHANGELOG.md`, `SECURITY.md`, `LICENSE`, `.editorconfig`, `.prettierrc.json`.
 - CI workflow za osnovne provjere kvalitete (`.github/workflows/ci.yml`).

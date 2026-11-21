@@ -55,6 +55,40 @@ for (const rel of required) {
   else bad(`Missing: ${rel}`);
 }
 
+/* Lagane smoke-provjere HTML-a — hvataju neusinkronizirane mount točke,
+   duplicirane ID-ove i izostavljene scriptove bez pokretanja browsera. */
+const htmlPath = path.join(root, "index.html");
+if (fs.existsSync(htmlPath)) {
+  const html = fs.readFileSync(htmlPath, "utf8");
+
+  const requiredIds = [
+    "planner-section",
+    "planner-form",
+    "planner-input",
+    "planner-deadline",
+    "planner-list",
+    "planner-progress-label",
+    "chart-grade-trend",
+    "chart-grade-donut",
+    "chart-course-progress"
+  ];
+  for (const id of requiredIds) {
+    if (html.includes(`id="${id}"`)) ok(`HTML id: ${id}`);
+    else bad(`HTML id missing: ${id}`);
+  }
+
+  const allIds = [...html.matchAll(/\bid="([^"]+)"/g)].map((match) => match[1]);
+  const duplicates = [...new Set(allIds.filter((id, index) => allIds.indexOf(id) !== index))];
+  if (duplicates.length === 0) ok("HTML: nema dupliciranih ID-ova");
+  else bad(`HTML duplicirani ID-ovi: ${duplicates.join(", ")}`);
+
+  const chartsAt = html.indexOf("assets/js/charts.js");
+  const viewsAt = html.indexOf("assets/js/views.js");
+  const appAt = html.indexOf("assets/js/app.js");
+  if (chartsAt > viewsAt && chartsAt < appAt) ok("HTML redoslijed: views.js → charts.js → app.js");
+  else bad("HTML redoslijed scriptova nije ispravan");
+}
+
 if (failed) {
   console.error("\nProvjere nisu prošle.");
   process.exit(1);

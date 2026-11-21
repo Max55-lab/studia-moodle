@@ -1033,10 +1033,17 @@ function handleDocumentClick(event) {
   const favoriteButton = event.target.closest("[data-course-fav]");
   if (favoriteButton) {
     const courseId = favoriteButton.dataset.courseFav;
+    const carousel = $("#courses-carousel");
+    const scrollLeft = carousel ? carousel.scrollLeft : 0;
+
     state.favorites[courseId] = !state.favorites[courseId];
     persistFavorites();
     renderCoursePills();
     renderCourses();
+    if (carousel) {
+      carousel.scrollLeft = scrollLeft;
+      if (typeof updateCarouselButtons === "function") updateCarouselButtons();
+    }
     renderFullCourses();
     refreshIcons();
     showToast(state.favorites[courseId] ? "Kolegij je dodan u favorite." : "Kolegij je uklonjen iz favorita.", "info");
@@ -1228,14 +1235,6 @@ function handleKeydown(event) {
       }, 50);
     }
     return;
-  }
-
-  if ((event.key === "Enter" || event.key === " ") && document.activeElement) {
-    const courseCard = document.activeElement.closest("[data-course-open]");
-    if (courseCard) {
-      event.preventDefault();
-      openCourseModal(courseCard.dataset.courseOpen);
-    }
   }
 }
 
