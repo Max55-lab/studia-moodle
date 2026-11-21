@@ -7,6 +7,7 @@ Format je informativan i temeljen na [Keep a Changelog](https://keepachangelog.c
 ## [Unreleased]
 
 ### Added
+- **Usklađenost sa zahtjevima projekta:** README sada sadrži cilj, korisnike, tim, tehnologije i popis korištenih AI alata; planer ima puni CRUD (dodavanje, uređivanje, završavanje, brisanje) s inline uređivanjem i perzistencijom. Prikazani identitet je generički `user` bez osobnih podataka.
 - **Pokret i mikro-interakcije:** postepeni ulazak nadzorne ploče, lagani hero sjaj i klizna akcentna linija, hover reakcije kartica, gumba i brzih veza, animirane obavijesti i planer. Brojači (prosjek, ECTS, zadaće) animiraju se samo pri prvom prikazu, a pozdrav se prilagođava dobu dana. Sve poštuje `prefers-reduced-motion` i koristi isključivo transform/opacity.
 - **Live Moodle podaci u portalu:** proxy sada uz `summary` vraća i normalizirani `data`; `assets/js/live-data.js` preslikava ga u `COURSES`, `GRADE_HISTORY`, `MATERIALS`, `ASSIGNMENTS` i obavijesti, pa grafikoni i kartice koriste stvarne Moodle podatke. Povratak u demo način vraća originalni dataset.
 - Mock Moodle proxy (`scripts/mock-moodle-proxy.js`, `npm run mock:proxy`) za testiranje live toka bez tokena.

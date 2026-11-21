@@ -8,11 +8,11 @@ const DEMO_TODAY = new Date(2026, 10, 18, 9, 0);
 const DEMO_TODAY_LABEL = "18. 11. 2026.";
 
 const STUDENT = {
-  firstName: "Ivan",
-  lastName: "Kovač",
-  fullName: "Ivan Kovač",
-  initials: "IK",
-  email: "ivan.kovac@fpmoz.sum.ba",
+  firstName: "user",
+  lastName: "",
+  fullName: "user",
+  initials: "U",
+  email: "user@demo.sum.ba",
   id: "689302",
   program: "FPMOZ · Računarstvo",
   programShort: "Računarstvo",

@@ -1497,3 +1497,17 @@ main section:not(.hidden):not(#view-dashboard) {
 .studia-nav-item.is-active > svg:first-child {
   animation: studia-icon-pop 0.5s ease-out both;
 }
+
+/* Uređivanje zadatka u planeru (CRUD: update). */
+.todo-edit-input {
+  width: 100%;
+  padding: 0.35rem 0.5rem;
+  border: 1px solid var(--primary);
+  border-radius: 9px;
+  background-color: var(--panel);
+  color: var(--ink);
+  font-size: 0.875rem;
+  font-weight: 600;
+  outline: none;
+  box-shadow: 0 0 0 3px var(--primary-soft);
+}

@@ -935,6 +935,74 @@ function handleDocumentClick(event) {
     return;
   }
 
+  const todoEdit = event.target.closest("[data-todo-edit]");
+  if (todoEdit) {
+    const id = todoEdit.dataset.todoEdit;
+    const todo = state.todos.find((item) => String(item.id) === String(id));
+    const row = todoEdit.closest("li");
+    const textEl = row ? row.querySelector(".todo-text") : null;
+    if (!todo || !textEl) return;
+
+    const input = document.createElement("input");
+    input.type = "text";
+    input.className = "todo-edit-input";
+    input.value = todo.text;
+    input.setAttribute("aria-label", "Uredi naziv zadatka");
+    textEl.replaceChildren(input);
+
+    const save = () => {
+      const value = input.value.trim();
+      if (!value) {
+        showToast("Naziv zadatka ne može biti prazan.", "error");
+        input.focus();
+        return;
+      }
+      todo.text = value;
+      persistPlanner();
+      renderPlanner();
+      showToast("Zadatak je ažuriran.");
+    };
+
+    input.addEventListener("keydown", (keyEvent) => {
+      if (keyEvent.key === "Enter") {
+        keyEvent.preventDefault();
+        save();
+      } else if (keyEvent.key === "Escape") {
+        keyEvent.preventDefault();
+        renderPlanner();
+      }
+    });
+
+    todoEdit.dataset.todoSave = id;
+    delete todoEdit.dataset.todoEdit;
+    todoEdit.setAttribute("aria-label", "Spremi zadatak");
+    todoEdit.title = "Spremi zadatak";
+    todoEdit.innerHTML = icon("check", "w-4 h-4");
+    input.focus();
+    input.select();
+    return;
+  }
+
+  const todoSave = event.target.closest("[data-todo-save]");
+  if (todoSave) {
+    const row = todoSave.closest("li");
+    const input = row ? row.querySelector(".todo-edit-input") : null;
+    if (!input) return;
+    const id = todoSave.dataset.todoSave;
+    const todo = state.todos.find((item) => String(item.id) === String(id));
+    const value = input.value.trim();
+    if (!todo || !value) {
+      showToast("Naziv zadatka ne može biti prazan.", "error");
+      input.focus();
+      return;
+    }
+    todo.text = value;
+    persistPlanner();
+    renderPlanner();
+    showToast("Zadatak je ažuriran.");
+    return;
+  }
+
   const todoDelete = event.target.closest("[data-todo-delete]");
   if (todoDelete) {
     const id = todoDelete.dataset.todoDelete;

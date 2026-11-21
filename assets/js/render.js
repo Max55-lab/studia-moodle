@@ -251,9 +251,10 @@ function renderPlanner() {
             : "border-slate-300 dark:border-slate-600 text-transparent hover:border-studia-500"
         }">✓</button>
         <div class="flex-1 min-w-0">
-          <span class="block text-sm font-semibold ${done ? "text-slate-400 line-through" : "text-slate-800 dark:text-slate-100"}">${escapeHtml(todo.text)}</span>
+          <span class="todo-text block text-sm font-semibold ${done ? "text-slate-400 line-through" : "text-slate-800 dark:text-slate-100"}">${escapeHtml(todo.text)}</span>
           ${todo.deadline ? `<span class="block text-[10px] text-slate-400 mt-1">Rok: ${escapeHtml(formatDateISO(todo.deadline))}</span>` : ""}
         </div>
+        <button type="button" data-todo-edit="${id}" aria-label="Uredi zadatak" title="Uredi zadatak" class="p-1.5 rounded-lg text-slate-400 hover:text-studia-600 hover:bg-studia-50 dark:hover:bg-studia-950/40 transition shrink-0">${icon("pencil", "w-4 h-4")}</button>
         <button type="button" data-todo-delete="${id}" aria-label="Obriši zadatak" class="p-1.5 rounded-lg text-slate-400 hover:text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition shrink-0">${icon("trash-2", "w-4 h-4")}</button>
       </li>
     `;
@@ -328,6 +329,8 @@ function updateGreeting() {
   const hour = new Date().getHours();
   const greeting = hour < 11 ? "Dobro jutro" : hour < 18 ? "Dobar dan" : "Dobra večer";
   heading.firstChild.textContent = `${greeting}, `;
+  const name = heading.querySelector("span");
+  if (name) name.textContent = `${STUDENT.firstName}.`;
 }
 
 function renderStats() {

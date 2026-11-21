@@ -9,7 +9,30 @@
 
 ![Pregled nadzorne ploče](docs/preview.png)
 
-> Demo koristi isključivo izmišljene podatke i ne provodi stvarnu autentikaciju. Live demo na GitHub Pages servira statički sadržaj (`index.html` + `assets/`).
+> Demo koristi isključivo izmišljene podatke i ne provodi stvarnu autentikaciju. Live demo na GitHub Pages servira statički sadržaj (`index.html` + `assets/`). Prikazani korisnik je generički `user` — u repozitoriju nema osobnih podataka ni tokena.
+
+## O projektu (za predaju)
+
+- **Cilj:** objediniti svakodnevne akademske informacije (kolegiji, ocjene, materijali, rokovi, raspored) na jednom preglednom mjestu i studentima smanjiti vrijeme traženja podataka kroz više e-kolegija.
+- **Korisnici:** studenti SUM-a; nastavnici i administratori koriste nativnu Moodle temu `theme_studia`.
+- **Ključne funkcionalnosti:** nadzorna ploča s fokusom na sljedeći rok, pretraga i filtriranje, osobni planer s punim CRUD-om, favoriti kolegija, grafikoni napretka, izvoz podataka, svijetli/tamni način i eksperimentalna live sinkronizacija.
+- **Tim:** dva studenta — imena i individualne doprinose unijeti prije predaje. Podjela posla: (1) dizajn i frontend sučelje; (2) podatkovni sloj, integracija i testiranje. Oba člana samostalno brane svoj doprinos.
+
+## Tehnologije
+
+- **Frontend:** HTML, CSS (Tailwind + vlastiti CSS), vanilla JavaScript bez frameworka.
+- **Integracija:** Node.js demo proxy za Moodle i Moodle 4.5 Boost child tema (`theme_studia`, PHP/SCSS).
+- **Pohrana:** `localStorage` za demo stanje planera, favorita i postavki; stvarni akademski podaci ostaju u Moodleu prema ADR-001.
+- **Alati za kvalitetu:** Playwright (E2E), Lighthouse (pristupačnost), Node provjere, GitHub Actions i GitHub Pages.
+
+## Korištenje AI alata
+
+AI je korišten za planiranje, generiranje i objašnjavanje koda, razvoj sučelja, otklanjanje pogrešaka, testiranje i dokumentiranje.
+
+- **Claude (u OpenCode okruženju):** redizajn sučelja, CSS animacije, CRUD planera, E2E testovi, provjere pristupačnosti i dokumentacija.
+- Ostale alate koje je tim koristio (npr. ChatGPT, Copilot) navesti ovdje prije predaje.
+
+Svi AI-generirani dijelovi ručno su pregledani i provjereni (`node scripts/check.mjs`, Playwright, Lighthouse) te prilagođeni postojećoj arhitekturi. U javni repozitorij ne unose se stvarne lozinke, tokeni ni osobni podaci.
 
 ## Dizajn — Studia 3
 
@@ -39,7 +62,7 @@ Odluka je detaljno obrazložena u [`docs/DECISIONS.md`](docs/DECISIONS.md) (ADR-
 ## Ključne značajke portala
 
 - **Pregledi:** nadzorna ploča, profil, inbox, kolegiji/UniHub, ocjene i ECTS, materijali, obavijesti, zadaće, raspored, Meet sobe, AI demo asistent.
-- **Planer i favoriti:** osobni zadaci s rokom (dodavanje, završavanje, brisanje) i označavanje kolegija favoritima uz filtar „Favoriti“.
+- **Planer i favoriti:** osobni zadaci s rokom i punim CRUD-om (dodavanje, uređivanje, završavanje, brisanje) te označavanje kolegija favoritima uz filtar „Favoriti“.
 - **Vizualizacije:** kretanje kumulativnog prosjeka ocjena, distribucija ocjena i napredak po kolegijima (inline SVG/CSS, bez vanjskih biblioteka).
 - **UX:** svijetli/tamni način, responzivan prikaz (desktop/tablet/mobilno), pretraga, filtri, modali, toast poruke, izvoz (npr. `.ics`, CSV) i demo preuzimanja.
 - **Demo stanje:** dio postavki i radnji sprema se lokalno u pregledniku (`localStorage`) isključivo za potrebe demonstracije.
