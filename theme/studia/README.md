@@ -7,7 +7,7 @@
 ## Glavne značajke
 
 - **Nasljeđivanje:** child tema `theme_boost`, bez izmjena Moodle core datoteka.
-- **Vizualni identitet (Focus):** papirnata pozadina, ravne površine, tanke linije i jedan indigo akcent (`#4338ca`), bez animiranih gradijenata i teških sjena; ista paleta kao i portal.
+- **Vizualni identitet (Studia 3):** tamni hero, violetni primarni (`#6d28d9`) i narančasti signalni akcent (`#f97316`) na svijetloj radnoj površini; ista paleta kao i portal, bez novih endpointa ili tokena.
 - **Nadzorna ploča:** hero pozdrav s aktivnim semestrom, kartice upisanih kolegija, nositelji i napredak dovršetka (completion) kada je dostupan.
 - **Navigacija:** Boost drawer struktura + kompaktni Studia brzi izbornik (profil, moji kolegiji, ocjene, kalendar).
 - **Dark mode:** prekidač u navbaru, odabir se sprema u Moodle korisničke postavke (`set_user_preference`) i primjenjuje se na serveru kroz `data-theme`/`data-bs-theme` kako ne bi bilo treperenja.

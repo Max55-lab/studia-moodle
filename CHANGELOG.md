@@ -19,8 +19,6 @@ Format je informativan i temeljen na [Keep a Changelog](https://keepachangelog.c
 
 ### Changed
 - **Potpuni redizajn „Studia 3” od početka:** cijeli vizualni sloj (`assets/css/style.css`) i struktura nadzorne ploče zamijenjeni su novim sustavom — tamna navigacijska traka, tamni hero s jednim sljedećim rokom, tri odvojena sažetka, violetni primarni i narančasti signalni akcent. Filtari, brze veze i sklopljena arhiva detalja redizajnirani su u novom sustavu klasa uz očuvanje svih ID-ova i testnih hookova. Ista paleta prenesena je u `theme/studia/scss/post.scss`. Lighthouse ostaje 1.0 u svjetlom i tamnom načinu, Playwright 6/6, mobilno bez prelijevanja.
-- **Potpuno novi Focus redizajn:** nadzorna ploča sada prikazuje jedan sljedeći rok, tri sažetka (prosjek, ECTS, aktivne zadaće), kompaktne kartice kolegija i četiri brze veze. Planer, tablica rokova, statistika, profesori i grafikoni premješteni su u sklopljeni `<details id="dashboard-more">`.
-- **Modernizirani vizualni jezik:** uklonjeni su animirani hero gradienti, mreža i orbovi, a zadržani papirnata pozadina, tanke linije i jedan indigo akcent. Dodane su suptilne sjene, mekani akcentni gradijenti na gumbima i karticama, akcentne trake, ikone u brzim vezama i kratke mikro-animacije (poštuju `prefers-reduced-motion`). Tema koristi istu paletu.
 - **Manje navigacijskog šuma:** bočni izbornik ima 7 umjesto 11 stavki (uklonjeni duplicirani profil, planer, Meet i AI unos), a kartice kolegija prikazuju samo kod, naziv, napredak i detalje.
 - `README.md`, `docs/INTEGRATION.md`, `docs/PRIVACY.md` i `theme/studia/README.md` reorganizirani oko odluke theme-first (sigurnosni model teme, ograničenja proxyja).
 

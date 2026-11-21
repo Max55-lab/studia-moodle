@@ -1,7 +1,7 @@
 /* =========================================================
-   STUDIA â€” vlastiti stilovi
-   Ovdje je samo ono Å¡to Tailwind ne pokriva: fontovi, animacije,
-   carousel, kalendar i pristupaÄnost.
+   STUDIA — vlastiti stilovi
+   Ovdje je samo ono što Tailwind ne pokriva: fontovi, animacije,
+   carousel, kalendar i pristupačnost.
    ========================================================= */
 
 /* ---------- Fontovi ---------- */
@@ -33,7 +33,7 @@ body {
   background-color: #f8f9fc;
   color: #111827;
   font-family: "Plus Jakarta Sans", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
-  /* overflow-x: clip (fallback hidden) â€” ne kreira scroll kontejner, da vertikalni scroll rade normalno. */
+  /* overflow-x: clip (fallback hidden) — ne kreira scroll kontejner, da vertikalni scroll rade normalno. */
   overflow-x: hidden;
   overflow-x: clip;
   transition: background-color 0.25s ease, color 0.25s ease;
@@ -79,7 +79,7 @@ html.dark ::selection {
   transform: scale(0.98);
 }
 
-/* ---------- PristupaÄnost ---------- */
+/* ---------- Pristupačnost ---------- */
 .skip-link {
   position: fixed;
   top: 0.75rem;
@@ -388,10 +388,10 @@ html.dark {
 
 
 /* =========================================================
-   STUDIA 3 â€” potpuno novi vizualni sustav.
-   Tamna navigacijska traka, svijetla radna povrÅ¡ina, jedan
-   violetni primarni i jedan naranÄasti signalni akcent.
-   PoÄetna stranica: jedan fokus, tri broja, arhiva ostalog.
+   STUDIA 3 — potpuno novi vizualni sustav.
+   Tamna navigacijska traka, svijetla radna površina, jedan
+   violetni primarni i jedan narančasti signalni akcent.
+   Početna stranica: jedan fokus, tri broja, arhiva ostalog.
    ========================================================= */
 
 :root {
@@ -659,7 +659,7 @@ tbody td {
 }
 
 /* =========================================================
-   NOVA POÄŒETNA STRANICA
+   NOVA POČETNA STRANICA
    ========================================================= */
 
 .proto-hero {
