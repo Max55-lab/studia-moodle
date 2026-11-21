@@ -7,6 +7,7 @@ Format je informativan i temeljen na [Keep a Changelog](https://keepachangelog.c
 ## [Unreleased]
 
 ### Added
+- **Unit testovi poslovne logike:** 5 testova u `tests/unit/logic.test.js` provjeravaju ponderirani prosjek, ECTS zbrojeve, distribuciju ocjena i formatiranje datuma pomoću ugrađenog `node:test`/`node:vm`, bez novih ovisnosti. Integrirani su u `node scripts/check.mjs` i dostupni kroz `npm run test:unit`.
 - **Priprema za obranu projekta:** `docs/OBRANA.md` s 6-minutnim scenarijem izlaganja, redoslijedom demonstracije, arhitektonskim odlukama, odgovorima na najčešća pitanja (autentikacija, RLS, normalizacija, CRUD, AI alati) i predloškom podjele posla. Bez osobnih imena.
 - **Proširena E2E pokrivenost:** planer test sada pokriva i inline uređivanje (dodaj → uredi → završi → reload → obriši), a novi test provjerava print medij (navigacija skrivena, sadržaj vidljiv, animacije isključene). Ukupno 7 Playwright testova.
 - **Print prikaz:** dodan je `@media print` sloj koji za A4 ispis skriva navigaciju, zaglavlje, modale i kontrole, uklanja animacije i sjene i zadržava samo sadržaj trenutnog prikaza. Provjereno u Playwrightu (`page.pdf`, bez konzolnih grešaka).

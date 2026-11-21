@@ -134,6 +134,17 @@ if (fs.existsSync(htmlPath)) {
   else bad("HTML redoslijed scriptova nije ispravan");
 }
 
+/* Unit testovi poslovne logike — bez vanjskih ovisnosti. */
+const unitTest = path.join(root, "tests", "unit", "logic.test.js");
+if (fs.existsSync(unitTest)) {
+  try {
+    execSync(`node --test "${unitTest}"`, { stdio: "pipe" });
+    ok("Unit: poslovna logika (5 testova)");
+  } catch (error) {
+    bad("Unit: poslovna logika");
+  }
+}
+
 if (failed) {
   console.error("\nProvjere nisu prošle.");
   process.exit(1);

@@ -106,7 +106,15 @@ npm run build:css
 npm run check
 ```
 
-Pokreće osnovne provjere (JSON, sintaksa JS datoteka, PHP sintaksa Moodle teme ako je PHP dostupan, prisutnost ključnih datoteka, obavezni HTML ID-ovi, duplicirani ID-ovi i redoslijed učitavanja scriptova). Ista skripta i zaseban PHP lint pokreću se i u CI-ju.
+Pokreće osnovne provjere (JSON, sintaksa JS datoteka, PHP sintaksa Moodle teme ako je PHP dostupan, prisutnost ključnih datoteka, obavezni HTML ID-ovi, duplicirani ID-ovi, redoslijed učitavanja scriptova) i **5 unit testova poslovne logike**. Ista skripta i zaseban PHP lint pokreću se i u CI-ju.
+
+Unit testove možeš pokrenuti i zasebno, bez instaliranih ovisnosti:
+
+```bash
+npm run test:unit     # ili: node --test tests/unit/logic.test.js
+```
+
+Testovi u `tests/unit/logic.test.js` provjeravaju ponderirani prosjek ocjena, zbroj ECTS-a, distribuciju ocjena i formatiranje datuma koristeći ugrađeni `node:test` i `node:vm`.
 
 ### Browser smoke-testovi (Playwright)
 
@@ -116,7 +124,7 @@ npm run test:e2e:install   # samo prvi put: preuzima Chromium
 npm run test:e2e
 ```
 
-Testovi u `tests/e2e/portal.spec.js` pokrivaju učitavanje nadzorne ploče, navigaciju, planer, favorite, tamni način i demo → live → demo sinkronizaciju preko mock proxyja. Playwright sam pokreće statički server (`scripts/static-server.js`, port `4173`) i mock proxy (port `8788`), pa nije potrebno ručno ih paliti. Isti testovi idu i u CI (uz `npm ci` i `npx playwright install --with-deps chromium`).
+Testovi u `tests/e2e/portal.spec.js` (njih 7) pokrivaju učitavanje nadzorne ploče, navigaciju, planer s uređivanjem, favorite, tamni način, print prikaz i demo → live → demo sinkronizaciju preko mock proxyja. Playwright sam pokreće statički server (`scripts/static-server.js`, port `4173`) i mock proxy (port `8788`), pa nije potrebno ručno ih paliti. Isti testovi idu i u CI (uz `npm ci` i `npx playwright install --with-deps chromium`).
 
 ## Konfiguracija i integracija
 
